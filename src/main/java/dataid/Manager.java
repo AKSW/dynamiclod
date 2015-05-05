@@ -135,8 +135,7 @@ public class Manager {
 						// uptate status of distribution
 						distributionMongoDBObj
 						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
-						distributionMongoDBObj
-						.setStatus(DistributionMongoDBObject.STATUS_ERROR);
+					
 						distributionMongoDBObj.updateObject(true);
 						bean.updateDistributionList = true;
 
