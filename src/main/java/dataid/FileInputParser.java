@@ -53,7 +53,10 @@ public class FileInputParser {
 		datasetsStmt = inModel.listStatements(null, RDFProperties.primaryTopic,
 				(RDFNode) null);
 		
-		Resource topic = datasetsStmt.next().getObject().asResource();
+		Resource topic = null;
+		
+		if(datasetsStmt.hasNext())
+			topic = datasetsStmt.next().getObject().asResource();
 
 		for (Resource datasetResource : RDFProperties.Dataset) {
 			if(topic==null)
