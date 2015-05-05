@@ -5,16 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.taglibs.standard.lang.jstl.test.Bean1;
 
 import com.mongodb.AggregationOutput;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import dataid.mongodb.DataIDDB;
-import dataid.mongodb.actions.MakeLinksets;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dataid.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
@@ -154,7 +153,14 @@ public class DistributionQueries {
 		try {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			BasicDBObject query = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_ERROR);
+			
+			DBObject clause1 = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_ERROR);  
+			DBObject clause2 = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD);    
+			BasicDBList or = new BasicDBList();
+			or.add(clause1);
+			or.add(clause2);
+			DBObject query = new BasicDBObject("$or", or);
+			
 			DBCursor instances = collection.find(query);
 
 			for (DBObject instance : instances) {
