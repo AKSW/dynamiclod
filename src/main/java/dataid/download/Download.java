@@ -62,18 +62,18 @@ public class Download {
 
 		// opens input stream from HTTP connection
 		InputStream inputStream = httpConn.getInputStream();
+		
 		logger.debug("InputStream from http connection opened");
 
 		// get some data from headers
 		getMetadataFromHTTPHeaders(httpConn);
-
+		
 		return inputStream;
 
 	}
 
 	private void openConnection() throws Exception {
 		httpConn = (HttpURLConnection) url.openConnection();
-		httpConn.setRequestMethod("HEAD");
 
 		httpConn.setReadTimeout(5000);
 		httpConn.setConnectTimeout(5000);
@@ -162,10 +162,10 @@ public class Download {
 	
 	protected InputStream getTarInputStream(InputStream inputStream)
 			throws Exception {
-		InputStream data = new BufferedInputStream(inputStream);
 
 		// check whether file is zip type
 		if (getExtension().equals("tar")) {
+			InputStream data = new BufferedInputStream(inputStream);
 			logger.info("File extension is tar, creating TarArchiveInputStream and checking compressed files...");
 			DownloadTarUtils d = new DownloadTarUtils();
 //			d.checkTarFile(data);		

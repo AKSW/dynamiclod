@@ -134,7 +134,7 @@ public class Manager {
 
 						// uptate status of distribution
 						distributionMongoDBObj
-								.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
+						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
 						distributionMongoDBObj.updateObject(true);
 						bean.updateDistributionList = true;
 
@@ -153,6 +153,7 @@ public class Manager {
 						// isDbpedia = true;
 						// if (isDbpedia)
 						// throw new DataIDException("DBpedia ttl format");
+						
 						p.separateSubjectAndObject(downloadedFile.fileName,
 								downloadedFile.extension, isDbpedia);
 						downloadedFile.objectDomains = p.objectDomains;

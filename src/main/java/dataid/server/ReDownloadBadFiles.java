@@ -31,6 +31,7 @@ public class ReDownloadBadFiles  extends HttpServlet{
 		ReDownloadBadFiles();
 	}
 
+	@Test
 	public void ReDownloadBadFiles() {
 		ArrayList<DistributionMongoDBObject> dist = DistributionQueries.getDistributionsWithErrors();
 		List<DistributionModel> distributionsLinks = new ArrayList<DistributionModel>();
