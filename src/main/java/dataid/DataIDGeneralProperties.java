@@ -13,12 +13,13 @@ public class DataIDGeneralProperties {
 	}
 
 	public void loadProperties() {
+		Properties prop = new Properties();
+		InputStream inputStream = null;
 		try {
 			String result = "";
-			Properties prop = new Properties();
 			String propFileName = "resources/config.properties";
 
-			InputStream inputStream = new FileInputStream(propFileName);
+			inputStream = new FileInputStream(propFileName);
 
 			prop.load(inputStream);
 
@@ -54,8 +55,15 @@ public class DataIDGeneralProperties {
 			
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally{
+			try {
+				inputStream.close();
+			} catch (Exception e2) {
+				System.out.println("Error closing input stream of .properties file.");
+				e2.printStackTrace();
+			}
 		}
 	}
 
