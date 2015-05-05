@@ -56,7 +56,7 @@ public class CreateOutputByDatasets extends HttpServlet {
 				for (DatasetMongoDBObject dataset : datasetList) {
 					Resource r = outModel.createResource(dataset.getUri());
 					r.addProperty(
-							Dataset.dataIDType,
+							Dataset.type,
 							ResourceFactory.createResource(NS.VOID_URI
 									+ "Dataset"));
 					r.addProperty(
@@ -77,7 +77,7 @@ public class CreateOutputByDatasets extends HttpServlet {
 							linkset.getSubjectsDatasetTarget())) {
 						Resource r = outModel.createResource(linkset.getUri());
 						r.addProperty(
-								Dataset.dataIDType,
+								Dataset.type,
 								ResourceFactory.createResource(NS.VOID_URI
 										+ "Linkset"));
 						r.addProperty(

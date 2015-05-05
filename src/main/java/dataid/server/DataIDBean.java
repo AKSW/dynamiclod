@@ -20,7 +20,6 @@ import dataid.mongodb.actions.MakeLinksets;
 import dataid.mongodb.actions.Queries;
 import dataid.mongodb.queries.DatasetQueries;
 import dataid.mongodb.queries.DistributionQueries;
-import dataid.mongodb.queries.SubsetQueries;
 
 @SessionScoped
 @ManagedBean
@@ -204,12 +203,6 @@ public class DataIDBean implements Serializable, Runnable {
 
 	public void setDisplay(String display) {
 		this.display.add(display);
-	}
-
-	// mutator methods for statistical data
-	public int getNumberOfSubsets() {
-		this.numberOfSubsets = SubsetQueries.getNumberOfSubsets();
-		return numberOfSubsets;
 	}
 
 	public void setNumberOfSubsets(int numberOfSubsets) {

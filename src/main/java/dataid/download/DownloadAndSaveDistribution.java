@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import dataid.DataIDGeneralProperties;
 import dataid.threads.GetDomainsFromTriplesThread;
 import dataid.threads.SplitAndStoreThread;
+import dataid.utils.FileUtils;
 import dataid.utils.Formats;
 
 public class DownloadAndSaveDistribution extends Download {
@@ -25,7 +26,7 @@ public class DownloadAndSaveDistribution extends Download {
 			.getLogger(DownloadAndSaveDistribution.class);
 
 	// Paths
-	public String dataIDFilePath = null;
+	public String hashFileName = null;
 	public String objectFilePath;
 
 	public double contentLengthAfterDownloaded = 0;
@@ -51,8 +52,9 @@ public class DownloadAndSaveDistribution extends Download {
 	boolean doneSplittingString = false;
 	boolean doneAuthorityObject = false;
 	
-	public DownloadAndSaveDistribution(String accessURL) throws MalformedURLException {
+	public DownloadAndSaveDistribution(String accessURL, String RDFFormat) throws MalformedURLException {
 		this.url = new URL(accessURL);
+		this.RDFFormat  = RDFFormat;
 	}
 
 	public void downloadDistribution() throws Exception {
@@ -65,34 +67,37 @@ public class DownloadAndSaveDistribution extends Download {
 		// allowing gzip format
 		inputStream = getGZipInputStream(inputStream);
 		
-		// allowinf zip format
+		// allowing zip format
 		inputStream = getZipInputStream(inputStream);
 
 		inputStream = getTarInputStream(inputStream);
 
-		dataIDFilePath = DataIDGeneralProperties.BASE_PATH + getFileName();
+		hashFileName = FileUtils.stringToHash(url.toString());
 		objectFilePath = DataIDGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
-				+ getFileName();
+				+ hashFileName;
 
 
 		setExtension(Formats.getEquivalentFormat(getExtension()));
 		
-		if (Formats.getEquivalentFormat(getExtension()).equals(
+		if(RDFFormat.equals(""))
+			RDFFormat = getExtension();
+		
+		if (Formats.getEquivalentFormat(RDFFormat).equals(
 				Formats.DEFAULT_NQUADS)) {
 			// parse graphs and call DownloadDistributionNTFormat()
 			
 		}
 
-		else if (Formats.getEquivalentFormat(getExtension()).equals(
+		else if (Formats.getEquivalentFormat(RDFFormat).equals(
 				Formats.DEFAULT_NTRIPLES)) {
 			DownloadDistributionNTFormat();
 
-		} else if (Formats.getEquivalentFormat(extension).equals(
+		} else if (Formats.getEquivalentFormat(RDFFormat).equals(
 				Formats.DEFAULT_TURTLE)
-				|| Formats.getEquivalentFormat(extension).equals(
+				|| Formats.getEquivalentFormat(RDFFormat).equals(
 						Formats.DEFAULT_RDFXML)) {
 			int bytesRead = -1;
-			FileOutputStream outputStream = new FileOutputStream(dataIDFilePath);
+			FileOutputStream outputStream = new FileOutputStream(DataIDGeneralProperties.DUMP_PATH +hashFileName);
 			while (-1 != (bytesRead = inputStream.read(buffer))) {
 				outputStream.write(buffer, 0, bytesRead);
 				contentLengthAfterDownloaded = contentLengthAfterDownloaded
@@ -115,7 +120,7 @@ public class DownloadAndSaveDistribution extends Download {
 
 		// update file length
 		if (httpContentLength < 1) {
-			File f = new File(dataIDFilePath);
+			File f = new File(DataIDGeneralProperties.DUMP_PATH +hashFileName);
 			httpContentLength = f.length();
 		}
 		httpConn.disconnect();
@@ -124,8 +129,12 @@ public class DownloadAndSaveDistribution extends Download {
 	
 	private void DownloadDistributionNTFormat() throws IOException, InterruptedException{
 
+//		SplitAndStoreThread splitThread = new SplitAndStoreThread(
+//				bufferQueue, subjectQueue, objectQueue, getFileName());
+		
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(
-				bufferQueue, subjectQueue, objectQueue, getFileName());
+				bufferQueue, subjectQueue, objectQueue, FileUtils.stringToHash(url.toString()));
+		
 		splitThread.start();
 
 		GetDomainsFromTriplesThread getDomainFromObjectsThread = new GetDomainsFromTriplesThread(

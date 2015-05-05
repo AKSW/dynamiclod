@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import dataid.Manager;
 import dataid.download.DownloadAndSaveDistribution;
-import dataid.models.DistributionModel;
+import dataid.mongodb.objects.DistributionMongoDBObject;
 
 public class DBPediaLinks {
 
@@ -65,45 +65,45 @@ public class DBPediaLinks {
 		}
 	};
 
-	public void download() {
-		try {
-			for (String link : links) {
-				DownloadAndSaveDistribution d = new DownloadAndSaveDistribution(
-						"http://downloads.dbpedia.org/3.9/en/" +link);
-				d.downloadDistribution();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public void download() {
+//		try {
+//			for (String link : links) {
+//				DownloadAndSaveDistribution d = new DownloadAndSaveDistribution(
+//						"http://downloads.dbpedia.org/3.9/en/" +link);
+//				d.downloadDistribution();
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
-	@Test
-	public void createDistribitons() {
-
-		List<DistributionModel> distributionsLinks = new ArrayList<DistributionModel>();
-
-		try {
-
-			DownloadAndSaveDistribution dist1 = null;
-
-			for (String link : links) {
-
-				String l = "http://downloads.dbpedia.org/3.9/en/" + link;
-
-				DistributionModel d = new DistributionModel(0,
-						"http://dbpedia.org/",
-						"http://downloads.dbpedia.org/3.9/en/", l, l);
-				distributionsLinks.add(d);
-
-			}
-
-			new Manager(distributionsLinks);
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+//	@Test
+//	public void createDistribitons() {
+//
+//		List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
+//
+//		try {
+//
+//			DownloadAndSaveDistribution dist1 = null;
+//
+//			for (String link : links) {
+//
+//				String l = "http://downloads.dbpedia.org/3.9/en/" + link;
+//
+//				DistributionMongoDBObject d = new DistributionMongoDBObject(0,
+//						"http://dbpedia.org/",
+//						"http://downloads.dbpedia.org/3.9/en/", l, l);
+//				distributionsLinks.add(d);
+//
+//			}
+//
+//			new Manager(distributionsLinks);
+//
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 }

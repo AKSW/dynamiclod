@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import dataid.Manager;
-import dataid.models.DistributionModel;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.queries.DistributionQueries;
 
@@ -34,14 +33,14 @@ public class ReDownloadBadFiles  extends HttpServlet{
 	@Test
 	public void ReDownloadBadFiles() {
 		ArrayList<DistributionMongoDBObject> dist = DistributionQueries.getDistributionsWithErrors();
-		List<DistributionModel> distributionsLinks = new ArrayList<DistributionModel>();
+		List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
 		
 		logger.info("Searching for bad downloaded file.");
 		
 		for (DistributionMongoDBObject distributionMongoDBObject : dist) {
 			distributionMongoDBObject.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD);
 			distributionMongoDBObject.updateObject(true);
-			distributionsLinks.add(new DistributionModel(0, distributionMongoDBObject.getTopDataset(), distributionMongoDBObject.getTopDataset(), distributionMongoDBObject.getUri(), distributionMongoDBObject.getDownloadUrl()));
+			distributionsLinks.add(distributionMongoDBObject);
 		}
 		if(distributionsLinks.size()>0){
 		logger.info("Starting manager");

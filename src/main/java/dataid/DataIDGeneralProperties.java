@@ -40,6 +40,7 @@ public class DataIDGeneralProperties {
 			FILTER_PATH = BASE_PATH + "filters/";
 			SUBJECT_PATH = BASE_PATH + "subjects/";
 			OBJECT_PATH = BASE_PATH + "objects/";
+			DUMP_PATH = BASE_PATH + "dump/";
 			DATAID_PATH = BASE_PATH + "dataid/";
 			AUTHORITY_FILTER_PATH = BASE_PATH + "authority_filter";
 			DISTRIBUTION_PREFIX = "distribution_";
@@ -79,6 +80,9 @@ public class DataIDGeneralProperties {
 
 	// defining object file path
 	public static String OBJECT_PATH;
+	
+	// defining dump file path
+	public static String DUMP_PATH;
 
 	// defining dataids file path
 	public static String DATAID_PATH;

@@ -33,6 +33,10 @@ public class FileUtils {
 		f = new File(DataIDGeneralProperties.DATAID_PATH);
 		if (!f.exists())
 			f.mkdirs();
+		
+		f = new File(DataIDGeneralProperties.DUMP_PATH);
+		if (!f.exists())
+			f.mkdirs();
 	}
 
 	// TODO make this method more precise

@@ -338,7 +338,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 		this.format = format;
 	}
 
-	public boolean isSuccessfullyDownloadede() {
+	public boolean getSuccessfullyDownloaded() {
 		return successfullyDownloaded;
 	}
 

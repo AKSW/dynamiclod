@@ -17,6 +17,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 	public static final String LABEL = "label";
 
 	public static final String TITLE = "title";
+	
+	public static final String PARENT_DATASETS = "parent_datasets";
 
 	public static final String SUBSET_URIS = "subset_uris";
 
@@ -46,6 +48,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 	private ArrayList<String> subsetsURIs = new ArrayList<String> ();
 
 	private ArrayList<String>  distributionsURIs = new ArrayList<String> ();
+	
+	private ArrayList<String> parentDatasetsURI = new ArrayList<String>();
 
 	public DatasetMongoDBObject(String uri) {
 		super(COLLECTION_NAME, uri);
@@ -69,6 +73,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 			mongoDBObject.put(LABEL, label);
 			
 			mongoDBObject.put(IS_VOCABULARY, isVocabulary);
+			
+			mongoDBObject.put(PARENT_DATASETS, parentDatasetsURI);
 			
 			
 			insert(checkBeforeInsert);
@@ -111,8 +117,14 @@ public class DatasetMongoDBObject extends DataIDDB {
 			for (Object sd : distributionList) {
 				distributionsURIs.add((String)sd);
 			}
+			
+			// loading parent datasets to object
+			BasicDBList parentDatasetsList = (BasicDBList) obj
+					.get(PARENT_DATASETS);
+			for (Object sd : parentDatasetsList) {
+				parentDatasetsURI.add((String) sd);
+			}
 
-//			System.out.println(obj);
 			return true;
 		}
 		return false;
@@ -167,6 +179,14 @@ public class DatasetMongoDBObject extends DataIDDB {
 	
 	public void setIsVocabulary(Boolean isVocabulary) {
 		this.isVocabulary = isVocabulary;
+	}
+	
+	public ArrayList<String> getParentDatasetURI() {
+		return parentDatasetsURI;
+	}
+	public void addParentDatasetURI(String parentDatasetURI) {
+		if (!parentDatasetsURI.contains(parentDatasetURI))
+			parentDatasetsURI.add(parentDatasetURI);
 	}
 	
 

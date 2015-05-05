@@ -40,7 +40,8 @@ public class Download {
 
 	public String fileName = null;
 	public String extension = null;
-
+	public String RDFFormat = null;
+	
 	HttpURLConnection httpConn = null;
 
 	String accessURL = null;

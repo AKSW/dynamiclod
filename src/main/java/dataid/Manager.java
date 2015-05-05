@@ -19,7 +19,6 @@ import dataid.files.PrepareFiles;
 import dataid.filters.FileToFilter;
 import dataid.filters.GoogleBloomFilter;
 import dataid.lov.LOV;
-import dataid.models.DistributionModel;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dataid.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
@@ -35,7 +34,7 @@ public class Manager {
 	private String name = null;
 
 	// list of subset and their distributions
-	public List<DistributionModel> distributionsLinks = new ArrayList<DistributionModel>();
+	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
 
 	FileInputParser fileInputParserModel = new FileInputParser();
 
@@ -43,7 +42,7 @@ public class Manager {
 
 	public void streamAndCreateFilters() throws Exception {
 		// if there is at least one distribution, load them
-		Iterator<DistributionModel> distributions = distributionsLinks
+		Iterator<DistributionMongoDBObject> distributions = distributionsLinks
 				.iterator();
 
 		int counter = 0;
@@ -56,10 +55,7 @@ public class Manager {
 		while (distributions.hasNext()) {
 			counter++;
 
-			DistributionModel distribution = distributions.next();
-			// loading mongodb distribution object
-			DistributionMongoDBObject distributionMongoDBObj = new DistributionMongoDBObject(
-					distribution.getDistribution());
+			DistributionMongoDBObject distributionMongoDBObj = distributions.next();
 
 			// case there is no such distribution, create one.
 			if (distributionMongoDBObj.getStatus() == null) {
@@ -86,9 +82,9 @@ public class Manager {
 			bean.addDisplayMessage(
 					DataIDGeneralProperties.MESSAGE_INFO,
 					"Distribution n. " + counter + ": "
-							+ distribution.getDistributionURI());
+							+ distributionMongoDBObj.getUri());
 			logger.info("Distribution n. " + counter + ": "
-					+ distribution.getDistributionURI());
+					+distributionMongoDBObj.getUri());
 
 			if (!needDownload) {
 				logger.info("Distribution is already in the last version. No needs to download again. ");
@@ -108,7 +104,7 @@ public class Manager {
 
 					// now we need to download the distribution
 					DownloadAndSaveDistribution downloadedFile = new DownloadAndSaveDistribution(
-							distribution.getDistriutionDownloadURL());
+							distributionMongoDBObj.getDownloadUrl(), distributionMongoDBObj.getFormat());
 
 					bean.addDisplayMessage(
 							DataIDGeneralProperties.MESSAGE_INFO,
@@ -129,7 +125,7 @@ public class Manager {
 					logger.info("Distribution downloaded. ");
 
 					// check if format is not ntriples
-					if (!downloadedFile.extension
+					if (!downloadedFile.RDFFormat
 							.equals(Formats.DEFAULT_NTRIPLES)) {
 
 						// uptate status of distribution
@@ -155,8 +151,8 @@ public class Manager {
 						// if (isDbpedia)
 						// throw new DataIDException("DBpedia ttl format");
 						
-						p.separateSubjectAndObject(downloadedFile.fileName,
-								downloadedFile.extension, isDbpedia);
+						p.separateSubjectAndObject(downloadedFile.hashFileName,
+								downloadedFile.RDFFormat, isDbpedia);
 						downloadedFile.objectDomains = p.objectDomains;
 						downloadedFile.subjectDomains = p.subjectDomains;
 						downloadedFile.objectFilePath = p.objectFile;
@@ -194,7 +190,7 @@ public class Manager {
 
 					// get authority domain
 					String authority = getAuthorotyDomainFromSubjectFile(DataIDGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
-							+ downloadedFile.fileName);
+							+ downloadedFile.hashFileName);
 
 					// load file to filter and take the process time
 					FileToFilter f = new FileToFilter();
@@ -203,11 +199,11 @@ public class Manager {
 					timer.startTimer();
 
 					// Loading file to filter
-					f.loadFileToFilter(filter, downloadedFile.fileName);
+					f.loadFileToFilter(filter, downloadedFile.hashFileName);
 					distributionMongoDBObj.setTimeToCreateFilter(String
 							.valueOf(timer.stopTimer()));
 
-					filter.saveFilter(downloadedFile.fileName);
+					filter.saveFilter(downloadedFile.hashFileName);
 					// save filter
 
 					// save distribution in a mongodb object
@@ -232,8 +228,6 @@ public class Manager {
 							.setObjectPath(downloadedFile.objectFilePath);
 					distributionMongoDBObj
 							.setSubjectFilterPath(filter.fullFilePath);
-					distributionMongoDBObj.setTopDataset(distribution
-							.getDatasetURI());
 					distributionMongoDBObj
 							.setNumberOfTriplesLoadedIntoFilter(String
 									.valueOf(f.subjectsLoadedIntoFilter));
@@ -356,7 +350,7 @@ public class Manager {
 		
 	}
 
-	public Manager(List<DistributionModel> distributionsLinks) {
+	public Manager(List<DistributionMongoDBObject> distributionsLinks) {
 		this.distributionsLinks = distributionsLinks;
 		bean = new DataIDBean();
 		try {
@@ -401,20 +395,18 @@ public class Manager {
 			logger.info("Parsing model in order to find distributions...");
 
 			// parse model in order to find distributions
-			List<DistributionModel> listOfSubsets = fileInputParserModel
+			List<DistributionMongoDBObject> listOfSubsets = fileInputParserModel
 					.parseDistributions(distributionsLinks, bean);
 			int numberOfDistributions = listOfSubsets.size();
 
 			// update view
 			if (numberOfDistributions > 0) {
-				bean.setDownloadDatasetURI(listOfSubsets.get(0).getDatasetURI());
+				bean.setDownloadDatasetURI(listOfSubsets.get(0).getUri());
 				DataIDBean.pushDownloadInfo();
 			}
 
 			if (!fileInputParserModel.someDownloadURLFound)
-				throw new Exception("No "
-						+ FileInputParser.downloadProperty.toString()
-						+ " property found!");
+				throw new Exception("No DownloadURL property found!");
 			else if (numberOfDistributions == 0)
 				throw new Exception("### 0 distribution found! ###");
 			else

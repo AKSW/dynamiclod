@@ -58,7 +58,7 @@ public class CreateOutputByDistributions extends HttpServlet {
 				for (DistributionMongoDBObject distribution : distributionList) {
 					Resource r = outModel.createResource(distribution.getDownloadUrl());
 					r.addProperty(
-							Dataset.dataIDType,
+							Dataset.type,
 							ResourceFactory.createResource(NS.VOID_URI
 									+ "Dataset"));
 					 String baseName = FilenameUtils.getBaseName(distribution.getDownloadUrl());
@@ -79,7 +79,7 @@ public class CreateOutputByDistributions extends HttpServlet {
 					if(linkset.getLinks()>0){
 						Resource r = outModel.createResource(linkset.getUri());
 						r.addProperty(
-								Dataset.dataIDType,
+								Dataset.type,
 								ResourceFactory.createResource(NS.VOID_URI
 										+ "Linkset"));
 						r.addProperty(

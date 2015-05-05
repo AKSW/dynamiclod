@@ -42,19 +42,12 @@ public class PrepareFiles {
 		// creates 2 files, one with subjects and other with objects
 		logger.info("Creating subject and object files: "
 				+ DataIDGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
-				+ fileName+ DataIDGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
+				+ fileName+" "+ DataIDGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
 				+ fileName);
 		
 		RunCommand r = new RunCommand();
 		
-//		r.runRapper("rapper -i "+rapperFormat+" "+DataIDGeneralProperties.BASE_PATH+ fileName+
-//				" -o ntriples | awk 'BEGIN{objcount=0;} {subjects=$1; objects=$3; if(lastlineSubjects!=subjects){ print subjects>\""+
-//				DataIDGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
-//				+ fileName+"\"; lastlineSubjects=subjects} if(objects~/^</){print objects>\""+
-//				DataIDGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH+ fileName+
-//				"\"; print objects; objcount++}} END{print \"objectTriples \" objcount}'  | awk -F/ '{gsub(\">\",\"\",$0);print $1\"//\"$3\"/\"$4\"/\"}' | awk '{x[$0]++; if(x[$0]==50 || ($0 ~ \"objectTriples\" )){print $0} }'", bean,subjectDomains, objectDomains);
-//	
-		r.runRapper("rapper -i "+rapperFormat+" "+DataIDGeneralProperties.BASE_PATH+ fileName+
+		r.runRapper("rapper -i "+rapperFormat+" "+DataIDGeneralProperties.DUMP_PATH+ fileName+
 				" -o ntriples | awk 'BEGIN{objcount=0;} {subjects=$1; objects=$3; if(lastlineSubjects!=subjects){ print subjects>\""+
 				DataIDGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+ fileName+
 				"\"; print \"[subjectDomain]\"subjects; lastlineSubjects=subjects} if(objects~/^</){print objects>\""+
