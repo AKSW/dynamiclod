@@ -131,12 +131,12 @@ public class DatasetMongoDBObject extends DataIDDB {
 	}
 
 	public void addSubsetURI(String subsetURI) {
-		if (!subsetsURIs.contains(subsetURI))
+		if (!subsetsURIs.contains(subsetURI) && subsetURI!=null)
 			subsetsURIs.add(subsetURI);
 	}
 
 	public void addDistributionURI(String distributionURI) {
-		if (!distributionsURIs.contains(distributionURI))
+		if (!distributionsURIs.contains(distributionURI) && distributionURI!=null)
 			distributionsURIs.add(distributionURI);
 	}
 
@@ -185,7 +185,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 		return parentDatasetsURI;
 	}
 	public void addParentDatasetURI(String parentDatasetURI) {
-		if (!parentDatasetsURI.contains(parentDatasetURI))
+		if (!parentDatasetsURI.contains(parentDatasetURI) && parentDatasetURI!=null)
 			parentDatasetsURI.add(parentDatasetURI);
 	}
 	

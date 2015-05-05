@@ -32,9 +32,11 @@ public class RDFProperties {
 	
 	public static final Property title = property(NS.DCT_URI, "title");
 	public static final Property label = property(NS.RDFS_URI, "label");
+	public static final Property description = property(NS.DCT_URI, "description");
 
 	public static final Property subset= property(NS.VOID_URI, "subset");	 	
 	public static final Property format = property(NS.DCT_URI, "format");
+	public static final Property primaryTopic = property(NS.FOAF_URI, "primaryTopic");
 
 	public static final Property dataIDDistribution = property(NS.DATAID_URI,
 			"Distribution");

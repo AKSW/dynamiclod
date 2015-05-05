@@ -415,24 +415,24 @@ public class Manager {
 
 			// check if LOV was already downloaded
 			GeneralPropertiesMongoDBObject g = new GeneralPropertiesMongoDBObject();
-			System.out.println(g.getDownloadedLOV());
-			if (g.getDownloadedLOV()== null || !g.getDownloadedLOV()){
-					logger.info("LOV vocabularies still not lodaded! Loading now...");
-					bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "LOV vocabularies still not lodaded! Loading now...");
-					try {
-						new LOV().loadLOVVocabularies();
-						g.setDownloadedLOV(true);
-						g.updateObject(true);
-						logger.info("LOV vocabularies loaded!");
-						bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "LOV vocabularies loaded!");
-					} catch (Exception e) {
-						e.printStackTrace();
-						g.setDownloadedLOV(false);
-						g.updateObject(true);
-						logger.info("We got an error trying to load LOV vocabularies! "+ e.getMessage());
-						bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "We got an error trying to load LOV vocabularies! "+ e.getMessage());
-					}
-			}
+//			System.out.println(g.getDownloadedLOV());
+//			if (g.getDownloadedLOV()== null || !g.getDownloadedLOV()){
+//					logger.info("LOV vocabularies still not lodaded! Loading now...");
+//					bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "LOV vocabularies still not lodaded! Loading now...");
+//					try {
+//						new LOV().loadLOVVocabularies();
+//						g.setDownloadedLOV(true);
+//						g.updateObject(true);
+//						logger.info("LOV vocabularies loaded!");
+//						bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "LOV vocabularies loaded!");
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//						g.setDownloadedLOV(false);
+//						g.updateObject(true);
+//						logger.info("We got an error trying to load LOV vocabularies! "+ e.getMessage());
+//						bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "We got an error trying to load LOV vocabularies! "+ e.getMessage());
+//					}
+//			}
 
 			// try to load distributions and make filters
 			streamAndCreateFilters();

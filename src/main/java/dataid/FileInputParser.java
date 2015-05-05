@@ -48,17 +48,26 @@ public class FileInputParser {
 
 		// select dataset
 		StmtIterator datasetsStmt = null;
+		
+		// find primaryTopic
+		datasetsStmt = inModel.listStatements(null, RDFProperties.primaryTopic,
+				(RDFNode) null);
+		
+		Resource topic = datasetsStmt.next().getObject().asResource();
 
 		for (Resource datasetResource : RDFProperties.Dataset) {
+			if(topic==null)
 			datasetsStmt = inModel.listStatements(null, Dataset.type,
 					datasetResource);
+			else
+				datasetsStmt = inModel.listStatements(topic, Dataset.type,
+						datasetResource);				
 			if (datasetsStmt.hasNext()) {
 				break;
 			}
 		}
 		if (datasetsStmt.hasNext())
-			iterateSubsetsNew(datasetsStmt, null,null);
-
+			iterateSubsetsNew(datasetsStmt, null, null);
 
 		return distributionsLinks;
 	}
@@ -75,9 +84,9 @@ public class FileInputParser {
 
 			String datasetURI = dataset.getSubject().toString();
 			logger.info("Found datasetset: " + datasetURI);
-			
-			//setting TOP dataset
-			if(topDataset==null){
+
+			// setting TOP dataset
+			if (topDataset == null) {
 				topDataset = datasetURI;
 			}
 
@@ -140,57 +149,65 @@ public class FileInputParser {
 			for (Property distributionProperty : RDFProperties.distribution) {
 				stmtDistribution = inModel.listStatements(dataset.getSubject()
 						.asResource(), distributionProperty, (RDFNode) null);
-				if (stmtDistribution.hasNext() && distributionProperty.equals(ResourceFactory.createProperty(NS.VOID_URI, "dataDump")))
-				{
+				if (stmtDistribution.hasNext()
+						&& distributionProperty.equals(ResourceFactory
+								.createProperty(NS.VOID_URI, "dataDump"))) {
 					Statement stmtDistribution2 = stmtDistribution.next();
-					addDistribution(stmtDistribution2, stmtDistribution2, datasetMongoDBObj, topDataset);
-				}
-				else if(stmtDistribution.hasNext())
+					addDistribution(stmtDistribution2, stmtDistribution2,
+							datasetMongoDBObj, topDataset);
+				} else if (stmtDistribution.hasNext())
 					break;
 			}
 
 			// case there's an distribution take the fist that has
 			// downloadURL
 			boolean downloadURLFound = false;
-			if (stmtDistribution.hasNext() && downloadURLFound == false) {
+			while (stmtDistribution.hasNext() && downloadURLFound == false) {
 				// store distribution
 				Statement distributionStmt = stmtDistribution.next();
 
-				// find downloadURL property
-				StmtIterator stmtDownloadURL = null;
+				// give priority for nt files
+				if (!stmtDistribution.hasNext()
+						|| distributionStmt.getObject().toString()
+								.contains(".nt")) {
 
-				for (Property downloadProperty : RDFProperties.downloadURL) {
-					stmtDownloadURL = inModel.listStatements(distributionStmt
-							.getObject().asResource(), downloadProperty,
-							(RDFNode) null);
-					if (stmtDownloadURL.hasNext())
-						break;
-				}
-				
+					// find downloadURL property
+					StmtIterator stmtDownloadURL = null;
 
-				// case there is an downloadURL property
-				if (stmtDownloadURL.hasNext()) {
-					downloadURLFound = true;
-					// store downloadURL statement
-					Statement downloadURLStmt = stmtDownloadURL.next();
-					try {
-						if (FileUtils.acceptedFormats(downloadURLStmt.getObject()
-								.toString())) {
-
-							addDistribution(downloadURLStmt, distributionStmt,
-									datasetMongoDBObj, topDataset);
-						}
-					} catch (DataIDException ex) {
-						ex.printStackTrace();
+					for (Property downloadProperty : RDFProperties.downloadURL) {
+						stmtDownloadURL = inModel.listStatements(
+								distributionStmt.getObject().asResource(),
+								downloadProperty, (RDFNode) null);
+						if (stmtDownloadURL.hasNext())
+							break;
 					}
+
+					// case there is an downloadURL property
+					if (stmtDownloadURL.hasNext()) {
+						downloadURLFound = true;
+						// store downloadURL statement
+						Statement downloadURLStmt = stmtDownloadURL.next();
+						try {
+							if (FileUtils.acceptedFormats(downloadURLStmt
+									.getObject().toString())) {
+
+								addDistribution(downloadURLStmt,
+										distributionStmt, datasetMongoDBObj,
+										topDataset);
+							}
+						} catch (DataIDException ex) {
+							ex.printStackTrace();
+						}
+					}
+					break;
 				}
 			}
 		}
 
 	}
 
-	public void addDistribution(Statement downloadURLStmt, Statement stmtDistribution,
-			DatasetMongoDBObject subsetMongoDBObj,
+	public void addDistribution(Statement downloadURLStmt,
+			Statement stmtDistribution, DatasetMongoDBObject subsetMongoDBObj,
 			String topDataset) {
 
 		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
@@ -204,9 +221,9 @@ public class FileInputParser {
 		// creating mongodb distribution object
 		DistributionMongoDBObject distributionMongoDBObj = new DistributionMongoDBObject(
 				stmtDistribution.getObject().toString());
-		
+
 		distributionMongoDBObj.addDefaultDataset(subsetMongoDBObj.getUri());
-		
+
 		distributionMongoDBObj.setTopDataset(topDataset);
 
 		distributionMongoDBObj.setDownloadUrl(downloadURLStmt.getObject()
@@ -220,12 +237,17 @@ public class FileInputParser {
 
 		// case there is format property
 		if (stmtDistribution.getSubject().getProperty(RDFProperties.format) != null) {
-			distributionMongoDBObj.setFormat(Formats.getEquivalentFormat(stmtDistribution.getSubject()
-					.getProperty(RDFProperties.format).getObject().toString()));
+			distributionMongoDBObj.setFormat(Formats
+					.getEquivalentFormat(stmtDistribution.getSubject()
+							.getProperty(RDFProperties.format).getObject()
+							.toString()));
 		}
-		if (stmtDistribution.getObject().asResource().getProperty(RDFProperties.format) != null) {
-			distributionMongoDBObj.setFormat(Formats.getEquivalentFormat(stmtDistribution.getObject()
-					.asResource().getProperty(RDFProperties.format).getObject().toString()));
+		if (stmtDistribution.getObject().asResource()
+				.getProperty(RDFProperties.format) != null) {
+			distributionMongoDBObj.setFormat(Formats
+					.getEquivalentFormat(stmtDistribution.getObject()
+							.asResource().getProperty(RDFProperties.format)
+							.getObject().toString()));
 		}
 		if (distributionMongoDBObj.getStatus() == null) {
 			distributionMongoDBObj
@@ -239,7 +261,7 @@ public class FileInputParser {
 			subsetMongoDBObj.addDistributionURI(stmtDistribution.getSubject()
 					.toString());
 			subsetMongoDBObj.updateObject(true);
-		} 
+		}
 
 	}
 

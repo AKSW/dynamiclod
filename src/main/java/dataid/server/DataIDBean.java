@@ -151,10 +151,8 @@ public class DataIDBean implements Serializable, Runnable {
 			else
 				updateGraph();
 
-			// this.dataIDList = Queries.getDataIDs();
-			pushDistributionList();
 
-		} catch (MessageException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
