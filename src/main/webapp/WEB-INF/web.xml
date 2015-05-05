@@ -21,6 +21,10 @@
 		<servlet-class>dataid.server.Service</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>ReDownloadBadFiles</servlet-name>
+		<servlet-class>dataid.server.ReDownloadBadFiles</servlet-class>
+	</servlet>	
+	<servlet>
 		<servlet-name>CreateD3JSONFormat</servlet-name>
 		<servlet-class>dataid.server.CreateD3JSONFormat</servlet-class>
 	</servlet>
@@ -32,6 +36,10 @@
 		<servlet-name>OutputByDataset</servlet-name>
 		<url-pattern>/outputByDataset/*</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ReDownloadBadFiles</servlet-name>
+		<url-pattern>/ReDownloadBadFiles/*</url-pattern>
+	</servlet-mapping>	
 	<servlet-mapping>
 		<servlet-name>CreateD3JSONFormat</servlet-name>
 		<url-pattern>/CreateD3JSONFormat/*</url-pattern>

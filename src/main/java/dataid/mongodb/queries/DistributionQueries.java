@@ -145,6 +145,30 @@ public class DistributionQueries {
 		}
 		return list;
 	}
+	
+	// return all distributions
+	public static ArrayList<DistributionMongoDBObject> getDistributionsWithErrors() {
+
+		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+
+		try {
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					DistributionMongoDBObject.COLLECTION_NAME);
+			BasicDBObject query = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_ERROR);
+			DBCursor instances = collection.find(query);
+
+			for (DBObject instance : instances) {
+				list.add(new DistributionMongoDBObject(instance.get(
+						DataIDDB.URI).toString()));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
 
 	public static DistributionMongoDBObject getByDownloadURL(String url) {
 

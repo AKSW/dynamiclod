@@ -13,10 +13,10 @@ public class DistributionModel {
 	String distriutionDownloadURL;
 	
 
-	public DistributionModel(int id, String dataset, String subset, String distribution, String distriutionDownloadURL) {
+	public DistributionModel(int id, String dataset, String subset, String distributionURI, String distriutionDownloadURL) {
 		this.id = id;
 		this.subsetURI = subset;
-		this.distributionURI = distribution;
+		this.distributionURI = distributionURI;
 		this.datasetURI = dataset;
 		this.distriutionDownloadURL = distriutionDownloadURL;
 	}
