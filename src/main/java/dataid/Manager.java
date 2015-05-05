@@ -135,6 +135,8 @@ public class Manager {
 						// uptate status of distribution
 						distributionMongoDBObj
 						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
+						distributionMongoDBObj
+						.setStatus(DistributionMongoDBObject.STATUS_ERROR);
 						distributionMongoDBObj.updateObject(true);
 						bean.updateDistributionList = true;
 
@@ -331,13 +333,6 @@ public class Manager {
 						exc.printStackTrace();
 					}
 
-				} catch (DataIDException e) {
-					bean.addDisplayMessage(
-							DataIDGeneralProperties.MESSAGE_ERROR,
-							e.getMessage());
-					DataIDBean.pushDownloadInfo();
-					bean.updateDistributionList = true;
-					e.printStackTrace();
 				} catch (Exception e) {
 					// uptate status of distribution
 					distributionMongoDBObj
@@ -349,11 +344,8 @@ public class Manager {
 					bean.addDisplayMessage(
 							DataIDGeneralProperties.MESSAGE_ERROR,
 							e.getMessage());
-
-					DataIDBean.pushDownloadInfo();
-					bean.updateDistributionList = true;
+			
 					e.printStackTrace();
-					distributionMongoDBObj.setLastErrorMsg(e.getMessage());
 					distributionMongoDBObj.setSuccessfullyDownloaded(false);
 					distributionMongoDBObj.updateObject(true);
 				}
@@ -361,7 +353,8 @@ public class Manager {
 		}
 		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
 				"We are done reading your distributions.");
-
+		logger.info("We are done reading your distributions.");
+		
 	}
 
 	public Manager(List<DistributionModel> distributionsLinks) {
