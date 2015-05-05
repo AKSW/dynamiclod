@@ -48,23 +48,23 @@ public class FileInputParser {
 
 		// select dataset
 		StmtIterator datasetsStmt = null;
-		
+
 		// find primaryTopic
 		datasetsStmt = inModel.listStatements(null, RDFProperties.primaryTopic,
 				(RDFNode) null);
-		
+
 		Resource topic = null;
-		
-		if(datasetsStmt.hasNext())
+
+		if (datasetsStmt.hasNext())
 			topic = datasetsStmt.next().getObject().asResource();
 
 		for (Resource datasetResource : RDFProperties.Dataset) {
-			if(topic==null)
-			datasetsStmt = inModel.listStatements(null, Dataset.type,
-					datasetResource);
+			if (topic == null)
+				datasetsStmt = inModel.listStatements(null, Dataset.type,
+						datasetResource);
 			else
 				datasetsStmt = inModel.listStatements(topic, Dataset.type,
-						datasetResource);				
+						datasetResource);
 			if (datasetsStmt.hasNext()) {
 				break;
 			}
@@ -130,20 +130,30 @@ public class FileInputParser {
 				// get subset
 				Statement subset = stmtDatasets2.next();
 
-				datasetMongoDBObj.addSubsetURI(subset.getObject().toString());
-				datasetMongoDBObj.updateObject(true);
+				// case is a Linkset subset, leave.
+				StmtIterator stmtLinkset;
+				stmtLinkset = inModel.listStatements(subset.getObject()
+						.asResource(), RDFProperties.type,
+						RDFProperties.linkset);
+				if (!stmtLinkset.hasNext()) {
 
-				StmtIterator stmtDatasets3 = null;
+					datasetMongoDBObj.addSubsetURI(subset.getObject()
+							.toString());
+					datasetMongoDBObj.updateObject(true);
 
-				for (Resource datasetsp : RDFProperties.Dataset) {
-					stmtDatasets3 = inModel.listStatements(subset.getObject()
-							.asResource(), RDFProperties.type, datasetsp);
+					StmtIterator stmtDatasets3 = null;
+
+					for (Resource datasetsp : RDFProperties.Dataset) {
+						stmtDatasets3 = inModel.listStatements(subset
+								.getObject().asResource(), RDFProperties.type,
+								datasetsp);
+						if (stmtDatasets3.hasNext())
+							break;
+					}
+
 					if (stmtDatasets3.hasNext())
-						break;
+						iterateSubsetsNew(stmtDatasets3, datasetURI, topDataset);
 				}
-
-				if (stmtDatasets3.hasNext())
-					iterateSubsetsNew(stmtDatasets3, datasetURI, topDataset);
 			}
 
 			// find a distribution within subset

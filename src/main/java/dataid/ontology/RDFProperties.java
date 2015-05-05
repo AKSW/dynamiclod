@@ -33,6 +33,7 @@ public class RDFProperties {
 	public static final Property title = property(NS.DCT_URI, "title");
 	public static final Property label = property(NS.RDFS_URI, "label");
 	public static final Property description = property(NS.DCT_URI, "description");
+	public static final Resource linkset = resource(NS.VOID_URI, "Linkset");
 
 	public static final Property subset= property(NS.VOID_URI, "subset");	 	
 	public static final Property format = property(NS.DCT_URI, "format");
