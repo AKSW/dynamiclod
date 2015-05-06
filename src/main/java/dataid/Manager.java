@@ -321,7 +321,7 @@ public class Manager {
 					logger.info("Distribution saved! ");
 
 					try {
-						DataIDBean.pushDownloadInfo();
+//						DataIDBean.pushDownloadInfo();
 					} catch (Exception exc) {
 						exc.printStackTrace();
 					}
@@ -402,7 +402,7 @@ public class Manager {
 			// update view
 			if (numberOfDistributions > 0) {
 				bean.setDownloadDatasetURI(listOfSubsets.get(0).getUri());
-				DataIDBean.pushDownloadInfo();
+//				DataIDBean.pushDownloadInfo();
 			}
 
 			if (!fileInputParserModel.someDownloadURLFound)

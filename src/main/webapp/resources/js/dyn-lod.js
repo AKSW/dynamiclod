@@ -13,9 +13,9 @@ var color = d3.scale.category20();
   
 var force = d3.layout.force()
 //.charge(-120)
-.gravity(.03)
-//.charge(function(d, i) { return i ? 0 : -2000; })
-.linkDistance(130)
+.gravity(.15)
+.charge(function(d, i) { return i ? 0 : -5000; })
+.linkDistance(150)
 .size([width, height]);  
                   
                   
@@ -25,7 +25,9 @@ makeGraph("");
 
 
 function makeGraph(param) { 
-	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+//	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+		d3.json("http://vmdbpedia.informatik.uni-leipzig.de:8080/dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+		
 		
 		if(circleData.nodes.length==0)
 			return;

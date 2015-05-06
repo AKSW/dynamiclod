@@ -87,6 +87,7 @@ public class RunCommand {
 		int errorCount = 0;
 		while ((string = stdError.readLine()) != null) {
 			if (string.contains("Error")) {
+				rt.runFinalization();
 				proc.destroy();
 				throw new Exception(string);
 			}
@@ -103,6 +104,7 @@ public class RunCommand {
 				System.out.println("Rapper output: " + string);
 			} else {
 				proc.destroy();
+				rt.runFinalization();
 				throw new Exception("Too many errors while parsing.");
 			}
 		}

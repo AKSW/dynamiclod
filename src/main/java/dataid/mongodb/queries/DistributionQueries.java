@@ -154,7 +154,7 @@ public class DistributionQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_ERROR);  
+			DBObject clause1 = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_CREATING_LINKSETS);  
 			DBObject clause2 = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD);    
 			BasicDBList or = new BasicDBList();
 			or.add(clause1);

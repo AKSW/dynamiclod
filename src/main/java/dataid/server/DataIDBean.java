@@ -67,27 +67,27 @@ public class DataIDBean implements Serializable, Runnable {
 		this.url = url;
 	}
 
-	public static void push() throws MessageException {
-		TopicKey topicKey = new TopicKey("logMessage");
-		TopicsContext topicsContext = TopicsContext.lookup();
-		topicsContext.publish(topicKey, "");
-	}
-
-	public static void pushDistributionList() throws MessageException {
-		TopicKey topicKey = new TopicKey("distributionListMessage");
-		TopicKey topicKey2 = new TopicKey("statsMessage");
-		TopicsContext topicsContext = TopicsContext.lookup();
-
-		topicsContext.publish(topicKey, "");
-		topicsContext.publish(topicKey2, "");
-	}
-
-	public static void pushDownloadInfo() throws MessageException {
-		TopicKey topicKey = new TopicKey("downloadDataIDMessage");
-		TopicsContext topicsContext = TopicsContext.lookup();
-
-		topicsContext.publish(topicKey, "");
-	}
+//	public static void push() throws MessageException {
+//		TopicKey topicKey = new TopicKey("logMessage");
+//		TopicsContext topicsContext = TopicsContext.lookup();
+//		topicsContext.publish(topicKey, "");
+//	}
+//
+//	public static void pushDistributionList() throws MessageException {
+//		TopicKey topicKey = new TopicKey("distributionListMessage");
+//		TopicKey topicKey2 = new TopicKey("statsMessage");
+//		TopicsContext topicsContext = TopicsContext.lookup();
+//
+//		topicsContext.publish(topicKey, "");
+//		topicsContext.publish(topicKey2, "");
+//	}
+//
+//	public static void pushDownloadInfo() throws MessageException {
+//		TopicKey topicKey = new TopicKey("downloadDataIDMessage");
+//		TopicsContext topicsContext = TopicsContext.lookup();
+//
+//		topicsContext.publish(topicKey, "");
+//	}
 
 	public void start() {
 		startTime = 0;
@@ -99,12 +99,12 @@ public class DataIDBean implements Serializable, Runnable {
 		thread.setDaemon(true);
 		thread.start();
 
-		try {
-			pushDistributionList();
-		} catch (MessageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			pushDistributionList();
+//		} catch (MessageException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 
@@ -126,25 +126,25 @@ public class DataIDBean implements Serializable, Runnable {
 		this.setDownloadDatasetURI("");
 
 		try {
-			new Thread(new Runnable() {
-
-				public void run() {
-					try {
-						while (true) {
-							Thread.sleep(1000);
-							if (updateLog) {
-								DataIDBean.push();
-								updateLog = false;
-							}
-//							if (updateDistributionList) {
-//								DataIDBean.pushDistributionList();
-//								updateDistributionList = false;
+//			new Thread(new Runnable() {
+//
+//				public void run() {
+//					try {
+//						while (true) {
+//							Thread.sleep(1000);
+//							if (updateLog) {
+//								DataIDBean.push();
+//								updateLog = false;
 //							}
-						}
-					} catch (Exception e) {
-					}
-				}
-			}).start();
+////							if (updateDistributionList) {
+////								DataIDBean.pushDistributionList();
+////								updateDistributionList = false;
+////							}
+//						}
+//					} catch (Exception e) {
+//					}
+//				}
+//			}).start();
 
 			if (action == "runDataid")
 				startDataID();

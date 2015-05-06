@@ -198,7 +198,7 @@ public class SplitAndStoreThread extends Thread {
 					object.close();
 				if (subject != null)
 					subject.close();
-				DataIDBean.pushDownloadInfo();
+//				DataIDBean.pushDownloadInfo();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
