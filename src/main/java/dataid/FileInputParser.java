@@ -2,6 +2,9 @@ package dataid;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -19,10 +22,8 @@ import dataid.exceptions.DataIDException;
 import dataid.mongodb.objects.DatasetMongoDBObject;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.ontology.Dataset;
-import dataid.ontology.Distribution;
 import dataid.ontology.NS;
 import dataid.ontology.RDFProperties;
-import dataid.server.DataIDBean;
 import dataid.utils.FileUtils;
 import dataid.utils.Formats;
 
@@ -31,20 +32,20 @@ public class FileInputParser {
 	final static Logger logger = Logger.getLogger(FileInputParser.class);
 
 	private Model inModel = ModelFactory.createDefaultModel();
-	List<DistributionMongoDBObject> distributionsLinks;
+	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
 	int numberOfDistributions = 0;
 	public boolean someDownloadURLFound = false;
 	private String datasetURI;
 	private String dataIDURL;
-	DataIDBean bean;
+//	DataIDBean bean;
 
 	boolean isVoid = false;
 
 	public List<DistributionMongoDBObject> parseDistributions(
-			List<DistributionMongoDBObject> distributionsLinks, DataIDBean bean) {
+			 ) {
 
-		this.distributionsLinks = distributionsLinks;
-		this.bean = bean;
+//		this.distributionsLinks = distributionsLinks;
+//		this.bean = bean;
 
 		// select dataset
 		StmtIterator datasetsStmt = null;
@@ -223,8 +224,11 @@ public class FileInputParser {
 			Statement stmtDistribution, DatasetMongoDBObject subsetMongoDBObj,
 			String topDataset) {
 
-		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
-				"Distribution found: downloadURL: "
+//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
+//				"Distribution found: downloadURL: "
+//						+ downloadURLStmt.getObject().toString());
+		
+		logger.info("Distribution found: downloadURL: "
 						+ downloadURLStmt.getObject().toString());
 
 		// save distribution with downloadURL to list
@@ -279,12 +283,15 @@ public class FileInputParser {
 	}
 
 	// read dataID file and return the dataset uri
-	public String readModel(String URL, DataIDBean bean) throws Exception {
+	public String readModel(String URL) throws Exception {
 		String name = null;
 
-		this.bean = bean;
+		logger.info("Trying to read dataset: "+URL.toString());
 
-		inModel.read(URL, null, "TTL");
+		HttpURLConnection URLConnection = (HttpURLConnection) new URL(URL).openConnection();
+		URLConnection.setRequestProperty("Accept", "application/rdf+xml");
+		
+		inModel.read(URLConnection.getInputStream(), null);
 
 		ResIterator hasSomeDatasets = null;
 		for (Resource datasetResource : RDFProperties.Dataset) {
@@ -296,9 +303,9 @@ public class FileInputParser {
 
 		if (hasSomeDatasets.hasNext()) {
 			name = hasSomeDatasets.next().getURI().toString();
-			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
+			logger.info(
 					"Jena model created. ");
-			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
+			logger.info(
 					"Looks that this is a valid VoID/DataID file! " + name);
 			dataIDURL = FileUtils.stringToHash(URL);
 			inModel.write(new FileOutputStream(new File(

@@ -38,7 +38,7 @@ public class Manager {
 
 	FileInputParser fileInputParserModel = new FileInputParser();
 
-	DataIDBean bean;
+//	DataIDBean bean;
 
 	public void streamAndCreateFilters() throws Exception {
 		// if there is at least one distribution, load them
@@ -47,8 +47,8 @@ public class Manager {
 
 		int counter = 0;
 
-		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "Loading "
-				+ distributionsLinks.size() + " distributions...");
+//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "Loading "
+//				+ distributionsLinks.size() + " distributions...");
 		logger.info("Loading " + distributionsLinks.size()
 				+ " distributions...");
 
@@ -79,17 +79,17 @@ public class Manager {
 					.checkDistribution(distributionMongoDBObj))
 				needDownload = true;
 
-			bean.addDisplayMessage(
-					DataIDGeneralProperties.MESSAGE_INFO,
-					"Distribution n. " + counter + ": "
-							+ distributionMongoDBObj.getUri());
+//			bean.addDisplayMessage(
+//					DataIDGeneralProperties.MESSAGE_INFO,
+//					"Distribution n. " + counter + ": "
+//							+ distributionMongoDBObj.getUri());
 			logger.info("Distribution n. " + counter + ": "
 					+distributionMongoDBObj.getUri());
 
 			if (!needDownload) {
 				logger.info("Distribution is already in the last version. No needs to download again. ");
-				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-						"Distribution is already in the last version. No needs to download again. ");
+//				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
+//						"Distribution is already in the last version. No needs to download again. ");
 			}
 
 			// if distribution have not already been handled
@@ -100,15 +100,15 @@ public class Manager {
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_DOWNLOADING);
 					distributionMongoDBObj.updateObject(true);
-					bean.updateDistributionList = true;
+//					bean.updateDistributionList = true;
 
 					// now we need to download the distribution
 					DownloadAndSaveDistribution downloadedFile = new DownloadAndSaveDistribution(
 							distributionMongoDBObj.getDownloadUrl(), distributionMongoDBObj.getFormat());
 
-					bean.addDisplayMessage(
-							DataIDGeneralProperties.MESSAGE_INFO,
-							"Downloading distribution.");
+//					bean.addDisplayMessage(
+//							DataIDGeneralProperties.MESSAGE_INFO,
+//							"Downloading distribution.");
 					logger.info("Downloading distribution.");
 
 					downloadedFile.downloadDistribution();
@@ -117,11 +117,11 @@ public class Manager {
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_DOWNLOADED);
 					distributionMongoDBObj.updateObject(true);
-					bean.updateDistributionList = true;
+//					bean.updateDistributionList = true;
 
-					bean.addDisplayMessage(
-							DataIDGeneralProperties.MESSAGE_INFO,
-							"Distribution downloaded. ");
+//					bean.addDisplayMessage(
+//							DataIDGeneralProperties.MESSAGE_INFO,
+//							"Distribution downloaded. ");
 					logger.info("Distribution downloaded. ");
 
 					// check if format is not ntriples
@@ -133,11 +133,11 @@ public class Manager {
 						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
 					
 						distributionMongoDBObj.updateObject(true);
-						bean.updateDistributionList = true;
+//						bean.updateDistributionList = true;
 
-						bean.addDisplayMessage(
-								DataIDGeneralProperties.MESSAGE_INFO,
-								"Separating subjects and objects.");
+//						bean.addDisplayMessage(
+//								DataIDGeneralProperties.MESSAGE_INFO,
+//								"Separating subjects and objects.");
 						logger.info("Separating subjects and objects.");
 
 						PrepareFiles p = new PrepareFiles();
@@ -164,11 +164,11 @@ public class Manager {
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_CREATING_BLOOM_FILTER);
 					distributionMongoDBObj.updateObject(true);
-					bean.updateDistributionList = true;
+//					bean.updateDistributionList = true;
 
-					bean.addDisplayMessage(
-							DataIDGeneralProperties.MESSAGE_INFO,
-							"Creating bloom filter.");
+//					bean.addDisplayMessage(
+//							DataIDGeneralProperties.MESSAGE_INFO,
+//							"Creating bloom filter.");
 					logger.info("Creating bloom filter.");
 
 					// make a filter with subjects
@@ -207,9 +207,9 @@ public class Manager {
 					// save filter
 
 					// save distribution in a mongodb object
-					bean.addDisplayMessage(
-							DataIDGeneralProperties.MESSAGE_INFO,
-							"Saving mongodb \"Distribution\" document.");
+//					bean.addDisplayMessage(
+//							DataIDGeneralProperties.MESSAGE_INFO,
+//							"Saving mongodb \"Distribution\" document.");
 					logger.info("Saving mongodb \"Distribution\" document.");
 
 					distributionMongoDBObj.setNumberOfObjectTriples(String
@@ -306,7 +306,7 @@ public class Manager {
 
 					distributionMongoDBObj.setSuccessfullyDownloaded(true);
 					distributionMongoDBObj.updateObject(true);
-					bean.updateDistributionList = true;
+//					bean.updateDistributionList = true;
 
 					logger.info("Done saving mongodb distribution object.");
 
@@ -315,9 +315,9 @@ public class Manager {
 							.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
 					distributionMongoDBObj.updateObject(true);
 
-					bean.addDisplayMessage(
-							DataIDGeneralProperties.MESSAGE_INFO,
-							"Distribution saved!");
+//					bean.addDisplayMessage(
+//							DataIDGeneralProperties.MESSAGE_INFO,
+//							"Distribution saved!");
 					logger.info("Distribution saved! ");
 
 					try {
@@ -333,10 +333,10 @@ public class Manager {
 					distributionMongoDBObj.setLastErrorMsg(e.getMessage());
 
 					distributionMongoDBObj.updateObject(true);
-
-					bean.addDisplayMessage(
-							DataIDGeneralProperties.MESSAGE_ERROR,
-							e.getMessage());
+//
+//					bean.addDisplayMessage(
+//							DataIDGeneralProperties.MESSAGE_ERROR,
+//							e.getMessage());
 			
 					e.printStackTrace();
 					distributionMongoDBObj.setSuccessfullyDownloaded(false);
@@ -344,15 +344,15 @@ public class Manager {
 				}
 
 		}
-		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-				"We are done reading your distributions.");
+//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
+//				"We are done reading your distributions.");
 		logger.info("We are done reading your distributions.");
 		
 	}
 
 	public Manager(List<DistributionMongoDBObject> distributionsLinks) {
 		this.distributionsLinks = distributionsLinks;
-		bean = new DataIDBean();
+		checkLOV();
 		try {
 			streamAndCreateFilters();
 		} catch (Exception e) {
@@ -363,7 +363,7 @@ public class Manager {
 	public Manager(String URL, DataIDBean bean) {
 		try {
 
-			this.bean = bean;
+//			this.bean = bean;
 
 			FileUtils.checkIfFolderExists();
 
@@ -375,7 +375,7 @@ public class Manager {
 			FileUtils.acceptedFormats(URL.toString());
 
 			// create jena model
-			name = fileInputParserModel.readModel(URL, bean);
+			name = fileInputParserModel.readModel(URL);
 
 			if (name == null) {
 				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_ERROR,
@@ -396,12 +396,12 @@ public class Manager {
 
 			// parse model in order to find distributions
 			List<DistributionMongoDBObject> listOfSubsets = fileInputParserModel
-					.parseDistributions(distributionsLinks, bean);
+					.parseDistributions();
 			int numberOfDistributions = listOfSubsets.size();
 
 			// update view
 			if (numberOfDistributions > 0) {
-				bean.setDownloadDatasetURI(listOfSubsets.get(0).getUri());
+//				bean.setDownloadDatasetURI(listOfSubsets.get(0).getUri());
 //				DataIDBean.pushDownloadInfo();
 			}
 
@@ -413,27 +413,8 @@ public class Manager {
 				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
 						numberOfDistributions + " distribution(s) found");
 
-			// check if LOV was already downloaded
-			GeneralPropertiesMongoDBObject g = new GeneralPropertiesMongoDBObject();
-			System.out.println(g.getDownloadedLOV());
-			if (g.getDownloadedLOV()== null || !g.getDownloadedLOV()){
-					logger.info("LOV vocabularies still not lodaded! Loading now...");
-					bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "LOV vocabularies still not lodaded! Loading now...");
-					try {
-						new LOV().loadLOVVocabularies();
-						g.setDownloadedLOV(true);
-						g.updateObject(true);
-						logger.info("LOV vocabularies loaded!");
-						bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "LOV vocabularies loaded!");
-					} catch (Exception e) {
-						e.printStackTrace();
-						g.setDownloadedLOV(false);
-						g.updateObject(true);
-						logger.info("We got an error trying to load LOV vocabularies! "+ e.getMessage());
-						bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "We got an error trying to load LOV vocabularies! "+ e.getMessage());
-					}
-			}
-
+			checkLOV();
+			
 			// try to load distributions and make filters
 			streamAndCreateFilters();
 
@@ -462,6 +443,26 @@ public class Manager {
 			e.printStackTrace();
 		}
 		return authority;
+	}
+	
+	private void checkLOV(){
+		// check if LOV was already downloaded
+		GeneralPropertiesMongoDBObject g = new GeneralPropertiesMongoDBObject();
+		System.out.println(g.getDownloadedLOV());
+		if (g.getDownloadedLOV()== null || !g.getDownloadedLOV()){
+				logger.info("LOV vocabularies still not lodaded! Loading now...");
+				try {
+					new LOV().loadLOVVocabularies();
+					g.setDownloadedLOV(true);
+					g.updateObject(true);
+					logger.info("LOV vocabularies loaded!");
+				} catch (Exception e) {
+					e.printStackTrace();
+					g.setDownloadedLOV(false);
+					g.updateObject(true);
+					logger.info("We got an error trying to load LOV vocabularies! "+ e.getMessage());
+				}
+		}
 	}
 
 }

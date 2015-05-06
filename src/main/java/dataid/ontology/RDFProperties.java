@@ -13,12 +13,13 @@ public class RDFProperties {
 		{
 			add(property(NS.DCAT_URI, "downloadURL"));
 			add(property(NS.VOID_URI, "dataDump"));
-
+			add(property(NS.DCAT_URI, "accessURL"));
 		}
 	};
 	public static final ArrayList<Resource> Dataset =  new  ArrayList<Resource>(){{
 		add(resource(NS.DATAID_URI, "Dataset"));
 		add(resource(NS.VOID_URI, "Dataset"));
+		add(resource(NS.DCAT_URI, "Dataset"));
 	}}; 
 	
 	public static final ArrayList<Property> distribution =  new  ArrayList<Property>(){{
