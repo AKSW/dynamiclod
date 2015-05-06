@@ -161,7 +161,8 @@ public class DataIDBean implements Serializable, Runnable {
 	public void updateGraph() {
 
 		MakeLinksets m = new MakeLinksets();
-		m.updateLinksets(this);
+		m.updateLinksets();
+//		m.updateLinksets(this);
 	}
 
 	public void startDataID() {

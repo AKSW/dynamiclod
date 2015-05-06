@@ -29,15 +29,15 @@ import dataid.utils.Timer;
 public class MakeLinksets {
 	final static Logger logger = Logger.getLogger(MakeLinksets.class);
 
-	public void updateLinksets(DataIDBean bean) {
+	public void updateLinksets() {
 
 		Timer t = new Timer();
 		t.startTimer();
 
 		try {
 
-			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-					"Updating linksets...");
+//			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
+//					"Updating linksets...");
 
 			logger.info("Updating linksets...");
 
@@ -79,7 +79,7 @@ public class MakeLinksets {
 											+ distribution.getDownloadUrl()
 											+ " distribution;");
 						}
-						bean.updateDistributionList = true;
+//						bean.updateDistributionList = true;
 
 						for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
 							try {
@@ -137,11 +137,11 @@ public class MakeLinksets {
 						BufferedReader br = new BufferedReader(new FileReader(
 								distribution.getObjectPath()));
 
-						bean.addDisplayMessage(
-								DataIDGeneralProperties.MESSAGE_LOG,
-								"Loading objects from: "
-										+ distribution.getObjectPath()
-										+ ". This might take a time, please be patient.");
+//						bean.addDisplayMessage(
+//								DataIDGeneralProperties.MESSAGE_LOG,
+//								"Loading objects from: "
+//										+ distribution.getObjectPath()
+//										+ ". This might take a time, please be patient.");
 						logger.info("Loading objects from: "
 								+ distribution.getObjectPath()
 								+ ". This might take a time, please be patient.");
@@ -159,13 +159,13 @@ public class MakeLinksets {
 						ConcurrentHashMap<String, Integer> c = new ConcurrentHashMap<String, Integer>();
 
 						if (listOfDataThreads.size() > 0) {
-							bean.addDisplayMessage(
-									DataIDGeneralProperties.MESSAGE_INFO,
-									"Creating liksets for distribution: "
-											+ distribution.getDownloadUrl()
-											+ " . We are comparing with "
-											+ listOfDataThreads.size()
-											+ " different bloom filters.");
+//							bean.addDisplayMessage(
+//									DataIDGeneralProperties.MESSAGE_INFO,
+//									"Creating liksets for distribution: "
+//											+ distribution.getDownloadUrl()
+//											+ " . We are comparing with "
+//											+ listOfDataThreads.size()
+//											+ " different bloom filters.");
 							logger.info("Creating liksets for distribution: "
 									+ distribution.getDownloadUrl()
 									+ " . We are comparing with "
@@ -223,17 +223,17 @@ public class MakeLinksets {
 							bufferIndex = 0;
 
 						} else {
-							bean.addDisplayMessage(
-									DataIDGeneralProperties.MESSAGE_LOG,
-									"New filters were't found!");
+//							bean.addDisplayMessage(
+//									DataIDGeneralProperties.MESSAGE_LOG,
+//									"New filters were't found!");
 
 							logger.info("New filters were't found!");
 						}
 
-						bean.addDisplayMessage(
-								DataIDGeneralProperties.MESSAGE_LOG,
-								"Loaded objects from: "
-										+ distribution.getObjectPath());
+//						bean.addDisplayMessage(
+//								DataIDGeneralProperties.MESSAGE_LOG,
+//								"Loaded objects from: "
+//										+ distribution.getObjectPath());
 
 						logger.info("Loaded objects from: "
 								+ distribution.getObjectPath());
@@ -245,23 +245,24 @@ public class MakeLinksets {
 						distribution
 								.setStatus(DistributionMongoDBObject.STATUS_DONE);
 						distribution.updateObject(true);
-						bean.updateDistributionList = true;
+//						bean.updateDistributionList = true;
 					} catch (Exception e) {
-						bean.addDisplayMessage(
-								DataIDGeneralProperties.MESSAGE_ERROR,
-								e.getMessage());
+//						bean.addDisplayMessage(
+//								DataIDGeneralProperties.MESSAGE_ERROR,
+//								e.getMessage());
+						e.printStackTrace();
 					}
 				distribution.setLastTimeLinkset(String.valueOf(new Date()));
 				distribution.updateObject(false);
-				bean.updateDistributionList = true;
+//				bean.updateDistributionList = true;
 
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
-				"Time to update linksets: " + t.stopTimer() + "s");
+//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
+//				"Time to update linksets: " + t.stopTimer() + "s");
 		logger.info("Time to update linksets: " + t.stopTimer() + "s");
 	}
 

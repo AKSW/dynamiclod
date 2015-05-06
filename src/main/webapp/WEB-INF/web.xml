@@ -21,6 +21,10 @@
 		<servlet-class>dataid.server.Service</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>API</servlet-name>
+		<servlet-class>dataid.server.API</servlet-class>
+	</servlet>	
+	<servlet>
 		<servlet-name>ReDownloadBadFiles</servlet-name>
 		<servlet-class>dataid.server.ReDownloadBadFiles</servlet-class>
 	</servlet>	
@@ -31,6 +35,10 @@
 	<servlet-mapping>
 		<servlet-name>OutputByDistribution</servlet-name>
 		<url-pattern>/outputByDistribution/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>API</servlet-name>
+		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>OutputByDataset</servlet-name>
