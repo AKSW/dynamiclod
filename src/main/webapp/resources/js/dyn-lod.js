@@ -25,8 +25,8 @@ makeGraph("");
 
 
 function makeGraph(param) { 
-//	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
-		d3.json("http://vmdbpedia.informatik.uni-leipzig.de:8080/dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+//		d3.json("http://vmdbpedia.informatik.uni-leipzig.de:8080/dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
 		
 		
 		if(circleData.nodes.length==0)
