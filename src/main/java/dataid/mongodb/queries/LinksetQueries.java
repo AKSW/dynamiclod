@@ -5,14 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mongodb.AggregationOutput;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
 
 import dataid.mongodb.DataIDDB;
-import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.LinksetMongoDBObject;
 
 public class LinksetQueries {
@@ -25,6 +24,27 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find();
+
+			for (DBObject instance : instances) {
+				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)
+						.toString()));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public static ArrayList<LinksetMongoDBObject> getLinksetsWithLinks() {
+
+		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
+
+		try {
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					LinksetMongoDBObject.COLLECTION_NAME);
+			DBObject query = new BasicDBObject(LinksetMongoDBObject.LINKS, new BasicDBObject("$gt", 0)); 
+			DBCursor instances = collection.find(query);
 
 			for (DBObject instance : instances) {
 				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)

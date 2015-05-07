@@ -37,15 +37,14 @@ public class FileInputParser {
 	public boolean someDownloadURLFound = false;
 	private String datasetURI;
 	private String dataIDURL;
-//	DataIDBean bean;
+	// DataIDBean bean;
 
 	boolean isVoid = false;
 
-	public List<DistributionMongoDBObject> parseDistributions(
-			 ) {
+	public List<DistributionMongoDBObject> parseDistributions() {
 
-//		this.distributionsLinks = distributionsLinks;
-//		this.bean = bean;
+		// this.distributionsLinks = distributionsLinks;
+		// this.bean = bean;
 
 		// select dataset
 		StmtIterator datasetsStmt = null;
@@ -224,12 +223,12 @@ public class FileInputParser {
 			Statement stmtDistribution, DatasetMongoDBObject subsetMongoDBObj,
 			String topDataset) {
 
-//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
-//				"Distribution found: downloadURL: "
-//						+ downloadURLStmt.getObject().toString());
-		
+		// bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
+		// "Distribution found: downloadURL: "
+		// + downloadURLStmt.getObject().toString());
+
 		logger.info("Distribution found: downloadURL: "
-						+ downloadURLStmt.getObject().toString());
+				+ downloadURLStmt.getObject().toString());
 
 		// save distribution with downloadURL to list
 		numberOfDistributions++;
@@ -283,15 +282,16 @@ public class FileInputParser {
 	}
 
 	// read dataID file and return the dataset uri
-	public String readModel(String URL) throws Exception {
+	public String readModel(String URL, String format) throws Exception {
 		String name = null;
+		format = getJenaFormat(format);
+		logger.info("Trying to read dataset: " + URL.toString());
 
-		logger.info("Trying to read dataset: "+URL.toString());
-
-		HttpURLConnection URLConnection = (HttpURLConnection) new URL(URL).openConnection();
+		HttpURLConnection URLConnection = (HttpURLConnection) new URL(URL)
+				.openConnection();
 		URLConnection.setRequestProperty("Accept", "application/rdf+xml");
-		
-		inModel.read(URLConnection.getInputStream(), null);
+
+		inModel.read(URLConnection.getInputStream(), null, format);
 
 		ResIterator hasSomeDatasets = null;
 		for (Resource datasetResource : RDFProperties.Dataset) {
@@ -303,10 +303,8 @@ public class FileInputParser {
 
 		if (hasSomeDatasets.hasNext()) {
 			name = hasSomeDatasets.next().getURI().toString();
-			logger.info(
-					"Jena model created. ");
-			logger.info(
-					"Looks that this is a valid VoID/DataID file! " + name);
+			logger.info("Jena model created. ");
+			logger.info("Looks that this is a valid VoID/DataID file! " + name);
 			dataIDURL = FileUtils.stringToHash(URL);
 			inModel.write(new FileOutputStream(new File(
 					DataIDGeneralProperties.DATAID_PATH + dataIDURL)));
@@ -318,6 +316,18 @@ public class FileInputParser {
 		}
 
 		return name;
+	}
+
+	public String getJenaFormat(String format) {
+		format = Formats.getEquivalentFormat(format);
+		if (format.equals(Formats.DEFAULT_NTRIPLES))
+			return "N-TRIPLES";
+
+		else if (format.equals(Formats.DEFAULT_TURTLE))
+			return "TTL";
+		else
+			return "RDF/XML";
+
 	}
 
 }

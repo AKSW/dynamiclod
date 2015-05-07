@@ -375,7 +375,7 @@ public class Manager {
 			FileUtils.acceptedFormats(URL.toString());
 
 			// create jena model
-			name = fileInputParserModel.readModel(URL);
+			name = fileInputParserModel.readModel(URL, "ttl");
 
 			if (name == null) {
 				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_ERROR,

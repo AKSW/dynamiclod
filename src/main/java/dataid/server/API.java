@@ -1,6 +1,7 @@
 package dataid.server;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -26,39 +27,51 @@ public class API extends HttpServlet {
 
 	private void manageRequest(HttpServletRequest request,
 			HttpServletResponse response) {
+		
 
-		Map parameters = request.getParameterMap();
+		PrintWriter out;
+		try {
+			out = response.getWriter();
 
-		if (parameters.containsKey("makeLinksets")) {
-			if (parameters.get("makeLinksets").equals("true")) {
-				MakeLinksets m = new MakeLinksets();
-				m.updateLinksets();
-			}
-		}
-		if (parameters.containsKey("addDataset")) {
-			for (String parameter : request.getParameterValues("addDataset")) {
-				FileInputParser f = new FileInputParser();
-				try {
-					f.readModel(parameter);
-					f.parseDistributions();
-					if (f.distributionsLinks.size() > 0) {
-					Manager m = new Manager(f.distributionsLinks);
-						System.out.println(f.distributionsLinks.size());
-						MakeLinksets makeLinksets = new MakeLinksets();
-						makeLinksets.updateLinksets();
-					}
-					else
-						System.out.println("Naos");
+			Map<String, String[]> parameters = request.getParameterMap();
+						
 
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if (parameters.containsKey("makeLinksets")) {
+				String[] makeLinkset = parameters.get("makeLinksets");
+				if (makeLinkset[0].toString().equals("true")) {
+					MakeLinksets m = new MakeLinksets();
+					m.updateLinksets();
 				}
+			}
+			if (parameters.containsKey("addDataset")) {
+				if (parameters.containsKey("rdfFormat")) {
+					String format = (parameters.get("rdfFormat")[0].toString());
+					
+					for (String datasetsURL : request
+							.getParameterValues("addDataset")) {
+						FileInputParser f = new FileInputParser();
+						try {
+							f.readModel(datasetsURL, format);
+							f.parseDistributions();
+							if (f.distributionsLinks.size() > 0) {
+								Manager m = new Manager(f.distributionsLinks);
+								System.out.println(f.distributionsLinks.size());
+								MakeLinksets makeLinksets = new MakeLinksets();
+								makeLinksets.updateLinksets();
+							} else
+								System.out.println("Naos");
+
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				} else
+					out.write("You need specify rdfFormat: \"ttl\", \"rdfxml\" or \"nt\".");
 
 			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
-		System.out.println(parameters);
-
 	}
-
 }

@@ -25,7 +25,8 @@ makeGraph("");
 
 
 function makeGraph(param) { 
-	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+//	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+	d3.json("../dataid/CreateD3JSONFormat?getAllDistributions", function(error, circleData) {
 //		d3.json("http://vmdbpedia.informatik.uni-leipzig.de:8080/dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
 		
 		
@@ -35,6 +36,9 @@ function makeGraph(param) {
 	
 d3.select("svg")
     .remove();
+
+console.log(circleData);
+
 //Create the SVG Viewport
 var svgContainer = d3.select("body").append("svg")
                                      .attr("width",width)
@@ -203,10 +207,6 @@ rootSvg = d3.select("#tree-body").append("svg:svg");
 
 // apply the zoom behavior to the svg image
 zoomListener(rootSvg);
-
-
-
-
 
 
 });
