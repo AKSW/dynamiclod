@@ -32,9 +32,11 @@ public class Bubble {
 		if (source instanceof DistributionMongoDBObject) {
 
 			DistributionMongoDBObject tmp = (DistributionMongoDBObject) source;
-
-			setText(tmp.getTitle());
-			setName(tmp.getUri());
+			if (tmp.getTitle() != null && !tmp.getTitle().equals(""))
+				setText(tmp.getTitle());
+			else
+				setText(tmp.getUri());
+			setName(tmp.getDownloadUrl());
 			setUri(tmp.getUri());
 
 			if (tmp.getIsVocabulary())
@@ -48,8 +50,15 @@ public class Bubble {
 		else if (source instanceof DatasetMongoDBObject) {
 			DatasetMongoDBObject tmp = (DatasetMongoDBObject) source;
 
-			setText(tmp.getTitle());
-			setName(tmp.getTitle());
+			if (tmp.getTitle() != null || !tmp.getTitle().equals(""))
+				setText(tmp.getTitle());
+			else if (tmp.getLabel() != null || !tmp.getLabel().equals(""))
+				setText(tmp.getLabel());
+			else
+				setText(tmp.getUri());
+			
+			setName(tmp.getUri());
+			setUri(tmp.getUri());
 
 			if (tmp.getIsVocabulary())
 				setColor("rgb(255, 127, 14)");
@@ -62,13 +71,12 @@ public class Bubble {
 	}
 
 	public String getText() {
-		if (text == null)
-			setText("");
+
 		setText(text.split("@")[0]);
 		setText(text.split("http")[0]);
 
-		if (text.length() > 1445) {
-			setText(text.substring(0, 15) + "...");
+		if (text.length() > 145) {
+			setText(text.substring(0, 145) + "...");
 		}
 		return text;
 	}

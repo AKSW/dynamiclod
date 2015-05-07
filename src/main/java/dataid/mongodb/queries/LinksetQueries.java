@@ -43,7 +43,7 @@ public class LinksetQueries {
 		try {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
-			DBObject query = new BasicDBObject(LinksetMongoDBObject.LINKS, new BasicDBObject("$gt", 0)); 
+			DBObject query = new BasicDBObject(LinksetMongoDBObject.LINKS, new BasicDBObject("$gt", 50)); 
 			DBCursor instances = collection.find(query);
 
 			for (DBObject instance : instances) {
