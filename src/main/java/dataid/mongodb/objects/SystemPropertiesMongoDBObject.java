@@ -22,6 +22,8 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 
 	public static final String LINKSET_STATUS = "linksetStatus";
 
+	public static final String LINKSET_NEED_UPDATE = "linksetNeedUpdate";
+
 	// class properties
 
 	private Boolean downloadedLOV;
@@ -33,6 +35,8 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 	private Date linksetNextRound; 
 	
 	private String linksetStatus;
+	
+	private Boolean linksetNeedUpdate;
 	
 
 	public SystemPropertiesMongoDBObject() {
@@ -51,6 +55,8 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 			mongoDBObject.put(LINKSET_NEXT_ROUND, linksetNextRound);
 
 			mongoDBObject.put(LINKSET_STATUS, linksetStatus);
+
+			mongoDBObject.put(LINKSET_NEED_UPDATE, linksetNeedUpdate);
 
 			insert(checkBeforeInsert);
 			return true;
@@ -84,7 +90,8 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 			
 			linksetStatus = (String) obj.get(LINKSET_STATUS);
 			
-
+			linksetNeedUpdate = (Boolean) obj.get(LINKSET_NEED_UPDATE);
+			
 			return true;
 		}
 		return false;
@@ -97,5 +104,47 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 	public void setDownloadedLOV(Boolean downloadedLOV) {
 		this.downloadedLOV = downloadedLOV;
 	}
+
+	public Date getLinksetTimeStarted() {
+		return linksetTimeStarted;
+	}
+
+	public void setLinksetTimeStarted(Date linksetTimeStarted) {
+		this.linksetTimeStarted = linksetTimeStarted;
+	}
+
+	public Date getLinksetTimeFinished() {
+		return linksetTimeFinished;
+	}
+
+	public void setLinksetTimeFinished(Date linksetTimeFinished) {
+		this.linksetTimeFinished = linksetTimeFinished;
+	}
+
+	public Date getLinksetNextRound() {
+		return linksetNextRound;
+	}
+
+	public void setLinksetNextRound(Date linksetNextRound) {
+		this.linksetNextRound = linksetNextRound;
+	}
+
+	public String getLinksetStatus() {
+		return linksetStatus;
+	}
+
+	public void setLinksetStatus(String linksetStatus) {
+		this.linksetStatus = linksetStatus;
+	}
+
+	public Boolean getLinksetNeedUpdate() {
+		return linksetNeedUpdate;
+	}
+
+	public void setLinksetNeedUpdate(Boolean linksetNeedUpdate) {
+		this.linksetNeedUpdate = linksetNeedUpdate;
+	}
+	
+	
 
 }

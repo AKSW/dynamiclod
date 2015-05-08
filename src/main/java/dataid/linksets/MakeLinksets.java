@@ -17,6 +17,7 @@ import dataid.exceptions.DataIDException;
 import dataid.filters.GoogleBloomFilter;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.LinksetMongoDBObject;
+import dataid.mongodb.objects.SystemPropertiesMongoDBObject;
 import dataid.mongodb.queries.DistributionQueries;
 import dataid.mongodb.queries.LinksetQueries;
 import dataid.server.DataIDBean;
@@ -34,17 +35,29 @@ public class MakeLinksets {
 		Timer t = new Timer();
 		t.startTimer();
 
+		SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
+
 		try {
 
-//			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-//					"Updating linksets...");
+			systemProperties.setLinksetTimeStarted(new Date());
+			systemProperties.setLinksetTimeFinished(null);
+			systemProperties.updateObject(true);
 
 			logger.info("Updating linksets...");
 
 			ArrayList<DistributionMongoDBObject> distributions = DistributionQueries
 					.getDistributions();
 
+			int distributionsAnalyzed = 0;
+			int totalDistributions = distributions.size();
+
 			for (DistributionMongoDBObject distribution : distributions) {
+				distributionsAnalyzed++;
+
+				systemProperties.setLinksetStatus(distributionsAnalyzed
+						+ " of " + totalDistributions
+						+ " distributions analyzed.");
+				systemProperties.updateObject(true);
 
 				if (distribution
 						.getStatus()
@@ -79,7 +92,6 @@ public class MakeLinksets {
 											+ distribution.getDownloadUrl()
 											+ " distribution;");
 						}
-//						bean.updateDistributionList = true;
 
 						for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
 							try {
@@ -137,11 +149,6 @@ public class MakeLinksets {
 						BufferedReader br = new BufferedReader(new FileReader(
 								distribution.getObjectPath()));
 
-//						bean.addDisplayMessage(
-//								DataIDGeneralProperties.MESSAGE_LOG,
-//								"Loading objects from: "
-//										+ distribution.getObjectPath()
-//										+ ". This might take a time, please be patient.");
 						logger.info("Loading objects from: "
 								+ distribution.getObjectPath()
 								+ ". This might take a time, please be patient.");
@@ -150,7 +157,6 @@ public class MakeLinksets {
 
 						// loading objects and creating a buffer to send to
 						// threads
-						// int bufferSize = 1400;
 						int bufferSize = 500000;
 
 						String[] buffer = new String[bufferSize];
@@ -159,13 +165,6 @@ public class MakeLinksets {
 						ConcurrentHashMap<String, Integer> c = new ConcurrentHashMap<String, Integer>();
 
 						if (listOfDataThreads.size() > 0) {
-//							bean.addDisplayMessage(
-//									DataIDGeneralProperties.MESSAGE_INFO,
-//									"Creating liksets for distribution: "
-//											+ distribution.getDownloadUrl()
-//											+ " . We are comparing with "
-//											+ listOfDataThreads.size()
-//											+ " different bloom filters.");
 							logger.info("Creating liksets for distribution: "
 									+ distribution.getDownloadUrl()
 									+ " . We are comparing with "
@@ -193,8 +192,7 @@ public class MakeLinksets {
 									}
 
 									// wait all threads finish and then start
-									// load
-									// buffer again
+									// load buffer again
 									for (int d = 0; d < threads.length; d++)
 										threads[d].join();
 
@@ -223,65 +221,63 @@ public class MakeLinksets {
 							bufferIndex = 0;
 
 						} else {
-//							bean.addDisplayMessage(
-//									DataIDGeneralProperties.MESSAGE_LOG,
-//									"New filters were't found!");
 
 							logger.info("New filters were't found!");
 						}
-
-//						bean.addDisplayMessage(
-//								DataIDGeneralProperties.MESSAGE_LOG,
-//								"Loaded objects from: "
-//										+ distribution.getObjectPath());
 
 						logger.info("Loaded objects from: "
 								+ distribution.getObjectPath());
 
 						// save linksets into mongodb
-						saveLinksets(listOfDataThreads,c);
+						saveLinksets(listOfDataThreads, c);
 
 						// uptate status of distribution
 						distribution
 								.setStatus(DistributionMongoDBObject.STATUS_DONE);
 						distribution.updateObject(true);
-//						bean.updateDistributionList = true;
 					} catch (Exception e) {
-//						bean.addDisplayMessage(
-//								DataIDGeneralProperties.MESSAGE_ERROR,
-//								e.getMessage());
 						e.printStackTrace();
 					}
 				distribution.setLastTimeLinkset(String.valueOf(new Date()));
 				distribution.updateObject(false);
-//				bean.updateDistributionList = true;
 
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+
+			systemProperties.setLinksetTimeFinished(new Date());
+			systemProperties.setLinksetStatus(e.getMessage());
+			systemProperties.updateObject(true);
+
 		}
-//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_LOG,
-//				"Time to update linksets: " + t.stopTimer() + "s");
+		systemProperties.setLinksetTimeFinished(new Date());
+		systemProperties.setLinksetStatus("Done");
+		systemProperties.updateObject(true);
+
 		logger.info("Time to update linksets: " + t.stopTimer() + "s");
 	}
 
-	public void saveLinksets(List<DataModelThread> dataThreads, ConcurrentHashMap<String, Integer> c) {
+	public void saveLinksets(List<DataModelThread> dataThreads,
+			ConcurrentHashMap<String, Integer> c) {
 
-	AtomicInteger concurrentConn = new AtomicInteger(0);
+		AtomicInteger concurrentConn = new AtomicInteger(0);
 
 		for (DataModelThread dataThread : dataThreads) {
 			String mongoDBURL = dataThread.objectDistributionURI + "-2-"
 					+ dataThread.subjectDistributionURI;
-			
+
 			System.out.println(dataThread.subjectDistributionURI);
-			new ResourceAvailability(dataThread.listURLToTest, mongoDBURL,c, concurrentConn);
-			
+			new ResourceAvailability(dataThread.listURLToTest, mongoDBURL, c,
+					concurrentConn);
+
 			LinksetMongoDBObject l = new LinksetMongoDBObject(mongoDBURL);
-			
-//			System.out.println(" Links working: "+positive + " "+ dataThread.urlStatus.size());
-//			if(dataThread.urlStatus.size()>0)
-//				l.setAvailability( (int) ((positive/dataThread.urlStatus.size())*100));
+
+			// System.out.println(" Links working: "+positive + " "+
+			// dataThread.urlStatus.size());
+			// if(dataThread.urlStatus.size()>0)
+			// l.setAvailability( (int)
+			// ((positive/dataThread.urlStatus.size())*100));
 			l.setLinks(dataThread.links);
 			l.setObjectsDistributionTarget(dataThread.objectDistributionURI);
 			l.setSubjectsDistributionTarget(dataThread.subjectDistributionURI);

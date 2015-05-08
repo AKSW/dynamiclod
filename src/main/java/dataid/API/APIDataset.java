@@ -3,6 +3,7 @@ package dataid.API;
 import dataid.InputRDFParser;
 import dataid.Manager;
 import dataid.linksets.MakeLinksets;
+import dataid.mongodb.objects.SystemPropertiesMongoDBObject;
 
 public class APIDataset extends API {
 
@@ -25,9 +26,10 @@ public class APIDataset extends API {
 				setMessage(new APIMessage(true, inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!"));
 				Manager m = new Manager(inputRDFParser.distributionsLinks);
 				System.out.println(inputRDFParser.distributionsLinks.size());
-				MakeLinksets makeLinksets = new MakeLinksets();
-				makeLinksets.updateLinksets();
-				setMessage(new APIMessage(true,"Done!"));
+				SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
+				systemProperties.setLinksetNeedUpdate(true);
+				systemProperties.updateObject(true);
+				setMessage(new APIMessage(true, "Done!"));
 			}
 
 		} catch (Exception e) {

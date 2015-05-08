@@ -113,6 +113,7 @@ public class DownloadAndSaveDistribution extends Download {
 			outputStream.close();
 		} else {
 			httpConn.disconnect();
+			inputStream.close();
 			throw new Exception("RDF format not supported: " + getExtension());
 		}
 
@@ -124,6 +125,7 @@ public class DownloadAndSaveDistribution extends Download {
 			httpContentLength = f.length();
 		}
 		httpConn.disconnect();
+		inputStream.close();
 	}
 	
 	
