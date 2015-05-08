@@ -22,7 +22,7 @@ import dataid.lov.LOV;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dataid.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
-import dataid.mongodb.objects.GeneralPropertiesMongoDBObject;
+import dataid.mongodb.objects.SystemPropertiesMongoDBObject;
 import dataid.server.DataIDBean;
 import dataid.utils.FileUtils;
 import dataid.utils.Formats;
@@ -36,7 +36,7 @@ public class Manager {
 	// list of subset and their distributions
 	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
 
-	FileInputParser fileInputParserModel = new FileInputParser();
+	InputRDFParser fileInputParserModel = new InputRDFParser();
 
 //	DataIDBean bean;
 
@@ -447,7 +447,7 @@ public class Manager {
 	
 	private void checkLOV(){
 		// check if LOV was already downloaded
-		GeneralPropertiesMongoDBObject g = new GeneralPropertiesMongoDBObject();
+		SystemPropertiesMongoDBObject g = new SystemPropertiesMongoDBObject();
 		System.out.println(g.getDownloadedLOV());
 		if (g.getDownloadedLOV()== null || !g.getDownloadedLOV()){
 				logger.info("LOV vocabularies still not lodaded! Loading now...");

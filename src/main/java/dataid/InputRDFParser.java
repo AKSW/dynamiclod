@@ -27,9 +27,9 @@ import dataid.ontology.RDFProperties;
 import dataid.utils.FileUtils;
 import dataid.utils.Formats;
 
-public class FileInputParser {
+public class InputRDFParser {
 
-	final static Logger logger = Logger.getLogger(FileInputParser.class);
+	final static Logger logger = Logger.getLogger(InputRDFParser.class);
 
 	private Model inModel = ModelFactory.createDefaultModel();
 	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();

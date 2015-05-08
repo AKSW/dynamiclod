@@ -1,4 +1,4 @@
-package dataid.mongodb.actions;
+package dataid.linksets;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

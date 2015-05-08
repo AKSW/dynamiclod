@@ -1,22 +1,41 @@
 package dataid.mongodb.objects;
 
+import java.util.Date;
+
 import com.mongodb.DBObject;
 
 import dataid.exceptions.DataIDException;
 import dataid.mongodb.DataIDDB;
 
-public class GeneralPropertiesMongoDBObject extends DataIDDB {
+public class SystemPropertiesMongoDBObject extends DataIDDB {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "systemProperties";
 
 	public static final String DOWNLOADED_LOV = "downloadedLOV";
 
+	public static final String LINKSET_TIME_STARTED = "linksetTimeStarted";
+
+	public static final String LINKSET_TIME_FINISHED = "linksetTimeFinished";
+
+	public static final String LINKSET_NEXT_ROUND = "linksetNextRound";
+
+	public static final String LINKSET_STATUS = "linksetStatus";
+
 	// class properties
 
 	private Boolean downloadedLOV;
+	
+	private Date linksetTimeStarted; 
+	
+	private Date linksetTimeFinished; 
+	
+	private Date linksetNextRound; 
+	
+	private String linksetStatus;
+	
 
-	public GeneralPropertiesMongoDBObject() {
+	public SystemPropertiesMongoDBObject() {
 		super(COLLECTION_NAME, COLLECTION_NAME);
 		loadObject();
 	}
@@ -24,6 +43,14 @@ public class GeneralPropertiesMongoDBObject extends DataIDDB {
 	public boolean updateObject(boolean checkBeforeInsert) {
 		try {
 			mongoDBObject.put(DOWNLOADED_LOV, downloadedLOV);
+
+			mongoDBObject.put(LINKSET_TIME_STARTED, linksetTimeStarted);
+
+			mongoDBObject.put(LINKSET_TIME_FINISHED, linksetTimeFinished);
+
+			mongoDBObject.put(LINKSET_NEXT_ROUND, linksetNextRound);
+
+			mongoDBObject.put(LINKSET_STATUS, linksetStatus);
 
 			insert(checkBeforeInsert);
 			return true;
@@ -46,11 +73,18 @@ public class GeneralPropertiesMongoDBObject extends DataIDDB {
 		DBObject obj = search();
 
 		if (obj != null) {
-			// mongoDBObject = (BasicDBObject) obj;
 
 			downloadedLOV = (Boolean) obj.get(DOWNLOADED_LOV);
+			
+			linksetTimeStarted = (Date) obj.get(LINKSET_TIME_STARTED);
+			
+			linksetTimeFinished = (Date) obj.get(LINKSET_TIME_FINISHED);
+			
+			linksetNextRound = (Date) obj.get(LINKSET_NEXT_ROUND);
+			
+			linksetStatus = (String) obj.get(LINKSET_STATUS);
+			
 
-			// System.out.println(obj);
 			return true;
 		}
 		return false;

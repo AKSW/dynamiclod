@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dataid.FileInputParser;
-import dataid.Manager;
-import dataid.mongodb.actions.MakeLinksets;
+import dataid.API.APIDataset;
+import dataid.API.APIFactory;
+import dataid.API.APITasks;
+import dataid.linksets.MakeLinksets;
 
 public class API extends HttpServlet {
 
@@ -27,14 +28,12 @@ public class API extends HttpServlet {
 
 	private void manageRequest(HttpServletRequest request,
 			HttpServletResponse response) {
-		
 
 		PrintWriter out;
 		try {
 			out = response.getWriter();
 
 			Map<String, String[]> parameters = request.getParameterMap();
-						
 
 			if (parameters.containsKey("makeLinksets")) {
 				String[] makeLinkset = parameters.get("makeLinksets");
@@ -46,26 +45,14 @@ public class API extends HttpServlet {
 			if (parameters.containsKey("addDataset")) {
 				if (parameters.containsKey("rdfFormat")) {
 					String format = (parameters.get("rdfFormat")[0].toString());
-					
-					for (String datasetsURL : request
-							.getParameterValues("addDataset")) {
-						FileInputParser f = new FileInputParser();
-						try {
-							f.readModel(datasetsURL, format);
-							f.parseDistributions();
-							if (f.distributionsLinks.size() > 0) {
-								Manager m = new Manager(f.distributionsLinks);
-								System.out.println(f.distributionsLinks.size());
-								MakeLinksets makeLinksets = new MakeLinksets();
-								makeLinksets.updateLinksets();
-							} else
-								System.out.println("Naos");
 
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+					for (String datasetURI : parameters.get("addDataset")) {
+
+						APIDataset apiDataset = APIFactory.createDataset(datasetURI, format);
+						out.write(apiDataset.getMessage().toString());
+
 					}
+
 				} else
 					out.write("You need specify rdfFormat: \"ttl\", \"rdfxml\" or \"nt\".");
 
