@@ -1,18 +1,24 @@
 package dataid.linksets;
 
-import org.junit.Test;
+import javax.servlet.http.HttpServlet;
 
 import dataid.mongodb.objects.SystemPropertiesMongoDBObject;
 
+public class LinksetTimer extends HttpServlet implements Runnable {
 
-public class LinksetTimer {
+	public void init() {
+		(new Thread(new LinksetTimer())).start();
 
-	@Test
-	public void LinksetTimer() {
+	}
+
+	public void run() {
+
 		while (true) {
-			SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
+			SystemPropertiesMongoDBObject systemProperties = null;
 
-			if (systemProperties.getLinksetNeedUpdate()) {
+			systemProperties = new SystemPropertiesMongoDBObject();
+
+			if (systemProperties.getLinksetNeedUpdate()==true) {
 				systemProperties.setLinksetNeedUpdate(false);
 				systemProperties.updateObject(true);
 				MakeLinksets m = new MakeLinksets();

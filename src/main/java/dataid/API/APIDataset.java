@@ -30,6 +30,7 @@ public class APIDataset extends API {
 				systemProperties.setLinksetNeedUpdate(true);
 				systemProperties.updateObject(true);
 				setMessage(new APIMessage(true, "Done!"));
+
 			}
 
 		} catch (Exception e) {
@@ -37,6 +38,8 @@ public class APIDataset extends API {
 		}
 
 		setMessage(new APIMessage(true, "Dataset added;"));
+		
+		APITasks.tasks.remove(datasetURI);
 
 	}
 

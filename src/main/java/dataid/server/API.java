@@ -50,13 +50,33 @@ public class API extends HttpServlet {
 
 						APIDataset apiDataset = APIFactory.createDataset(datasetURI, format);
 						out.write(apiDataset.getMessage().toString());
+						out.write("<br>");
 
 					}
 
 				} else
 					out.write("You need specify rdfFormat: \"ttl\", \"rdfxml\" or \"nt\".");
-
 			}
+			
+			
+
+			if (parameters.containsKey("retrieveDataset")) {
+
+				for (String datasetURI : parameters.get("retrieveDataset")) {
+
+					APIDataset apiDataset = APIFactory.createDataset(datasetURI, format);
+					out.write(apiDataset.getMessage().toString());
+					out.write("<br>");
+
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
