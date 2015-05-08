@@ -29,7 +29,7 @@ public class Link {
 				.getUri());
 		link.put("source", source
 				.getUri());
-		link.put("value", 5);
+		link.put("value", links);
 		
 		return link;
 	}

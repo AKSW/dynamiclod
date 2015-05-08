@@ -16,6 +16,8 @@ public class Bubble {
 	String name;
 
 	String color;
+	
+	int radius;
 
 	public JSONObject getJSON() {
 		JSONObject node = new JSONObject();
@@ -23,7 +25,7 @@ public class Bubble {
 		node.put("text", getText());
 		node.put("color", getColor());
 		node.put("name", getUri());
-		node.put("radius", 20);
+		node.put("radius", getRadius());
 
 		return node;
 	}
@@ -38,6 +40,13 @@ public class Bubble {
 				setText(tmp.getUri());
 			setName(tmp.getDownloadUrl());
 			setUri(tmp.getUri());
+			
+
+			if(tmp.getTriples()>50000000)
+				setRadius(100);
+			else{
+				setRadius(tmp.getTriples()/50000);
+			}
 
 			if (tmp.getIsVocabulary())
 				setColor("rgb(255, 127, 14)");
@@ -108,5 +117,15 @@ public class Bubble {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
+
+	public int getRadius() {
+		return radius;
+	}
+
+	public void setRadius(int radius) {
+		this.radius = radius;
+	}
+	
+	
 
 }

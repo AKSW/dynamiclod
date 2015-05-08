@@ -12,13 +12,17 @@ var height = h - 160;
 var color = d3.scale.category20();
   
 var force = d3.layout.force()
-//.charge(-120)
-.gravity(.15)
-.charge(function(d, i) { return i ? 0 : -5000; })
-.linkDistance(150)
-.size([width, height]);  
+.linkStrength(0.00001)
+.friction(0.4)
+.linkDistance(960)
+.charge(15)
+.gravity(0.0000001)
+.theta(1.9)
+.alpha(1.9)
+.size([width, height])
+.start();
                   
-                  
+
                   
 var nodeMap = {};    
 makeGraph("");
@@ -26,8 +30,8 @@ makeGraph("");
 
 function makeGraph(param) { 
 //	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
-	d3.json("../dataid/CreateD3JSONFormat?getAllDistributions", function(error, circleData) {
-//		d3.json("http://vmdbpedia.informatik.uni-leipzig.de:8080/dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
+//	d3.json("../dataid/CreateD3JSONFormat?getAllDistributions", function(error, circleData) {
+		d3.json("http://vmdbpedia.informatik.uni-leipzig.de:9999/dataid/CreateD3JSONFormat?getAllDistributions", function(error, circleData) {
 		
 		
 		if(circleData.nodes.length==0)
@@ -106,7 +110,7 @@ var circleAttr = circles
     .attr("r", function (d) { return d.radius; })
     .attr("class", "node")
 //    .on("click", function(d) { window.open(d["url"],"_blank"); })
-    .on("click", function(d) { makeGraph(d.name.replace("#", "@@@@@@"));})
+//    .on("click", function(d) { makeGraph(d.name.replace("#", "@@@@@@"));})
     .attr("cursor", "pointer")
     .style("fill", function (d) { return d.color; })
     .call(force.drag);
@@ -135,6 +139,26 @@ force.on("tick", function() {
 while (++i < n) q.visit(collide(circleData.nodes[i]));
 
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
     path.attr('d', function(d) {
     var deltaX = d.target.x - d.source.x,
