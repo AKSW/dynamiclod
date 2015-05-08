@@ -47,6 +47,8 @@ public class Bubble {
 			else{
 				setRadius(tmp.getTriples()/833333);
 			}
+			if(getRadius()<8)
+				setRadius(8);
 
 			if (tmp.getIsVocabulary()){
 				setColor("rgb(255, 127, 14)");
