@@ -146,6 +146,27 @@ public class DistributionQueries {
 	}
 	
 	// return all distributions
+	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDataset(String topDataset) {
+
+		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+
+		try {
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					DistributionMongoDBObject.COLLECTION_NAME);
+			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.TOP_DATASET,topDataset));
+
+			for (DBObject instance : instances) {
+				list.add(new DistributionMongoDBObject(instance.get(
+						DataIDDB.URI).toString()));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+
 	public static ArrayList<DistributionMongoDBObject> getDistributionsWithErrors() {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();

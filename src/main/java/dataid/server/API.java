@@ -11,8 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import dataid.API.APIDataset;
 import dataid.API.APIFactory;
+import dataid.API.APIRetrieve;
+import dataid.API.APIStatus;
 import dataid.API.APITasks;
 import dataid.linksets.MakeLinksets;
+import dataid.mongodb.objects.APIStatusMongoDBObject;
 
 public class API extends HttpServlet {
 
@@ -48,7 +51,8 @@ public class API extends HttpServlet {
 
 					for (String datasetURI : parameters.get("addDataset")) {
 
-						APIDataset apiDataset = APIFactory.createDataset(datasetURI, format);
+						APIDataset apiDataset = APIFactory.createDataset(
+								datasetURI, format);
 						out.write(apiDataset.getMessage().toString());
 						out.write("<br>");
 
@@ -57,26 +61,39 @@ public class API extends HttpServlet {
 				} else
 					out.write("You need specify rdfFormat: \"ttl\", \"rdfxml\" or \"nt\".");
 			}
-			
-			
 
-			if (parameters.containsKey("retrieveDataset")) {
+			if (parameters.containsKey("datasetStatus")) {
 
-				for (String datasetURI : parameters.get("retrieveDataset")) {
+				for (String datasetURI : parameters.get("datasetStatus")) {
 
-					APIDataset apiDataset = APIFactory.createDataset(datasetURI, format);
-					out.write(apiDataset.getMessage().toString());
-					out.write("<br>");
+					APIStatus apiStatus = APIFactory.createStatusDataset(datasetURI);
+					if (apiStatus!=null) {
+						out.write(apiStatus.getMessage().toString());
+						out.write("\n");
+					}
+					else{
+						out.write("Error: we couldn't find your dataset. ");
+						out.write("\n");
+					}
+						
+						
 
 				}
-				
+
 			}
-			
-			
-			
-			
-			
-			
+
+			// if (parameters.containsKey("retrieveDataset")) {
+			//
+			// for (String datasetURI : parameters.get("retrieveDataset")) {
+			//
+			// APIRetrieve apiDataset = APIFactory.retrieveDataset(datasetURI);
+			// out.write(apiDataset.getMessage().toString());
+			// out.write("<br>");
+			//
+			// }
+			//
+			// }
+
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

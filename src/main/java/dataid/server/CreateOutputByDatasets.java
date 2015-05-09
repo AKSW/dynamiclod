@@ -13,11 +13,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
-import dataid.mongodb.actions.Queries;
 import dataid.mongodb.objects.DatasetMongoDBObject;
 import dataid.mongodb.objects.LinksetMongoDBObject;
 import dataid.mongodb.queries.DatasetQueries;
 import dataid.mongodb.queries.LinksetQueries;
+import dataid.mongodb.queries.Queries;
 import dataid.ontology.Dataset;
 import dataid.ontology.NS;
 

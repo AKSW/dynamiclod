@@ -1,4 +1,4 @@
-package dataid.mongodb.actions;
+package dataid.mongodb.queries;
 
 import java.util.Arrays;
 import java.util.List;

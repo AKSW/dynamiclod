@@ -19,6 +19,7 @@ import dataid.files.PrepareFiles;
 import dataid.filters.FileToFilter;
 import dataid.filters.GoogleBloomFilter;
 import dataid.lov.LOV;
+import dataid.mongodb.objects.APIStatusMongoDBObject;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dataid.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
@@ -38,8 +39,6 @@ public class Manager {
 
 	InputRDFParser fileInputParserModel = new InputRDFParser();
 
-//	DataIDBean bean;
-
 	public void streamAndCreateFilters() throws Exception {
 		// if there is at least one distribution, load them
 		Iterator<DistributionMongoDBObject> distributions = distributionsLinks
@@ -47,8 +46,6 @@ public class Manager {
 
 		int counter = 0;
 
-//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "Loading "
-//				+ distributionsLinks.size() + " distributions...");
 		logger.info("Loading " + distributionsLinks.size()
 				+ " distributions...");
 
@@ -79,17 +76,11 @@ public class Manager {
 					.checkDistribution(distributionMongoDBObj))
 				needDownload = true;
 
-//			bean.addDisplayMessage(
-//					DataIDGeneralProperties.MESSAGE_INFO,
-//					"Distribution n. " + counter + ": "
-//							+ distributionMongoDBObj.getUri());
 			logger.info("Distribution n. " + counter + ": "
 					+distributionMongoDBObj.getUri());
 
 			if (!needDownload) {
 				logger.info("Distribution is already in the last version. No needs to download again. ");
-//				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-//						"Distribution is already in the last version. No needs to download again. ");
 			}
 
 			// if distribution have not already been handled
@@ -100,15 +91,11 @@ public class Manager {
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_DOWNLOADING);
 					distributionMongoDBObj.updateObject(true);
-//					bean.updateDistributionList = true;
 
 					// now we need to download the distribution
 					DownloadAndSaveDistribution downloadedFile = new DownloadAndSaveDistribution(
 							distributionMongoDBObj.getDownloadUrl(), distributionMongoDBObj.getFormat());
 
-//					bean.addDisplayMessage(
-//							DataIDGeneralProperties.MESSAGE_INFO,
-//							"Downloading distribution.");
 					logger.info("Downloading distribution.");
 
 					downloadedFile.downloadDistribution();
@@ -315,28 +302,13 @@ public class Manager {
 							.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
 					distributionMongoDBObj.updateObject(true);
 
-//					bean.addDisplayMessage(
-//							DataIDGeneralProperties.MESSAGE_INFO,
-//							"Distribution saved!");
 					logger.info("Distribution saved! ");
-
-					try {
-//						DataIDBean.pushDownloadInfo();
-					} catch (Exception exc) {
-						exc.printStackTrace();
-					}
 
 				} catch (Exception e) {
 					// uptate status of distribution
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_ERROR);
 					distributionMongoDBObj.setLastErrorMsg(e.getMessage());
-
-					distributionMongoDBObj.updateObject(true);
-//
-//					bean.addDisplayMessage(
-//							DataIDGeneralProperties.MESSAGE_ERROR,
-//							e.getMessage());
 			
 					e.printStackTrace();
 					distributionMongoDBObj.setSuccessfullyDownloaded(false);
@@ -344,8 +316,6 @@ public class Manager {
 				}
 
 		}
-//		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-//				"We are done reading your distributions.");
 		logger.info("We are done reading your distributions.");
 		
 	}

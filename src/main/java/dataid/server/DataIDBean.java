@@ -17,9 +17,9 @@ import org.richfaces.application.push.TopicsContext;
 import dataid.Manager;
 import dataid.DataIDGeneralProperties;
 import dataid.linksets.MakeLinksets;
-import dataid.mongodb.actions.Queries;
 import dataid.mongodb.queries.DatasetQueries;
 import dataid.mongodb.queries.DistributionQueries;
+import dataid.mongodb.queries.Queries;
 
 @SessionScoped
 @ManagedBean

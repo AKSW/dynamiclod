@@ -14,7 +14,7 @@ public class APIMessage {
 	
 	@Override
 	public String toString() {
-		return "Success: "+error+". Msg: "+ message;
+		return "Success: "+error+". Message: "+ message;
 	}
 	
 }

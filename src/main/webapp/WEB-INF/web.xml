@@ -9,6 +9,11 @@
 	<display-name>DataID Dynamic Cloud</display-name>
 
 	<servlet>
+		<servlet-name>LinksetTimer</servlet-name>
+		<servlet-class>dataid.linksets.LinksetTimer</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<servlet>
 		<servlet-name>OutputByDistribution</servlet-name>
 		<servlet-class>dataid.server.CreateOutputByDistributions</servlet-class>
 	</servlet>

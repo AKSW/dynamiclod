@@ -112,7 +112,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 	
 	private boolean isVocabulary = false;
 	
-	private String lastErrorMsg;
+	private String lastErrorMsg = "";
 	
 	private String status;
 	

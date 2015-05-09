@@ -17,6 +17,13 @@ public class LinksetTimer extends HttpServlet implements Runnable {
 			SystemPropertiesMongoDBObject systemProperties = null;
 
 			systemProperties = new SystemPropertiesMongoDBObject();
+			
+			if(systemProperties.getLinksetNeedUpdate()==null){
+				systemProperties.setLinksetNeedUpdate(true);
+				systemProperties.updateObject(true);
+			}
+			
+			System.out.println("=)");
 
 			if (systemProperties.getLinksetNeedUpdate()==true) {
 				systemProperties.setLinksetNeedUpdate(false);
