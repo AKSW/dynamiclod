@@ -88,7 +88,7 @@ public class LOV extends Download {
 			tmpModel = ModelFactory.createModelForGraph(tmpGraph);
 		
 			if(tmpNode.getURI().equals("http://lov.okfn.org/dataset/lov")){
-				System.out.println("Oiaaaa");
+				System.out.println("");
 				break;
 			}
 		

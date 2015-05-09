@@ -79,7 +79,8 @@ public class DownloadAndSaveDistribution extends Download {
 
 		setExtension(Formats.getEquivalentFormat(getExtension()));
 		
-		if(RDFFormat.equals(""))
+		
+		if(RDFFormat == null || RDFFormat.equals(""))
 			RDFFormat = getExtension();
 		
 		if (Formats.getEquivalentFormat(RDFFormat).equals(

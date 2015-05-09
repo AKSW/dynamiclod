@@ -3,6 +3,7 @@ package dataid.API;
 import dataid.InputRDFParser;
 import dataid.Manager;
 import dataid.linksets.MakeLinksets;
+import dataid.mongodb.objects.APIStatusMongoDBObject;
 import dataid.mongodb.objects.SystemPropertiesMongoDBObject;
 
 public class APIDataset extends API {
@@ -34,10 +35,14 @@ public class APIDataset extends API {
 			}
 			else{
 				addMessage(new APIMessage(false, "We found an error reading your RDF data."));
+				APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
+				apiStatus.setMessage("We didn't find any distributions!");
+				
 			}
 
 		} catch (Exception e) {
 			addMessage(new APIMessage(false, e.getMessage()));
+			e.printStackTrace();
 		}
 
 		addMessage(new APIMessage(true, "Dataset added;"));

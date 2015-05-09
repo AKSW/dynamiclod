@@ -197,27 +197,29 @@ public class InputRDFParser {
 							break;
 					}
 
+				
 					// case there is an downloadURL property
 					while (stmtDownloadURL.hasNext()) {
 						// store downloadURL statement
 						Statement downloadURLStmt = stmtDownloadURL.next();
+						
 						try {
 							if (FileUtils.acceptedFormats(downloadURLStmt
 									.getObject().toString())) {
-
+								
 								downloadURLFound = true;
 								addDistribution(downloadURLStmt,
 										distributionStmt, datasetMongoDBObj,
 										topDataset);
 								
 							}
-						} catch (DataIDException ex) {
+						} catch (Exception ex) {
 							ex.printStackTrace();
 							apiStatus.setHasError(true);
 							apiStatus.setMessage(ex.getMessage());
 						}
 					}
-					break;
+//					break;
 //				}
 			}
 		}

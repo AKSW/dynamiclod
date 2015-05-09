@@ -10,6 +10,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
+import dataid.mongodb.objects.DatasetMongoDBObject;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.LinksetMongoDBObject;
 import dataid.mongodb.queries.LinksetQueries;
@@ -33,7 +34,15 @@ public class APIRetrieve extends API {
 
 		outModelInit();
 
-		retrieveByDistribution();
+		if(LinksetQueries.checkIfDistributionExists(URI)){
+			System.out.println("oi");
+			retrieveByDistribution();
+			
+		}
+		else if(LinksetQueries.checkIfDatasetExists(URI)){
+			System.out.println("Tius");
+			retrieveByDataset();
+		}
 
 		printModel();
 
@@ -71,14 +80,42 @@ public class APIRetrieve extends API {
 			DistributionMongoDBObject distribution = new DistributionMongoDBObject(
 					linkset.getObjectsDistributionTarget());
 			addDistributionToModel(distribution);
-			addLinksetToModel(linkset);
+			addDistributionLinksetToModel(linkset);
 		}
 		// add linksets to jena model
 		for (LinksetMongoDBObject linkset : out) {
 			DistributionMongoDBObject distribution = new DistributionMongoDBObject(
 					linkset.getSubjectsDistributionTarget());
 			addDistributionToModel(distribution);
-			addLinksetToModel(linkset);
+			addDistributionLinksetToModel(linkset);
+		}
+
+	}
+	
+	public void retrieveByDataset() {
+
+		// get indegree and outdegree for a distribution
+		ArrayList<LinksetMongoDBObject> in = LinksetQueries
+				.getLinksetsInDegreeByDataset(URI);
+		ArrayList<LinksetMongoDBObject> out = LinksetQueries
+				.getLinksetsOutDegreeByDataset(URI);
+
+		// add choosen distribution to jena
+		addDatasetToModel(new DatasetMongoDBObject(URI));
+
+		// add linksets to jena model
+		for (LinksetMongoDBObject linkset : in) {
+			DatasetMongoDBObject dataset = new DatasetMongoDBObject(
+					linkset.getObjectsDatasetTarget());
+			addDatasetToModel(dataset);
+			addDatasetLinksetToModel(linkset);
+		}
+		// add linksets to jena model
+		for (LinksetMongoDBObject linkset : out) {
+			DatasetMongoDBObject dataset = new DatasetMongoDBObject(
+					linkset.getSubjectsDatasetTarget());
+			addDatasetToModel(dataset);
+			addDatasetLinksetToModel(linkset);
 		}
 
 	}
@@ -97,8 +134,23 @@ public class APIRetrieve extends API {
 
 		r.addProperty(Dataset.title, name);
 	}
+	
+	private void addDatasetToModel(DatasetMongoDBObject dataset) {
+		// add distribution to jena model
+		Resource r = outModel.createResource(dataset.getUri());
+		r.addProperty(Dataset.type,
+				ResourceFactory.createResource(NS.VOID_URI + "Dataset"));
+		
+		String name;
+		
+		if(dataset.getTitle()==null)
+			name = dataset.getUri();
+		else name = dataset.getTitle();
 
-	private void addLinksetToModel(LinksetMongoDBObject linkset) {
+		r.addProperty(Dataset.title, name);
+	}
+
+	private void addDistributionLinksetToModel(LinksetMongoDBObject linkset) {
 		// add linksets
 			Resource r = outModel.createResource(linkset.getUri());
 			r.addProperty(Dataset.type,
@@ -109,6 +161,23 @@ public class APIRetrieve extends API {
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "subjectsTarget"), ResourceFactory.createResource(linkset
 					.getObjectsDistributionTarget().toString()));
+
+			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
+					+ "triples"), ResourceFactory.createPlainLiteral(String
+					.valueOf(linkset.getLinks())));
+	}
+	
+	private void addDatasetLinksetToModel(LinksetMongoDBObject linkset) {
+		// add linksets
+			Resource r = outModel.createResource(linkset.getUri());
+			r.addProperty(Dataset.type,
+					ResourceFactory.createResource(NS.VOID_URI + "Linkset"));
+			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
+					+ "objectsTarget"), ResourceFactory.createResource(linkset
+					.getSubjectsDatasetTarget().toString()));
+			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
+					+ "subjectsTarget"), ResourceFactory.createResource(linkset
+					.getObjectsDatasetTarget().toString()));
 
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "triples"), ResourceFactory.createPlainLiteral(String

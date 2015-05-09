@@ -16,9 +16,8 @@ public class RunCommand {
 
 	public void runRapper(String c, ConcurrentHashMap<String,Integer> subjectDomains,ConcurrentHashMap<String,Integer> objectDomains)
 			throws Exception {
-
-		if(c.contains("lexvo_latest.rdf")) throw new Exception("-");
-		
+	
+	
 		String[] cmd = { "/bin/sh", "-c", c };
 
 		logger.debug("<b>Running rapper command:</b> <i>" + c + "</i>");
@@ -104,7 +103,6 @@ public class RunCommand {
 				System.out.println("Rapper output: " + string);
 			} else {
 				proc.destroy();
-				rt.runFinalization();
 				throw new Exception("Too many errors while parsing.");
 			}
 		}

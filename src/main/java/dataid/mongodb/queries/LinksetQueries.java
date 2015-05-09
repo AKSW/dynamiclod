@@ -159,9 +159,6 @@ public class LinksetQueries {
 
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
-
-//			BasicDBObject query = new BasicDBObject(
-//					LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET, url);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET, url);  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
@@ -194,11 +191,42 @@ public class LinksetQueries {
 
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
-
-//			BasicDBObject query = new BasicDBObject(
-//					LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET, url);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET, url);  
+			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
+					new BasicDBObject("$gt", 50));   
+
+			BasicDBList and = new BasicDBList();
+			and.add(clause1);
+			and.add(clause2);
+			DBObject query = new BasicDBObject("$and", and);
+			
+			DBCursor d = collection.find(query);
+
+			while (d.hasNext()) {
+				list.add(new LinksetMongoDBObject(d.next().get(DataIDDB.URI)
+						.toString()));
+			}
+
+			d.close();
+			return list;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+
+	public static ArrayList<LinksetMongoDBObject> getLinksetsInDegreeByDataset(
+			String url) {
+		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
+		try {
+
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					LinksetMongoDBObject.COLLECTION_NAME);
+			
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DATASET_TARGET, url);  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -206,6 +234,38 @@ public class LinksetQueries {
 			or.add(clause1);
 			or.add(clause2);
 			DBObject query = new BasicDBObject("$and", or);
+			DBCursor d = collection.find(query);
+
+			while (d.hasNext()) {
+				list.add(new LinksetMongoDBObject(d.next().get(DataIDDB.URI)
+						.toString()));
+			}
+
+			d.close();
+			return list;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDataset(
+			String url) {
+		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
+		try {
+
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					LinksetMongoDBObject.COLLECTION_NAME);
+			
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DATASET_TARGET, url);  
+			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
+					new BasicDBObject("$gt", 50));   
+
+			BasicDBList and = new BasicDBList();
+			and.add(clause1);
+			and.add(clause2);
+			DBObject query = new BasicDBObject("$and", and);
 			
 			DBCursor d = collection.find(query);
 
@@ -243,5 +303,61 @@ public class LinksetQueries {
 		d.close();
 		return false;
 	}
+	
+	public static boolean checkIfDatasetExists(String datasetURL) {
+
+		DBCollection collection = DataIDDB.getInstance().getCollection(
+				LinksetMongoDBObject.COLLECTION_NAME);
+		BasicDBObject clause1 = new BasicDBObject(
+				LinksetMongoDBObject.SUBJECTS_DATASET_TARGET,
+				datasetURL);
+		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DATASET_TARGET,
+				datasetURL);
+
+		
+		BasicDBList and = new BasicDBList();
+		and.add(clause1);
+		and.add(clause2);
+		DBObject query = new BasicDBObject("$or", and);
+		
+		DBCursor d = collection.find(query).limit(1);
+		
+
+		if (d.hasNext()) {
+			return true;
+		}
+
+		d.close();
+		return false;
+	}
+	
+	public static boolean checkIfDistributionExists(String distributionURL) {
+
+		DBCollection collection = DataIDDB.getInstance().getCollection(
+				LinksetMongoDBObject.COLLECTION_NAME);
+		BasicDBObject clause1 = new BasicDBObject(
+				LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET,
+				distributionURL);
+		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET,
+				distributionURL);
+
+		
+		BasicDBList and = new BasicDBList();
+		and.add(clause1);
+		and.add(clause2);
+		DBObject query = new BasicDBObject("$or", and);
+		
+		DBCursor d = collection.find(query).limit(1);
+		
+
+		if (d.hasNext()) {
+			return true;
+		}
+
+		d.close();
+		return false;
+	}
+	
+	
 
 }

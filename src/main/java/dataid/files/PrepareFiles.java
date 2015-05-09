@@ -47,7 +47,7 @@ public class PrepareFiles {
 		
 		RunCommand r = new RunCommand();
 		
-		r.runRapper("rapper -i "+rapperFormat+" "+DataIDGeneralProperties.DUMP_PATH+ fileName+
+		r.runRapper("rapper -w -i "+rapperFormat+" "+DataIDGeneralProperties.DUMP_PATH+ fileName+
 				" -o ntriples | awk 'BEGIN{objcount=0;} {subjects=$1; objects=$3; if(lastlineSubjects!=subjects){ print subjects>\""+
 				DataIDGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+ fileName+
 				"\"; print \"[subjectDomain]\"subjects; lastlineSubjects=subjects} if(objects~/^</){print objects>\""+
