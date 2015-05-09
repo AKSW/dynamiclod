@@ -25,11 +25,10 @@ public class APIFactory {
 		
 	}
 
-//	public static APIRetrieve retrieveDataset(String datasetURI) {
+	public static APIRetrieve retrieveDataset(String datasetURI) {
 
-		
-//		return new APIRetrieve(datasetURI);
+		return new APIRetrieve(datasetURI);
 
-//	}
+	}
 
 }

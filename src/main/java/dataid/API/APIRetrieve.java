@@ -19,7 +19,7 @@ import dataid.ontology.NS;
 public class APIRetrieve extends API {
 
 	public String URI;
-	Model outModel = null;
+	public Model outModel = null;
 
 	@Override
 	public void run() {
@@ -27,10 +27,9 @@ public class APIRetrieve extends API {
 
 	}
 
-	@Test
-	public void APIRetrieve() {
+	public APIRetrieve(String URI) {
 
-		this.URI = "http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#";
+		this.URI = URI;
 
 		outModelInit();
 

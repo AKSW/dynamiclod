@@ -54,7 +54,7 @@ public class API extends HttpServlet {
 						APIDataset apiDataset = APIFactory.createDataset(
 								datasetURI, format);
 						out.write(apiDataset.getMessage().toString());
-						out.write("<br>");
+						out.write("\n");
 
 					}
 
@@ -75,24 +75,18 @@ public class API extends HttpServlet {
 						out.write("Error: we couldn't find your dataset. ");
 						out.write("\n");
 					}
-						
-						
+				}
+			}
 
+			if (parameters.containsKey("retrieveDataset")) {
+
+				for (String datasetURI : parameters.get("retrieveDataset")) {
+					APIRetrieve apiRetrieve = APIFactory
+							.retrieveDataset(datasetURI);
+					apiRetrieve.outModel.write(out, "TURTLE");
 				}
 
 			}
-
-			// if (parameters.containsKey("retrieveDataset")) {
-			//
-			// for (String datasetURI : parameters.get("retrieveDataset")) {
-			//
-			// APIRetrieve apiDataset = APIFactory.retrieveDataset(datasetURI);
-			// out.write(apiDataset.getMessage().toString());
-			// out.write("<br>");
-			//
-			// }
-			//
-			// }
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
