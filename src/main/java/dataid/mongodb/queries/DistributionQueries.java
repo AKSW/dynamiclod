@@ -149,29 +149,33 @@ public class DistributionQueries {
 	// return all distributions
 	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetAccessURL(String topDataset) {
 
-		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+		ArrayList<DistributionMongoDBObject> distributionList = new ArrayList<DistributionMongoDBObject>();
+		
+		ArrayList<String> datasetList = new ArrayList<String>();
+		
 		
 		DBCollection collection = DataIDDB.getInstance().getCollection(
 				DatasetMongoDBObject.COLLECTION_NAME);
 		DBCursor inst = collection.find(new BasicDBObject(DatasetMongoDBObject.ACCESS_URL,new BasicDBObject("$regex",topDataset+".*")));
-		if(inst.hasNext()){
-			topDataset = (String) inst.next().get(DataIDDB.URI);
+		while(inst.hasNext()){
+			datasetList.add((String) inst.next().get(DataIDDB.URI));
 		}
 
 		try {
 			collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.TOP_DATASET,new BasicDBObject("$regex",topDataset+".*")));
+			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.TOP_DATASET,
+					new BasicDBObject("$in",datasetList)));
 
 			for (DBObject instance : instances) {
-				list.add(new DistributionMongoDBObject(instance.get(
+				distributionList.add(new DistributionMongoDBObject(instance.get(
 						DataIDDB.URI).toString()));
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return list;
+		return distributionList;
 	}
 	
 
