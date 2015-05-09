@@ -20,8 +20,9 @@ public class APIStatus extends API {
 
 	public APIStatus(String url) {
 		apiStatus = new APIStatusMongoDBObject(url);
-		distributions=DistributionQueries.getDistributionsByTopDataset(url);
-		addMessage(new APIMessage(!apiStatus.getHasError(),"Dataset status:  "+apiStatus.getMessage()));			
+		distributions=DistributionQueries.getDistributionsByTopDatasetAccessURL(url);
+		System.out.println(url);
+		addMessage(new APIMessage(!apiStatus.getHasError(),"Dataset status:  " + apiStatus.getMessage()));			
 		for (DistributionMongoDBObject distribution : distributions) {
 			addMessage(new APIMessage(false,"Distribution:  "+distribution.getDownloadUrl()+" Status: " +distribution.getStatus()+" "+ distribution.getLastErrorMsg()));
 		}

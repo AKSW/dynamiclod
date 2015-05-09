@@ -38,16 +38,13 @@ public class InputRDFParser {
 	public boolean someDownloadURLFound = false;
 	private String datasetURI;
 	private String dataIDURL;
-	
+	private String access_url;
+
 	APIStatusMongoDBObject apiStatus = null;
 
 	boolean isVoid = false;
 
-	public List<DistributionMongoDBObject> parseDistributions() {
-
-		// this.distributionsLinks = distributionsLinks;
-		// this.bean = bean;
-
+	public StmtIterator getFirstStmt() {
 		// select dataset
 		StmtIterator datasetsStmt = null;
 
@@ -71,6 +68,18 @@ public class InputRDFParser {
 				break;
 			}
 		}
+
+		return datasetsStmt;
+	}
+
+	public List<DistributionMongoDBObject> parseDistributions() {
+
+		// this.distributionsLinks = distributionsLinks;
+		// this.bean = bean;
+
+		// select dataset
+		StmtIterator datasetsStmt = getFirstStmt();
+
 		if (datasetsStmt.hasNext())
 			iterateSubsetsNew(datasetsStmt, null, null);
 
@@ -99,6 +108,8 @@ public class InputRDFParser {
 			DatasetMongoDBObject datasetMongoDBObj = new DatasetMongoDBObject(
 					datasetURI);
 			datasetMongoDBObj.addParentDatasetURI(parentDataset);
+			datasetMongoDBObj.setAccess_url(access_url);
+			
 
 			// add DataID file path
 			datasetMongoDBObj.setDataIdFileName(dataIDURL);
@@ -181,46 +192,44 @@ public class InputRDFParser {
 				// store distribution
 				Statement distributionStmt = stmtDistribution.next();
 
-//				 give priority for nt files
-//				if (!stmtDistribution.hasNext()
-//						|| distributionStmt.getObject().toString()
-//								.contains(".nt")) {
+				// give priority for nt files
+				// if (!stmtDistribution.hasNext()
+				// || distributionStmt.getObject().toString()
+				// .contains(".nt")) {
 
-					// find downloadURL property
-					StmtIterator stmtDownloadURL = null;
+				// find downloadURL property
+				StmtIterator stmtDownloadURL = null;
 
-					for (Property downloadProperty : RDFProperties.downloadURL) {
-						stmtDownloadURL = inModel.listStatements(
-								distributionStmt.getObject().asResource(),
-								downloadProperty, (RDFNode) null);
-						if (stmtDownloadURL.hasNext())
-							break;
-					}
+				for (Property downloadProperty : RDFProperties.downloadURL) {
+					stmtDownloadURL = inModel.listStatements(distributionStmt
+							.getObject().asResource(), downloadProperty,
+							(RDFNode) null);
+					if (stmtDownloadURL.hasNext())
+						break;
+				}
 
-				
-					// case there is an downloadURL property
-					while (stmtDownloadURL.hasNext()) {
-						// store downloadURL statement
-						Statement downloadURLStmt = stmtDownloadURL.next();
-						
-						try {
-							if (FileUtils.acceptedFormats(downloadURLStmt
-									.getObject().toString())) {
-								
-								downloadURLFound = true;
-								addDistribution(downloadURLStmt,
-										distributionStmt, datasetMongoDBObj,
-										topDataset);
-								
-							}
-						} catch (Exception ex) {
-							ex.printStackTrace();
-							apiStatus.setHasError(true);
-							apiStatus.setMessage(ex.getMessage());
+				// case there is an downloadURL property
+				while (stmtDownloadURL.hasNext()) {
+					// store downloadURL statement
+					Statement downloadURLStmt = stmtDownloadURL.next();
+
+					try {
+						if (FileUtils.acceptedFormats(downloadURLStmt
+								.getObject().toString())) {
+
+							downloadURLFound = true;
+							addDistribution(downloadURLStmt, distributionStmt,
+									datasetMongoDBObj, topDataset);
+
 						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						apiStatus.setHasError(true);
+						apiStatus.setMessage(ex.getMessage());
 					}
-//					break;
-//				}
+				}
+				// break;
+				// }
 			}
 		}
 
@@ -239,7 +248,10 @@ public class InputRDFParser {
 
 		// creating mongodb distribution object
 		DistributionMongoDBObject distributionMongoDBObj = new DistributionMongoDBObject(
-				stmtDistribution.getObject().toString());
+				downloadURLStmt.getObject()
+				.toString());
+		
+		distributionMongoDBObj.setResourceUri(stmtDistribution.getObject().toString());
 
 		distributionMongoDBObj.addDefaultDataset(subsetMongoDBObj.getUri());
 
@@ -287,6 +299,7 @@ public class InputRDFParser {
 	// read dataID file and return the dataset uri
 	public String readModel(String URL, String format) throws Exception {
 		apiStatus = new APIStatusMongoDBObject(URL);
+		access_url = URL;
 		String name = null;
 		format = getJenaFormat(format);
 		logger.info("Trying to read dataset: " + URL.toString());
@@ -309,8 +322,10 @@ public class InputRDFParser {
 			name = hasSomeDatasets.next().getURI().toString();
 			logger.info("Jena model created. ");
 			logger.info("Looks that this is a valid VoID/DataID file! " + name);
-			apiStatus.setMessage("Looks that this is a valid VoID/DataID file! " + name);
-			
+			apiStatus
+					.setMessage("Looks that this is a valid VoID/DataID file! "
+							+ name);
+
 			dataIDURL = FileUtils.stringToHash(URL);
 			inModel.write(new FileOutputStream(new File(
 					DataIDGeneralProperties.DATAID_PATH + dataIDURL)));
@@ -318,8 +333,7 @@ public class InputRDFParser {
 		if (name == null) {
 			apiStatus.setMessage("It's not possible to find a dataset.");
 			apiStatus.setHasError(true);
-			throw new Exception(
-					"It's not possible to find a dataset.");
+			throw new Exception("It's not possible to find a dataset.");
 		}
 
 		return name;

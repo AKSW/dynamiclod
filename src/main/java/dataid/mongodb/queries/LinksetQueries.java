@@ -110,7 +110,7 @@ public class LinksetQueries {
 				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)
 						.toString()));
 			}
-			instances.close();
+		
 			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -144,7 +144,6 @@ public class LinksetQueries {
 				System.out.println(instance.get(DataIDDB.URI).toString());
 			}
 
-			instances.close();
 			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -175,7 +174,7 @@ public class LinksetQueries {
 						.toString()));
 			}
 
-			d.close();
+		
 			return list;
 
 		} catch (Exception e) {
@@ -208,7 +207,6 @@ public class LinksetQueries {
 						.toString()));
 			}
 
-			d.close();
 			return list;
 
 		} catch (Exception e) {
@@ -226,7 +224,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DATASET_TARGET, url);  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DATASET_TARGET,  new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -241,7 +239,6 @@ public class LinksetQueries {
 						.toString()));
 			}
 
-			d.close();
 			return list;
 
 		} catch (Exception e) {
@@ -258,7 +255,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DATASET_TARGET, url);  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DATASET_TARGET, new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -274,7 +271,6 @@ public class LinksetQueries {
 						.toString()));
 			}
 
-			d.close();
 			return list;
 
 		} catch (Exception e) {
@@ -300,7 +296,6 @@ public class LinksetQueries {
 			return true;
 		}
 
-		d.close();
 		return false;
 	}
 	
@@ -310,24 +305,23 @@ public class LinksetQueries {
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject clause1 = new BasicDBObject(
 				LinksetMongoDBObject.SUBJECTS_DATASET_TARGET,
-				datasetURL);
+				new BasicDBObject("$regex", datasetURL+".*"));
 		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DATASET_TARGET,
-				datasetURL);
-
+				new BasicDBObject("$regex", datasetURL+".*"));
 		
-		BasicDBList and = new BasicDBList();
-		and.add(clause1);
-		and.add(clause2);
-		DBObject query = new BasicDBObject("$or", and);
+		BasicDBList or = new BasicDBList();
+		or.add(clause1);
+		or.add(clause2);
+		DBObject query = new BasicDBObject("$or", or);
 		
 		DBCursor d = collection.find(query).limit(1);
 		
+		System.out.println("="+datasetURL+".*");
 
 		if (d.hasNext()) {
 			return true;
 		}
 
-		d.close();
 		return false;
 	}
 	
@@ -337,10 +331,9 @@ public class LinksetQueries {
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject clause1 = new BasicDBObject(
 				LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET,
-				distributionURL);
+				new BasicDBObject("$regex", distributionURL+".*"));
 		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET,
-				distributionURL);
-
+				 new BasicDBObject("$regex", distributionURL+".*"));
 		
 		BasicDBList and = new BasicDBList();
 		and.add(clause1);
@@ -348,13 +341,11 @@ public class LinksetQueries {
 		DBObject query = new BasicDBObject("$or", and);
 		
 		DBCursor d = collection.find(query).limit(1);
-		
 
 		if (d.hasNext()) {
 			return true;
 		}
 
-		d.close();
 		return false;
 	}
 	

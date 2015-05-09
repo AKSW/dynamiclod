@@ -32,6 +32,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 	
 	public static final String IS_VOCABULARY = "is_vocabulary";
 	
+	public static final String ACCESS_URL = "access_url";
+	
 	
 
 	// class properties
@@ -41,6 +43,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 	private String title;
 
 	private String dataIdFileName;
+
+	private String access_url;
 	
 	private boolean isVocabulary = false;
 	
@@ -76,6 +80,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 			
 			mongoDBObject.put(PARENT_DATASETS, parentDatasetsURI);
 			
+			mongoDBObject.put(ACCESS_URL, access_url);
+			
 			
 			insert(checkBeforeInsert);
 			return true;
@@ -104,6 +110,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 			title = (String) obj.get(TITLE);
 			dataIdFileName = (String) obj.get(DATAID_FILENAME);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
+			access_url = (String) obj.get(ACCESS_URL);
 
 			// loading subsets to object
 			BasicDBList subsetList = (BasicDBList) obj.get(SUBSET_URIS);
@@ -187,6 +194,14 @@ public class DatasetMongoDBObject extends DataIDDB {
 	public void addParentDatasetURI(String parentDatasetURI) {
 		if (!parentDatasetsURI.contains(parentDatasetURI) && parentDatasetURI!=null)
 			parentDatasetsURI.add(parentDatasetURI);
+	}
+
+	public String getAccess_url() {
+		return access_url;
+	}
+
+	public void setAccess_url(String access_url) {
+		this.access_url = access_url;
 	}
 	
 

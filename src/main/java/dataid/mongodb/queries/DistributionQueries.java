@@ -14,6 +14,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import dataid.mongodb.DataIDDB;
+import dataid.mongodb.objects.DatasetMongoDBObject;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dataid.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
@@ -146,14 +147,21 @@ public class DistributionQueries {
 	}
 	
 	// return all distributions
-	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDataset(String topDataset) {
+	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetAccessURL(String topDataset) {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+		
+		DBCollection collection = DataIDDB.getInstance().getCollection(
+				DatasetMongoDBObject.COLLECTION_NAME);
+		DBCursor inst = collection.find(new BasicDBObject(DatasetMongoDBObject.ACCESS_URL,new BasicDBObject("$regex",topDataset+".*")));
+		if(inst.hasNext()){
+			topDataset = (String) inst.next().get(DataIDDB.URI);
+		}
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.TOP_DATASET,topDataset));
+			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.TOP_DATASET,new BasicDBObject("$regex",topDataset+".*")));
 
 			for (DBObject instance : instances) {
 				list.add(new DistributionMongoDBObject(instance.get(

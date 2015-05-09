@@ -34,13 +34,12 @@ public class APIRetrieve extends API {
 
 		outModelInit();
 
+		
 		if(LinksetQueries.checkIfDistributionExists(URI)){
-			System.out.println("oi");
 			retrieveByDistribution();
 			
 		}
 		else if(LinksetQueries.checkIfDatasetExists(URI)){
-			System.out.println("Tius");
 			retrieveByDataset();
 		}
 

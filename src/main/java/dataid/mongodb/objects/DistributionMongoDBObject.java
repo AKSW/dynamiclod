@@ -34,6 +34,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 	public static final String STATUS_DONE = "DONE";
 	
 	
+	
 	// collection properties
 	public static final String DOWNLOAD_URL = "DownloadUrl";
 
@@ -75,7 +76,9 @@ public class DistributionMongoDBObject extends DataIDDB {
 	
 	public static final String IS_VOCABULARY = "isVocabulary";
 	
+	public static final String RESOURCE_URI = "resourceUri";
 
+	
 	private ArrayList<String> defaultDatasets = new ArrayList<String>();
 
 	private String downloadUrl;
@@ -106,8 +109,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	private String format;
 	
-	private String domain;
-	
 	private boolean successfullyDownloaded;
 	
 	private boolean isVocabulary = false;
@@ -117,6 +118,10 @@ public class DistributionMongoDBObject extends DataIDDB {
 	private String status;
 	
 	private String lastTimeLinkset;
+	
+	private String resourceUri;
+	
+	
 
 	public DistributionMongoDBObject(String uri) {
 		super(COLLECTION_NAME, uri);
@@ -155,7 +160,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 			mongoDBObject.put(TITLE, title);
 			mongoDBObject.put(FORMAT, format);	
 			mongoDBObject.put(STATUS, status);	
-			mongoDBObject.put(DOMAIN, domain);
+			mongoDBObject.put(RESOURCE_URI, resourceUri);
 			mongoDBObject.put(SUCCESSFULLY_DOWNLOADED, successfullyDownloaded);
 			mongoDBObject.put(IS_VOCABULARY, isVocabulary);
 			mongoDBObject.put(LAST_ERROR_MSG, lastErrorMsg);
@@ -198,7 +203,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 			numberOfTriplesLoadedIntoFilter = (String) obj
 					.get(NUMBER_OF_TRIPLES_LOADED_INTO_FILTER);
 			numberOfObjectTriples = (String) obj.get(NUMBER_OF_OBJECTS_TRIPLES);
-			domain = (String) obj.get(DOMAIN);
+			resourceUri = (String) obj.get(RESOURCE_URI);
 			successfullyDownloaded = (Boolean) obj.get(SUCCESSFULLY_DOWNLOADED);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
 			lastErrorMsg = (String) obj.get(LAST_ERROR_MSG);
@@ -322,14 +327,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 		this.triples = triples;
 	}
 
-	public String getDomain() {
-		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
 	public String getFormat() {
 		return format;
 	}
@@ -376,6 +373,14 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	public void setIsVocabulary(boolean isVocabulary) {
 		this.isVocabulary = isVocabulary;
+	}
+
+	public String getResourceUri() {
+		return resourceUri;
+	}
+
+	public void setResourceUri(String resourceUri) {
+		this.resourceUri = resourceUri;
 	}
 	
 	

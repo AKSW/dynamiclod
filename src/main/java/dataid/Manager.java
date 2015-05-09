@@ -220,7 +220,6 @@ public class Manager {
 									.valueOf(f.subjectsLoadedIntoFilter));
 					distributionMongoDBObj
 							.setTriples(downloadedFile.totalTriples);
-					distributionMongoDBObj.setDomain(authority);
 
 					// remove old domains object
 					ObjectId id = new ObjectId();
