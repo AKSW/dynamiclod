@@ -193,9 +193,9 @@ public class InputRDFParser {
 				Statement distributionStmt = stmtDistribution.next();
 
 				// give priority for nt files
-				 if (!stmtDistribution.hasNext()
-				 || distributionStmt.getObject().toString()
-				 .contains(".nt")) {
+				// if (!stmtDistribution.hasNext()
+				// || distributionStmt.getObject().toString()
+				// .contains(".nt")) {
 
 				// find downloadURL property
 				StmtIterator stmtDownloadURL = null;
@@ -228,8 +228,8 @@ public class InputRDFParser {
 						apiStatus.setMessage(ex.getMessage());
 					}
 				}
-				 break;
-				 }
+				// break;
+				// }
 			}
 		}
 
