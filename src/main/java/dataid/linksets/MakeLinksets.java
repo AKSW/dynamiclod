@@ -2,17 +2,16 @@ package dataid.linksets;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
-import dataid.DataIDGeneralProperties;
 import dataid.exceptions.DataIDException;
 import dataid.filters.GoogleBloomFilter;
 import dataid.mongodb.objects.DistributionMongoDBObject;
@@ -20,11 +19,9 @@ import dataid.mongodb.objects.LinksetMongoDBObject;
 import dataid.mongodb.objects.SystemPropertiesMongoDBObject;
 import dataid.mongodb.queries.DistributionQueries;
 import dataid.mongodb.queries.LinksetQueries;
-import dataid.server.DataIDBean;
 import dataid.threads.DataModelThread;
 import dataid.threads.JobThread;
 import dataid.threads.ResourceAvailability;
-import dataid.threads.ResourceInstance;
 import dataid.utils.Timer;
 
 public class MakeLinksets {
@@ -137,7 +134,10 @@ public class MakeLinksets {
 							} catch (Exception e) {
 								logger.error("Error while loading bloom filter: "
 										+ e.getMessage());
-								e.printStackTrace();
+								StringWriter errors = new StringWriter();
+								e.printStackTrace(new PrintWriter(errors));
+								System.out.println(errors.toString());
+								System.out.println("distribution"+distribution.getUri());
 								throw new DataIDException(
 										"Error while loading bloom filter: "
 												+ e.getMessage());
