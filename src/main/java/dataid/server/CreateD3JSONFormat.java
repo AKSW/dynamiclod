@@ -21,7 +21,6 @@ import dataid.mongodb.objects.LinksetMongoDBObject;
 import dataid.mongodb.queries.LinksetQueries;
 
 public class CreateD3JSONFormat extends HttpServlet {
-	
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -33,10 +32,11 @@ public class CreateD3JSONFormat extends HttpServlet {
 		manageRequest(request, response);
 	}
 
-	public void printOutput(JSONArray nodes, JSONArray links, HttpServletResponse response){
-		
+	public void printOutput(JSONArray nodes, JSONArray links,
+			HttpServletResponse response) {
+
 		JSONObject obj = new JSONObject();
-		
+
 		obj.put("nodes", nodes);
 		obj.put("links", links);
 
@@ -46,39 +46,139 @@ public class CreateD3JSONFormat extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void manageRequest(HttpServletRequest request,
 			HttpServletResponse response) {
-		
-		 ArrayList<String> nodeList = new ArrayList<String>();
-		
+
+		ArrayList<String> nodeList = new ArrayList<String>();
+
 		JSONArray nodes = new JSONArray();
 		JSONArray links = new JSONArray();
-		
-		
+
 		Map<String, String[]> parameters = request.getParameterMap();
-		
-		if(parameters.containsKey("getAllDistributions")){
-			
+
+		if (parameters.containsKey("getAllDistributions")) {
+
 			Diagram diagram = new Diagram();
-			ArrayList<LinksetMongoDBObject> linksets = LinksetQueries.getLinksetsWithLinks();
-			
+			ArrayList<LinksetMongoDBObject> linksets = LinksetQueries
+					.getLinksetsWithLinks();
+
 			for (LinksetMongoDBObject linkset : linksets) {
-				
-				Bubble target = new Bubble(new DistributionMongoDBObject(linkset.getSubjectsDistributionTarget()));
-				Bubble source = new Bubble(new DistributionMongoDBObject(linkset.getObjectsDistributionTarget()));
-				
+
+				Bubble target = new Bubble(new DistributionMongoDBObject(
+						linkset.getSubjectsDistributionTarget()));
+				Bubble source = new Bubble(new DistributionMongoDBObject(
+						linkset.getObjectsDistributionTarget()));
+
 				Link link = new Link(source, target, linkset.getLinks());
-				
+
 				diagram.addBubble(target);
 				diagram.addBubble(source);
-				
+
 				diagram.addLink(link);
 			}
-			
+
 			nodes = diagram.getBubblesJSON();
 			links = diagram.getLinksJSON();
 			printOutput(nodes, links, response);
 		}
+
+		if (parameters.containsKey("dataset")) {
+			Diagram diagram = new Diagram();
+			for (String datasetURI : parameters.get("dataset")) {
+
+				if (LinksetQueries.checkIfDistributionExists(datasetURI)) {
+					// get indegree and outdegree for a distribution
+					ArrayList<LinksetMongoDBObject> in = LinksetQueries
+							.getLinksetsInDegreeByDistribution(datasetURI);
+					ArrayList<LinksetMongoDBObject> out = LinksetQueries
+							.getLinksetsOutDegreeByDistribution(datasetURI);
+
+					for (LinksetMongoDBObject linkset : in) {
+						DistributionMongoDBObject distribution = new DistributionMongoDBObject(
+								linkset.getObjectsDistributionTarget());
+						Bubble target = new Bubble(
+								new DistributionMongoDBObject(linkset
+										.getSubjectsDistributionTarget()));
+						Bubble source = new Bubble(
+								new DistributionMongoDBObject(
+										linkset.getObjectsDistributionTarget()));
+
+						Link link = new Link(source, target, linkset.getLinks());
+
+						diagram.addBubble(target);
+						diagram.addBubble(source);
+
+						diagram.addLink(link);
+					}
+					// add linksets to jena model
+					for (LinksetMongoDBObject linkset : out) {
+						DistributionMongoDBObject distribution = new DistributionMongoDBObject(
+								linkset.getSubjectsDistributionTarget());
+						Bubble target = new Bubble(
+								new DistributionMongoDBObject(linkset
+										.getSubjectsDistributionTarget()));
+						Bubble source = new Bubble(
+								new DistributionMongoDBObject(
+										linkset.getObjectsDistributionTarget()));
+
+						Link link = new Link(source, target, linkset.getLinks());
+
+						diagram.addBubble(target);
+						diagram.addBubble(source);
+
+						diagram.addLink(link);
+					}
+
+				} else if (LinksetQueries.checkIfDatasetExists(datasetURI)) {
+					// get indegree and outdegree for a distribution
+					ArrayList<LinksetMongoDBObject> in = LinksetQueries
+							.getLinksetsInDegreeByDataset(datasetURI);
+					ArrayList<LinksetMongoDBObject> out = LinksetQueries
+							.getLinksetsOutDegreeByDataset(datasetURI);
+
+					// add linksets to jena model
+					for (LinksetMongoDBObject linkset : in) {
+						DatasetMongoDBObject dataset = new DatasetMongoDBObject(
+								linkset.getObjectsDatasetTarget());
+						Bubble target = new Bubble(
+								new DatasetMongoDBObject(linkset
+										.getSubjectsDatasetTarget()));
+						Bubble source = new Bubble(
+								new DatasetMongoDBObject(
+										linkset.getObjectsDatasetTarget()));
+
+						Link link = new Link(source, target, linkset.getLinks());
+
+						diagram.addBubble(target);
+						diagram.addBubble(source);
+
+						diagram.addLink(link);
+					}
+					// add linksets to jena model
+					for (LinksetMongoDBObject linkset : out) {
+						DatasetMongoDBObject dataset = new DatasetMongoDBObject(
+								linkset.getSubjectsDatasetTarget());
+						Bubble target = new Bubble(
+								new DatasetMongoDBObject(linkset
+										.getSubjectsDatasetTarget()));
+						Bubble source = new Bubble(
+								new DatasetMongoDBObject(
+										linkset.getObjectsDatasetTarget()));
+
+						Link link = new Link(source, target, linkset.getLinks());
+
+						diagram.addBubble(target);
+						diagram.addBubble(source);
+
+						diagram.addLink(link);
+					}
+				}
+			}
+			nodes = diagram.getBubblesJSON();
+			links = diagram.getLinksJSON();
+			printOutput(nodes, links, response);
+		}
+
 	}
 }

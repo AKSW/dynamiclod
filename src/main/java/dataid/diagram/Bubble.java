@@ -72,6 +72,7 @@ public class Bubble {
 			
 			setName(tmp.getUri());
 			setUri(tmp.getUri());
+			setRadius(20);
 
 			if (tmp.getIsVocabulary())
 				setColor("rgb(255, 127, 14)");

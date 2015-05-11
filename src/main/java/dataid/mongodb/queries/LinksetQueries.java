@@ -159,7 +159,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET, url);  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET, new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -191,7 +191,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET, url);  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET, new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
