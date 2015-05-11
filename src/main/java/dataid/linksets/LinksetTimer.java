@@ -23,7 +23,6 @@ public class LinksetTimer extends HttpServlet implements Runnable {
 				systemProperties.updateObject(true);
 			}
 			
-			System.out.println("=)");
 
 			if (systemProperties.getLinksetNeedUpdate()==true) {
 				systemProperties.setLinksetNeedUpdate(false);
