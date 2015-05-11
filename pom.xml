@@ -5,7 +5,7 @@
 	<groupId>dataid</groupId>
 	<artifactId>Dyn-lod</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	 <packaging>war</packaging>
 
 	<name>Dyn-lod</name>
 	<url>http://maven.apache.org</url>
@@ -14,68 +14,31 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.richfaces</groupId>
-				<artifactId>richfaces-cache-bom</artifactId>
-				<type>pom</type>
-				<version>4.5.3.Final</version>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.richfaces</groupId>
-				<artifactId>richfaces-build</artifactId>
-				<type>pom</type>
-				<version>4.5.3.Final</version>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
-			<version>1.2.1</version>
-		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
 		</dependency>
 
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>3.0.1</version>
+    <scope>provided</scope>
+</dependency>
 
-		<!-- dependency>
-			<groupId>org.atmosphere</groupId>
-			<artifactId>atmosphere-runtime</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
-		</dependency -->
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.faces</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.faces</groupId>
-			<artifactId>javax.faces-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.richfaces</groupId>
-			<artifactId>richfaces</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-		</dependency>
+  <dependency>
+	 <groupId>com.sun.faces</groupId>
+	 <artifactId>jsf-api</artifactId>
+	 <version>2.1.7</version>
+  </dependency>
+  <dependency>
+	 <groupId>com.sun.faces</groupId>
+	 <artifactId>jsf-impl</artifactId>
+	 <version>2.1.7</version>
+  </dependency>
 
 		<dependency>
 			<groupId>org.apache.jena</groupId>
@@ -86,14 +49,6 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
 			<version>2.12.0</version>
-		</dependency>
-
-
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -116,21 +71,29 @@
 			<version>1.2.17</version>
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 			<version>1.8</version>
 		</dependency>
-		
-		
 
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20140107</version>
 		</dependency>
+		
+		<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.6.4</version>
+</dependency>
+
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.6.4</version>
+</dependency>
 
 
 	</dependencies>
@@ -138,14 +101,23 @@
 	<build>
 		<plugins>
 
-			<plugin>
+			<!-- plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>8.1.15.v20140411</version>
 				<configuration>
 					<reload>manual</reload>
 				</configuration>
-			</plugin>
+			</plugin -->
+			      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <port>9090</port>
+          <path>/dataid</path>
+        </configuration>
+      </plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -175,15 +147,6 @@
 		<repository>
 			<id>ldstack</id>
 			<url>http://mvn.linkeddata.org/content/groups/linkeddata.org/</url>
-		</repository>
-		<repository>
-			<id>c</id>
-			<name>Maven repository</name>
-			<url>http://dev.biordf.net/maven/</url>
-		</repository>
-		<repository>
-			<id>dev.biordf.net</id>
-			<url>http://dev.biordf.net/maven</url>
 		</repository>
 	</repositories>
 </project>
