@@ -137,7 +137,8 @@ public class MakeLinksets {
 								StringWriter errors = new StringWriter();
 								e.printStackTrace(new PrintWriter(errors));
 								System.out.println(errors.toString());
-								System.out.println("distribution"+distribution.getUri());
+								System.out.println("distribution: "+distribution.getUri());
+								System.out.println("distribution to compare: "+distributionToCompare.getUri());
 								throw new DataIDException(
 										"Error while loading bloom filter: "
 												+ e.getMessage());
