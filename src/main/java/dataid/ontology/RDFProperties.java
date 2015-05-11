@@ -37,6 +37,7 @@ public class RDFProperties {
 	public static final Resource linkset = resource(NS.VOID_URI, "Linkset");
 
 	public static final Property subset= property(NS.VOID_URI, "subset");	 	
+	public static final Property wasDerivedFrom= property(NS.PROV_URI, "wasGeneratedBy");	 	
 	public static final Property format = property(NS.DCT_URI, "format");
 	public static final Property primaryTopic = property(NS.FOAF_URI, "primaryTopic");
 

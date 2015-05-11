@@ -121,10 +121,12 @@ public class DownloadAndSaveDistribution extends Download {
 		doneReadingFile = true;
 
 		// update file length
+		File f = new File(DataIDGeneralProperties.DUMP_PATH +hashFileName);
 		if (httpContentLength < 1) {
-			File f = new File(DataIDGeneralProperties.DUMP_PATH +hashFileName);
 			httpContentLength = f.length();
 		}
+		f.delete();
+		
 		httpConn.disconnect();
 		inputStream.close();
 	}

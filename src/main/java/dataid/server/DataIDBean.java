@@ -4,15 +4,9 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.EventListener;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
-
-import org.richfaces.application.push.MessageException;
-import org.richfaces.application.push.TopicKey;
-import org.richfaces.application.push.TopicsContext;
 
 import dataid.Manager;
 import dataid.DataIDGeneralProperties;
@@ -40,7 +34,7 @@ public class DataIDBean implements Serializable, Runnable {
 	public boolean updateLog = false;
 
 	public boolean updateDistributionList = false;
-
+ 
 	// dataid list
 	private String distributionIDList = "(empty)";
 

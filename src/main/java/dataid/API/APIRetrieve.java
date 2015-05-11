@@ -2,8 +2,7 @@ package dataid.API;
 
 import java.util.ArrayList;
 
-import org.apache.commons.io.FilenameUtils;
-import org.junit.Test;
+import javax.servlet.http.HttpServletRequest;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -16,6 +15,7 @@ import dataid.mongodb.objects.LinksetMongoDBObject;
 import dataid.mongodb.queries.LinksetQueries;
 import dataid.ontology.Dataset;
 import dataid.ontology.NS;
+import dataid.ontology.RDFProperties;
 
 public class APIRetrieve extends API {
 
@@ -130,7 +130,7 @@ public class APIRetrieve extends API {
 		if(distribution.getTitle()==null)
 			name = distribution.getUri();
 		else name = distribution.getTitle();
-
+ 
 		r.addProperty(Dataset.title, name);
 	}
 	
@@ -152,6 +152,7 @@ public class APIRetrieve extends API {
 	private void addDistributionLinksetToModel(LinksetMongoDBObject linkset) {
 		// add linksets
 			Resource r = outModel.createResource(linkset.getUri());
+			
 			r.addProperty(Dataset.type,
 					ResourceFactory.createResource(NS.VOID_URI + "Linkset"));
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
@@ -160,7 +161,7 @@ public class APIRetrieve extends API {
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "subjectsTarget"), ResourceFactory.createResource(linkset
 					.getObjectsDistributionTarget().toString()));
-
+			r.addProperty(RDFProperties.wasDerivedFrom, dataid.server.API.getServerURL());
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "triples"), ResourceFactory.createPlainLiteral(String
 					.valueOf(linkset.getLinks())));
@@ -177,7 +178,7 @@ public class APIRetrieve extends API {
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "subjectsTarget"), ResourceFactory.createResource(linkset
 					.getObjectsDatasetTarget().toString()));
-
+			r.addProperty(RDFProperties.wasDerivedFrom, dataid.server.API.getServerURL());
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "triples"), ResourceFactory.createPlainLiteral(String
 					.valueOf(linkset.getLinks())));

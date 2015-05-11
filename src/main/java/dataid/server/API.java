@@ -18,6 +18,8 @@ import dataid.linksets.MakeLinksets;
 import dataid.mongodb.objects.APIStatusMongoDBObject;
 
 public class API extends HttpServlet {
+	
+	static HttpServletRequest staticRequest;
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -29,8 +31,13 @@ public class API extends HttpServlet {
 		manageRequest(request, response);
 	}
 
+	public static String getServerURL(){
+		return staticRequest.getRequestURL().toString();
+	}
+	
 	private void manageRequest(HttpServletRequest request,
 			HttpServletResponse response) {
+		staticRequest = request;
 
 		PrintWriter out;
 		try {
