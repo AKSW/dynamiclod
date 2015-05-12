@@ -15,8 +15,8 @@ import dataid.mongodb.queries.DatasetQueries;
 import dataid.mongodb.queries.DistributionQueries;
 import dataid.mongodb.queries.Queries;
 
-@SessionScoped
-@ManagedBean
+//@SessionScoped
+//@ManagedBean
 public class DataIDBean implements Serializable, Runnable {
 
 	private static final long serialVersionUID = -6239437588285327644L;

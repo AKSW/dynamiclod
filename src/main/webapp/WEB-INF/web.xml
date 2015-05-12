@@ -13,18 +13,18 @@
 		<servlet-class>dataid.linksets.LinksetTimer</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
-	<servlet>
+	<!-- servlet>
 		<servlet-name>OutputByDistribution</servlet-name>
 		<servlet-class>dataid.server.CreateOutputByDistributions</servlet-class>
-	</servlet>
-	<servlet>
+	</servlet -->
+	<!--servlet>
 		<servlet-name>OutputByDataset</servlet-name>
 		<servlet-class>dataid.server.CreateOutputByDatasets</servlet-class>
-	</servlet>
-	<servlet>
+	</servlet -->
+	<!--servlet>
 		<servlet-name>Service</servlet-name>
 		<servlet-class>dataid.server.Service</servlet-class>
-	</servlet>
+	</servlet -->
 	<servlet>
 		<servlet-name>API</servlet-name>
 		<servlet-class>dataid.server.API</servlet-class>
@@ -37,18 +37,18 @@
 		<servlet-name>CreateD3JSONFormat</servlet-name>
 		<servlet-class>dataid.server.CreateD3JSONFormat</servlet-class>
 	</servlet>
-	<servlet-mapping>
+	<!--servlet-mapping>
 		<servlet-name>OutputByDistribution</servlet-name>
 		<url-pattern>/outputByDistribution/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping -->
 	<servlet-mapping>
 		<servlet-name>API</servlet-name>
 		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
+	<!--servlet-mapping>
 		<servlet-name>OutputByDataset</servlet-name>
 		<url-pattern>/outputByDataset/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping -->
 	<servlet-mapping>
 		<servlet-name>ReDownloadBadFiles</servlet-name>
 		<url-pattern>/ReDownloadBadFiles/*</url-pattern>
@@ -57,28 +57,13 @@
 		<servlet-name>CreateD3JSONFormat</servlet-name>
 		<url-pattern>/CreateD3JSONFormat/*</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
+	<!--servlet-mapping>
 		<servlet-name>Service</servlet-name>
 		<url-pattern>/service/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>Faces Servlet</servlet-name>
-		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>*.jsf</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>/dataid/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping -->
 
 	<!-- Resource Servlet - serves static resources and resources for specific 
-		components -->
+		components >
 	<servlet>
 		<servlet-name>Resource Servlet</servlet-name>
 		<servlet-class>org.richfaces.webapp.ResourceServlet</servlet-class>
@@ -87,10 +72,10 @@
 	<servlet-mapping>
 		<servlet-name>Resource Servlet</servlet-name>
 		<url-pattern>/org.richfaces.resources/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping -->
 
 	<!-- Resource Mapping - resources will be served compressed and packed in 
-		production -->
+		production >
 	<context-param>
 		<param-name>org.richfaces.resourceMapping.enabled</param-name>
 		<param-value>true</param-value>
@@ -98,14 +83,15 @@
 	<context-param>
 		<param-name>org.richfaces.enableControlSkinning</param-name>
 		<param-value>false</param-value>
-	</context-param>
+	</context-param -->
 
 	<welcome-file-list>
 		<welcome-file>dataid/index.xhtml</welcome-file>
 	</welcome-file-list>
 
-	<listener>
+	<!-- listener>
 		<listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-	</listener>
+	</listener -->
+
 
 </web-app>
