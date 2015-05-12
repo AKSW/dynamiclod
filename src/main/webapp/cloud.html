@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<script src="resources/js/d3.v3.min.js"></script>
+<script src="resources/js/jquery-2.1.0.js"></script>
+<script src="resources/jquery-ui/jquery-ui.js"></script>
+<link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet"></link>
+<link href="resources/bootstrap/css/bootstrap-theme.min.css"
+	rel="stylesheet"></link>
+<link href="resources/css/dyn-lod.css" rel="stylesheet"></link>
+
+<script src="resources/js/dyn-lod.js"></script>
+<style>
+path.link {
+	fill: none;
+	stroke: #666;
+	stroke-width: 1.5px;
+}
+
+circle {
+	fill: #ccc;
+	stroke: #fff;
+	stroke-width: 1.5px;
+}
+
+text {
+	fill: #000;
+	font: 10px sans-serif;
+	pointer-events: none;
+}
+</style>
+
+<script>
+	$(function() {
+		$("#menu").load("menu.html");
+	});
+</script>
+<script src="resources/js/dyn-lod.js"></script>
+
+<body>
+	<div id="menu"></div>
+
+	<div style="margin-left: 15px;">
+
+		<div class="page-header">
+			<h2>LOD-Diagram</h2>
+		</div>
+
+		<div id="diagram"
+			style="width: 95%; border: 1px solid #d8d8d8; margin-top: 40px">
+
+		</div>
+	</div>
+
+
+</body>
+</html>

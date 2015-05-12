@@ -6,16 +6,16 @@ var h = window.innerHeight
 || document.documentElement.clientHeight
 || document.body.clientHeight;
 
-var width = w - 140;
-var height = h - 160;
+var width = w - 240;
+var height = h - 240;
 
 var color = d3.scale.category20();
   
 var force = d3.layout.force()
 .linkStrength(0.00001)
 .friction(0.4)
-.linkDistance(960)
-.charge(15)
+.linkDistance(50)
+.charge(5)
 .gravity(0.0000001)
 .theta(1.9)
 .alpha(1.9)
@@ -27,11 +27,21 @@ var force = d3.layout.force()
 var nodeMap = {};    
 makeGraph("");
 
+//console.log(getUrlParameter("dataset"));
+
+var requestLink = "/dataid/CreateD3JSONFormat?";
+
+if(typeof getUrlParameter("getAllDistributions")!= 'undefined'){
+	requestLink = requestLink + "getAllDistributions="+"&";
+}
+if(typeof getUrlParameter("dataset")!= 'undefined'){
+	requestLink = requestLink + "dataset="+getUrlParameter("dataset")+"&";
+}
+
+console.log(requestLink);
 
 function makeGraph(param) { 
-//	d3.json("../dataid/CreateD3JSONFormat?dataset="+param, function(error, circleData) {
-	d3.json("../dataid/CreateD3JSONFormat?getAllDistributions", function(error, circleData) {
-//		d3.json("http://vmdbpedia.informatik.uni-leipzig.de:9999/dataid/CreateD3JSONFormat?getAllDistributions", function(error, circleData) {
+	d3.json(requestLink, function(error, circleData) {
 		
 		
 		if(circleData.nodes.length==0)
@@ -44,7 +54,7 @@ d3.select("svg")
 console.log(circleData);
 
 //Create the SVG Viewport
-var svgContainer = d3.select("body").append("svg")
+var svgContainer = d3.select("#diagram").append("svg")
                                      .attr("width",width)
                                      .attr("height",height)    .attr("pointer-events", "all")
                                      .append('svg:g')
@@ -139,27 +149,6 @@ force.on("tick", function() {
 while (++i < n) q.visit(collide(circleData.nodes[i]));
 
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
     path.attr('d', function(d) {
     var deltaX = d.target.x - d.source.x,
         deltaY = d.target.y - d.source.y,
@@ -231,7 +220,20 @@ rootSvg = d3.select("#tree-body").append("svg:svg");
 
 // apply the zoom behavior to the svg image
 zoomListener(rootSvg);
-
-
 });
+}
+
+
+function getUrlParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
 }

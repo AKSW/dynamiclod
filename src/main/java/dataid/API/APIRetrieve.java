@@ -123,7 +123,7 @@ public class APIRetrieve extends API {
 		// add distribution to jena model
 		Resource r = outModel.createResource(distribution.getDownloadUrl());
 		r.addProperty(Dataset.type,
-				ResourceFactory.createResource(NS.VOID_URI + "Dataset"));
+				ResourceFactory.createResource(NS.DCAT_URI + "distribution"));
 		
 		String name;
 		
@@ -152,6 +152,7 @@ public class APIRetrieve extends API {
 	private void addDistributionLinksetToModel(LinksetMongoDBObject linkset) {
 		// add linksets
 			Resource r = outModel.createResource(linkset.getUri());
+			Resource wasDerivedFrom = outModel.createResource(dataid.server.API.getServerURL());
 			
 			r.addProperty(Dataset.type,
 					ResourceFactory.createResource(NS.VOID_URI + "Linkset"));
@@ -161,7 +162,7 @@ public class APIRetrieve extends API {
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "subjectsTarget"), ResourceFactory.createResource(linkset
 					.getObjectsDistributionTarget().toString()));
-			r.addProperty(RDFProperties.wasDerivedFrom, dataid.server.API.getServerURL());
+			r.addProperty(RDFProperties.wasDerivedFrom, wasDerivedFrom);
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "triples"), ResourceFactory.createPlainLiteral(String
 					.valueOf(linkset.getLinks())));
@@ -170,6 +171,7 @@ public class APIRetrieve extends API {
 	private void addDatasetLinksetToModel(LinksetMongoDBObject linkset) {
 		// add linksets
 			Resource r = outModel.createResource(linkset.getUri());
+			Resource wasDerivedFrom = outModel.createResource(dataid.server.API.getServerURL());
 			r.addProperty(Dataset.type,
 					ResourceFactory.createResource(NS.VOID_URI + "Linkset"));
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
@@ -178,7 +180,7 @@ public class APIRetrieve extends API {
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "subjectsTarget"), ResourceFactory.createResource(linkset
 					.getObjectsDatasetTarget().toString()));
-			r.addProperty(RDFProperties.wasDerivedFrom, dataid.server.API.getServerURL());
+			r.addProperty(RDFProperties.wasDerivedFrom, wasDerivedFrom);
 			r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 					+ "triples"), ResourceFactory.createPlainLiteral(String
 					.valueOf(linkset.getLinks())));
