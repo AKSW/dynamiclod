@@ -123,6 +123,7 @@
 				<configuration>
 					<port>9090</port>
 					<path>/dataid</path>
+					<reload>manual</reload>
 				</configuration>
 			</plugin>
 			<plugin>
