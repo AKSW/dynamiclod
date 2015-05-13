@@ -9,17 +9,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.MapContext;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import dataid.download.CheckWhetherDownload;
 import dataid.download.DownloadAndSaveDistribution;
-import dataid.exceptions.DataIDException;
 import dataid.files.PrepareFiles;
 import dataid.filters.FileToFilter;
 import dataid.filters.GoogleBloomFilter;
 import dataid.lov.LOV;
-import dataid.mongodb.objects.APIStatusMongoDBObject;
 import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dataid.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
@@ -104,11 +106,7 @@ public class Manager {
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_DOWNLOADED);
 					distributionMongoDBObj.updateObject(true);
-//					bean.updateDistributionList = true;
 
-//					bean.addDisplayMessage(
-//							DataIDGeneralProperties.MESSAGE_INFO,
-//							"Distribution downloaded. ");
 					logger.info("Distribution downloaded. ");
 
 					// check if format is not ntriples
@@ -120,26 +118,17 @@ public class Manager {
 						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
 					
 						distributionMongoDBObj.updateObject(true);
-//						bean.updateDistributionList = true;
 
-//						bean.addDisplayMessage(
-//								DataIDGeneralProperties.MESSAGE_INFO,
-//								"Separating subjects and objects.");
 						logger.info("Separating subjects and objects.");
 
 						PrepareFiles p = new PrepareFiles();
 						// separating subjects and objects using rapper and awk
 						// error to convert dbpedia files from turtle using
 						// rapper
-						boolean isDbpedia = false;
-						// if (distributionMongoDBObj.getDownloadUrl().contains(
-						// "dbpedia"))
-						// isDbpedia = true;
-						// if (isDbpedia)
-						// throw new DataIDException("DBpedia ttl format");
+						
 						
 						p.separateSubjectAndObject(downloadedFile.hashFileName,
-								downloadedFile.RDFFormat, isDbpedia);
+								downloadedFile.RDFFormat);
 						downloadedFile.objectDomains = p.objectDomains;
 						downloadedFile.subjectDomains = p.subjectDomains;
 						downloadedFile.objectFilePath = p.objectFile;
@@ -151,16 +140,41 @@ public class Manager {
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_CREATING_BLOOM_FILTER);
 					distributionMongoDBObj.updateObject(true);
-//					bean.updateDistributionList = true;
 
-//					bean.addDisplayMessage(
-//							DataIDGeneralProperties.MESSAGE_INFO,
-//							"Creating bloom filter.");
 					logger.info("Creating bloom filter.");
 
 					// make a filter with subjects
 					GoogleBloomFilter filter;
 					if (downloadedFile.subjectLines != 0) {
+						
+						// get customized equation from properties file
+						if(DataIDGeneralProperties.FPP_EQUATION!=null){
+							
+							// equation parser
+							JexlEngine jexl = new JexlEngine();
+								jexl.setCache(512);
+								jexl.setLenient(false);
+								jexl.setSilent(false);
+
+								String calc = DataIDGeneralProperties.FPP_EQUATION;
+								Expression e = jexl.createExpression(calc);
+
+								// populate the context
+								JexlContext context = new MapContext();
+								context.set("distributionSize", downloadedFile.subjectLines);
+
+								// work it out
+								Double result = (Double) e.evaluate(context);								
+								
+							
+							filter = new GoogleBloomFilter(
+									(int) downloadedFile.subjectLines,
+									result);
+							
+							logger.info("Created bloom filter with customized equation: "+DataIDGeneralProperties.FPP_EQUATION + " and value: "+ result);
+						}
+						else{
+						
 						if (downloadedFile.subjectLines > 1000000)
 							filter = new GoogleBloomFilter(
 									(int) downloadedFile.subjectLines,
@@ -169,6 +183,7 @@ public class Manager {
 							filter = new GoogleBloomFilter(
 									(int) downloadedFile.subjectLines,
 									0.0000001);
+						}
 					} else {
 						filter = new GoogleBloomFilter(
 								(int) downloadedFile.contentLengthAfterDownloaded / 40,
@@ -194,9 +209,7 @@ public class Manager {
 					// save filter
 
 					// save distribution in a mongodb object
-//					bean.addDisplayMessage(
-//							DataIDGeneralProperties.MESSAGE_INFO,
-//							"Saving mongodb \"Distribution\" document.");
+
 					logger.info("Saving mongodb \"Distribution\" document.");
 
 					distributionMongoDBObj.setNumberOfObjectTriples(String

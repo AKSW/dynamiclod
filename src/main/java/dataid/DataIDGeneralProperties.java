@@ -34,6 +34,13 @@ public class DataIDGeneralProperties {
 			MONGODB_USERNAME = prop.getProperty("MONGODB_USERNAME");
 			MONGODB_PASSWORD = prop.getProperty("MONGODB_PASSWORD");
 			LOV_URL = prop.getProperty("LOV_URL");
+			try{
+				FPP_EQUATION = prop.getProperty("CUSTOMIZED_FPP_EQUATION");
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			
 			
 			
 			USE_MULTITHREAD = prop.getProperty("USE_MULTITHREAD");
@@ -117,6 +124,10 @@ public class DataIDGeneralProperties {
 	public static String MONGODB_USERNAME;
 	public static String MONGODB_PASSWORD;
 
+	// fpp equation
+	public static String FPP_EQUATION = null;
+	
+	// other properties
 	public static String USE_MULTITHREAD;
 	public static String LOV_URL;
 

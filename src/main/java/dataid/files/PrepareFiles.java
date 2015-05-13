@@ -29,14 +29,14 @@ public class PrepareFiles {
 	public ConcurrentHashMap<String,Integer> subjectDomains = new ConcurrentHashMap<String,Integer>();
 	public ConcurrentLinkedQueue<String> results = new ConcurrentLinkedQueue<String>();
 
-	public void separateSubjectAndObject(String fileName, String extension,  boolean isDbpedia) throws Exception {
+	public void separateSubjectAndObject(String fileName, String extension) throws Exception {
 		
 		String rapperFormat = null;
 		
 		if (Formats.getEquivalentFormat(extension).equals(Formats.DEFAULT_TURTLE)) rapperFormat = "turtle";
 		else if (Formats.getEquivalentFormat(extension).equals(Formats.DEFAULT_RDFXML)) rapperFormat = "rdfxml";
 		
-		if(extension.equals(Formats.DEFAULT_TURTLE) && isDbpedia) rapperFormat = "ntriples";
+//		if(extension.equals(Formats.DEFAULT_TURTLE) && isDbpedia) rapperFormat = "ntriples";
 		
 		
 		// creates 2 files, one with subjects and other with objects
