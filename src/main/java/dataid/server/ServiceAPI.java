@@ -17,7 +17,7 @@ import dataid.API.APITasks;
 import dataid.linksets.MakeLinksets;
 import dataid.mongodb.objects.APIStatusMongoDBObject;
 
-public class API extends HttpServlet {
+public class ServiceAPI extends HttpServlet {
 	
 	static HttpServletRequest staticRequest;
 
@@ -60,7 +60,7 @@ public class API extends HttpServlet {
 
 						APIDataset apiDataset = APIFactory.createDataset(
 								datasetURI, format);
-						out.write(apiDataset.getMessage().toString());
+						out.write(apiDataset.getMessageJSON().toString());
 						out.write("\n");
 
 					}
@@ -75,7 +75,7 @@ public class API extends HttpServlet {
 
 					APIStatus apiStatus = APIFactory.createStatusDataset(datasetURI);
 					if (apiStatus!=null) {
-						out.write(apiStatus.getMessage().toString());
+						out.write(apiStatus.getMessageJSON().toString());
 						out.write("\n");
 					}
 					else{

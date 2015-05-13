@@ -24,28 +24,26 @@ public class APIDataset extends API {
 			inputRDFParser.parseDistributions();
 			
 			if (inputRDFParser.distributionsLinks.size() > 0) {
-				addMessage(new APIMessage(true, inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!"));
+				addMessage(new APIMessage("parserMsg",true, inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!"));
 				Manager m = new Manager(inputRDFParser.distributionsLinks);
 				System.out.println(inputRDFParser.distributionsLinks.size());
 				SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
 				systemProperties.setLinksetNeedUpdate(true);
 				systemProperties.updateObject(true);
-				addMessage(new APIMessage(true, "Done!"));
+//				addMessage(new APIMessage(true, "Done!"));
 				
 			}
 			else{
-				addMessage(new APIMessage(false, "We found an error reading your RDF data."));
+				addMessage(new APIMessage("parserMsg",false, "We found an error reading your RDF data."));
 				APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
 				apiStatus.setMessage("We didn't find any distributions!");
 				
 			}
 
 		} catch (Exception e) {
-			addMessage(new APIMessage(false, e.getMessage()));
+			addMessage(new APIMessage("parserMsg",false, e.getMessage()));
 			e.printStackTrace();
 		}
-
-		addMessage(new APIMessage(true, "Dataset added;"));
 		
 		APITasks.tasks.remove(datasetURI);
 

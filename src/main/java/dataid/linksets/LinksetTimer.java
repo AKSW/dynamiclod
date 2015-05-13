@@ -32,7 +32,7 @@ public class LinksetTimer extends HttpServlet implements Runnable {
 			}
 
 			try {
-				Thread.sleep(30000);
+				Thread.sleep(60000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

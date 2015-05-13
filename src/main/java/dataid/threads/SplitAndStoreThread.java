@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dataid.DataIDGeneralProperties;
-import dataid.server.DataIDBean;
 
 public class SplitAndStoreThread extends Thread {
 

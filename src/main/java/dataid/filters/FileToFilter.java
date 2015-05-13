@@ -14,7 +14,6 @@ import dataid.Manager;
 import dataid.DataIDGeneralProperties;
 import dataid.download.CheckWhetherDownload;
 import dataid.ontology.Linkset;
-import dataid.server.DataIDBean;
 
 public class FileToFilter {
 	

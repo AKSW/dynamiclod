@@ -2,8 +2,6 @@ package dataid.API;
 
 import java.util.ArrayList;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -175,7 +173,7 @@ public class APIRetrieve extends API {
 	private void addDistributionLinksetToModel(LinksetMongoDBObject linkset) {
 		// add linksets
 		Resource r = outModel.createResource(linkset.getUri());
-		Resource wasDerivedFrom = outModel.createResource(dataid.server.API
+		Resource wasDerivedFrom = outModel.createResource(dataid.server.ServiceAPI
 				.getServerURL());
 
 		r.addProperty(Dataset.type,
@@ -195,7 +193,7 @@ public class APIRetrieve extends API {
 	private void addDatasetLinksetToModel(LinksetMongoDBObject linkset) {
 		// add linksets
 		Resource r = outModel.createResource(linkset.getUri());
-		Resource wasDerivedFrom = outModel.createResource(dataid.server.API
+		Resource wasDerivedFrom = outModel.createResource(dataid.server.ServiceAPI
 				.getServerURL());
 		r.addProperty(Dataset.type,
 				ResourceFactory.createResource(NS.VOID_URI + "Linkset"));

@@ -1,6 +1,7 @@
 package dataid.API;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import dataid.mongodb.objects.APIStatusMongoDBObject;
 import dataid.mongodb.objects.DistributionMongoDBObject;
@@ -21,12 +22,23 @@ public class APIStatus extends API {
 	public APIStatus(String url) {
 		apiStatus = new APIStatusMongoDBObject(url);
 		distributions=DistributionQueries.getDistributionsByTopDatasetAccessURL(url);
-		System.out.println(url);
-		addMessage(new APIMessage(!apiStatus.getHasError(),"Dataset status:  " + apiStatus.getMessage()));			
+
+		addMessage(new APIMessage("parserMsg", !apiStatus.getHasError(),"Dataset status:  " + apiStatus.getMessage()));			
 		for (DistributionMongoDBObject distribution : distributions) {
-			addMessage(new APIMessage(false,"Distribution:  "+distribution.getDownloadUrl()+" Status: " +distribution.getStatus()+" "+ distribution.getLastErrorMsg()));
+			boolean success = true; 
+			HashMap<String, String> extraMessages = new HashMap<String, String>();
+			if(distribution.getStatus().equals(DistributionMongoDBObject.STATUS_ERROR)){
+				success = false;
+				extraMessages.put(DistributionMongoDBObject.LAST_ERROR_MSG, distribution.getDownloadUrl());
+			}
+			extraMessages.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
+			extraMessages.put(DistributionMongoDBObject.TOP_DATASET, distribution.getTopDataset());
+			extraMessages.put(DistributionMongoDBObject.STATUS, distribution.getStatus());
+			addMessage(new APIMessage(distribution.getDownloadUrl(),success,
+					"Distribution:  "+distribution.getDownloadUrl()+" Status: " +distribution.getStatus()+" "+ distribution.getLastErrorMsg(),
+					extraMessages));
 		}
-		addMessage(new APIMessage(false,"DONE!"));
+//		addMessage(new APIMessage(true,"DONE!"));
 		
 	}
 

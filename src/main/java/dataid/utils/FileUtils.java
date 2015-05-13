@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import dataid.DataIDGeneralProperties;
 import dataid.exceptions.DataIDException;
-import dataid.server.DataIDBean;
 
 public class FileUtils {
 

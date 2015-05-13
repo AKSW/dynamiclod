@@ -26,7 +26,6 @@ import dataid.mongodb.objects.DistributionMongoDBObject;
 import dataid.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dataid.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dataid.mongodb.objects.SystemPropertiesMongoDBObject;
-import dataid.server.DataIDBean;
 import dataid.utils.FileUtils;
 import dataid.utils.Formats;
 import dataid.utils.Timer;
@@ -342,15 +341,10 @@ public class Manager {
 		}
 	}
 
-	public Manager(String URL, DataIDBean bean) {
+	public Manager(String URL) {
 		try {
-
-//			this.bean = bean;
-
 			FileUtils.checkIfFolderExists();
 
-			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-					"Loading DataID file URL: " + URL + " url.");
 			logger.debug("Loading DataID file URL: " + URL + " url.");
 
 			// check file extension
@@ -360,20 +354,13 @@ public class Manager {
 			name = fileInputParserModel.readModel(URL, "ttl");
 
 			if (name == null) {
-				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_ERROR,
-						"Impossible to read dataset. Perhaps that's not a valid DataID file. Dataset: "
-								+ name);
 				logger.error("Impossible to read dataset. Perhaps that's not a valid DataID file. Dataset: "
 						+ name);
 				return;
 			}
 
-			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-					"We found at least one dataset: " + name);
 			logger.info("We found at least one dataset: " + name);
 
-			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-					"Parsing model in order to find distributions...");
 			logger.info("Parsing model in order to find distributions...");
 
 			// parse model in order to find distributions
@@ -390,10 +377,7 @@ public class Manager {
 			if (!fileInputParserModel.someDownloadURLFound)
 				throw new Exception("No DownloadURL property found!");
 			else if (numberOfDistributions == 0)
-				throw new Exception("### 0 distribution found! ###");
-			else
-				bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO,
-						numberOfDistributions + " distribution(s) found");
+				throw new Exception("### 0 distribution found! ###");				
 
 			checkLOV();
 			
@@ -401,13 +385,10 @@ public class Manager {
 			streamAndCreateFilters();
 
 		} catch (Exception e) {
-			bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_ERROR,
-					e.getMessage());
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
 		logger.info("END");
-		bean.addDisplayMessage(DataIDGeneralProperties.MESSAGE_INFO, "end");
 	}
 
 	private String getAuthorotyDomainFromSubjectFile(String filePath) {

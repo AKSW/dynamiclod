@@ -1,17 +1,11 @@
 package dataid.files;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 
-import dataid.Manager;
 import dataid.DataIDGeneralProperties;
-import dataid.server.DataIDBean;
-import dataid.threads.GetDomainsFromTriplesThread;
 import dataid.utils.Formats;
 
 public class PrepareFiles {
