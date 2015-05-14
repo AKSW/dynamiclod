@@ -57,7 +57,7 @@ console.log(circleData);
 var svgContainer = d3.select("#diagram").append("svg")
                                      .attr("width",width)
                                      .attr("height",height)    .attr("pointer-events", "all")
-                                     .append('svg:g')
+//                                     .append('svg:g')
                                      .call(d3.behavior.zoom().on("zoom", redraw))
                                    .append('svg:g');
 
@@ -114,7 +114,7 @@ var path = svgContainer.append("svg:g").selectAll("path")
 var circles = svgContainer.selectAll("circle")
                            .data(circleData.nodes)
                            .enter()
-                           .append("circle");;
+                           .append("circle");
                            
 var circleAttr = circles
     .attr("r", function (d) { return d.radius; })
@@ -128,16 +128,26 @@ var circleAttr = circles
 
 
     
-var text = svgContainer.selectAll("text")
-	.data(circleData.nodes)
-	.enter()
-	.append("text")
-	.attr("x", 0)
-    .attr("dy", ".35em")
-    .attr("text-anchor", "middle")
-    .style("font-size","8px")
-	.html(function (d) { return d.text; });
-	                           
+//var text = svgContainer.selectAll("text")
+//.data(circleData.nodes)
+//.enter()
+//.append("text")
+////.attr("x", 0)
+////.attr("dy", ".35em")
+//.attr("text-anchor", "middle")
+//.style("font-size","8px")
+//.text(function (d) { return d.text; })
+// .call(wrap, 70);
+
+
+var text = svgContainer.selectAll("foreignObject")
+.data(circleData.nodes)
+.enter()
+.append("foreignObject")
+ .attr('width', function (d) { return d.radius+8; })
+ .attr('height', function (d) { return d.radius+8; })
+ .html(function (d) { return "<div style=\"font-size: 5px; text-align:center\">"+d.text+"</div>"; });
+
 
 force.on("tick", function() {
 	
@@ -170,8 +180,8 @@ while (++i < n) q.visit(collide(circleData.nodes[i]));
     	  });
   
   text
-  .attr("x", function(d) { return d.x; })
-  .attr("y", function(d) { return d.y; });
+  .attr("x", function(d) { return d.x-d.radius/2-4; })
+  .attr("y", function(d) { return d.y-d.radius/2-4; });
   
 	})
 	
@@ -237,3 +247,5 @@ function getUrlParameter(sParam)
         }
     }
 }
+
+
