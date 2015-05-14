@@ -91,7 +91,7 @@ svgContainer.append("svg:defs").selectAll("marker")
   .enter().append("svg:marker")
     .attr("id", String)
     .attr("viewBox", "0 -5 10 10")
-    .attr("refX", 15)
+    .attr("refX", 20)
     .attr("refY", -1.5)
     .attr("markerWidth", 6)
     .attr("markerHeight", 6)
@@ -144,9 +144,9 @@ var text = svgContainer.selectAll("foreignObject")
 .data(circleData.nodes)
 .enter()
 .append("foreignObject")
- .attr('width', function (d) { return d.radius+8; })
- .attr('height', function (d) { return d.radius+8; })
- .html(function (d) { return "<div style=\"font-size: 5px; text-align:center\">"+d.text+"</div>"; });
+ .attr('width', function (d) { return d.radius+9; })
+ .attr('height', function (d) { return d.radius+11; })
+ .html(function (d) { return "<div style=\"font-size: 8px; text-align:center\">"+d.text+"</div>"; });
 
 
 force.on("tick", function() {

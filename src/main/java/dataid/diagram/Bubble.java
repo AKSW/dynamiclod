@@ -47,12 +47,12 @@ public class Bubble {
 			else{
 				setRadius(tmp.getTriples()/833333);
 			}
-			if(getRadius()<15)
-				setRadius(15);
+			if(getRadius()<23)
+				setRadius(23);
 
 			if (tmp.getIsVocabulary()){
 				setColor("rgb(255, 127, 14)");
-				setRadius(20);
+				setRadius(25);
 			}
 			else
 				setColor("green");
