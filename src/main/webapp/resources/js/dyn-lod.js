@@ -144,7 +144,7 @@ var text = svgContainer.selectAll("foreignObject")
 .data(circleData.nodes)
 .enter()
 .append("foreignObject")
- .attr('width', function (d) { return d.radius+9; })
+ .attr('width', function (d) { return d.radius+13; })
  .attr('height', function (d) { return d.radius+11; })
  .html(function (d) { return "<div style=\"font-size: 8px; text-align:center\">"+d.text+"</div>"; });
 
@@ -180,8 +180,8 @@ while (++i < n) q.visit(collide(circleData.nodes[i]));
     	  });
   
   text
-  .attr("x", function(d) { return d.x-d.radius/2-4; })
-  .attr("y", function(d) { return d.y-d.radius/2-4; });
+  .attr("x", function(d) { return d.x-d.radius/2-6; })
+  .attr("y", function(d) { return d.y-d.radius/2-5; });
   
 	})
 	
