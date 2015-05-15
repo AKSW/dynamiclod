@@ -290,7 +290,7 @@ public class InputRDFParser {
 
 		if (subsetMongoDBObj != null) {
 			// update dataset or subset on mongodb with distribution
-			subsetMongoDBObj.addDistributionURI(stmtDistribution.getSubject()
+			subsetMongoDBObj.addDistributionURI(downloadURLStmt.getObject()
 					.toString());
 			subsetMongoDBObj.updateObject(true);
 		}
