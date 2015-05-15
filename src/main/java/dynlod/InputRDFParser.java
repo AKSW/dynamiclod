@@ -43,6 +43,7 @@ public class InputRDFParser {
 	APIStatusMongoDBObject apiStatus = null;
 
 	boolean isVoid = false;
+	boolean isDataid = false;
 
 	public StmtIterator getFirstStmt() {
 		// select dataset
@@ -65,6 +66,8 @@ public class InputRDFParser {
 				datasetsStmt = inModel.listStatements(topic, Dataset.type,
 						datasetResource);
 			if (datasetsStmt.hasNext()) {
+				if (datasetResource.equals(RDFProperties.dataIdDataset))
+					isDataid = true;
 				break;
 			}
 		}
@@ -109,7 +112,6 @@ public class InputRDFParser {
 					datasetURI);
 			datasetMongoDBObj.addParentDatasetURI(parentDataset);
 			datasetMongoDBObj.setAccess_url(access_url);
-			
 
 			// add DataID file path
 			datasetMongoDBObj.setDataIdFileName(dataIDURL);
@@ -181,8 +183,9 @@ public class InputRDFParser {
 					Statement stmtDistribution2 = stmtDistribution.next();
 					addDistribution(stmtDistribution2, stmtDistribution2,
 							datasetMongoDBObj, topDataset);
-				} else if (stmtDistribution.hasNext())
+				} else if (stmtDistribution.hasNext()) {
 					break;
+				}
 			}
 
 			// case there's an distribution take the fist that has
@@ -192,44 +195,85 @@ public class InputRDFParser {
 				// store distribution
 				Statement distributionStmt = stmtDistribution.next();
 
-				// give priority for nt files
-				// if (!stmtDistribution.hasNext()
-				// || distributionStmt.getObject().toString()
-				// .contains(".nt")) {
+				// give priority for nt files (case it's a dataid file)
+				if (isDataid) {
+					System.out.println("ASASASS");
+					if (!stmtDistribution.hasNext()
+							|| distributionStmt.getObject().toString()
+									.contains(".nt")) {
+						// find downloadURL property
+						StmtIterator stmtDownloadURL = null;
+						System.out.println("PORRRRRRRRRRRRRRA");
 
-				// find downloadURL property
-				StmtIterator stmtDownloadURL = null;
-
-				for (Property downloadProperty : RDFProperties.downloadURL) {
-					stmtDownloadURL = inModel.listStatements(distributionStmt
-							.getObject().asResource(), downloadProperty,
-							(RDFNode) null);
-					if (stmtDownloadURL.hasNext())
-						break;
-				}
-
-				// case there is an downloadURL property
-				while (stmtDownloadURL.hasNext()) {
-					// store downloadURL statement
-					Statement downloadURLStmt = stmtDownloadURL.next();
-
-					try {
-						if (FileUtils.acceptedFormats(downloadURLStmt
-								.getObject().toString())) {
-
-							downloadURLFound = true;
-							addDistribution(downloadURLStmt, distributionStmt,
-									datasetMongoDBObj, topDataset);
-
+						for (Property downloadProperty : RDFProperties.downloadURL) {
+							stmtDownloadURL = inModel.listStatements(
+									distributionStmt.getObject().asResource(),
+									downloadProperty, (RDFNode) null);
+							if (stmtDownloadURL.hasNext())
+								break;
 						}
-					} catch (Exception ex) {
-						ex.printStackTrace();
-						apiStatus.setHasError(true);
-						apiStatus.setMessage(ex.getMessage());
+
+						// case there is an downloadURL property
+						while (stmtDownloadURL.hasNext()) {
+							// store downloadURL statement
+							Statement downloadURLStmt = stmtDownloadURL.next();
+
+							try {
+								if (FileUtils.acceptedFormats(downloadURLStmt
+										.getObject().toString())) {
+
+									downloadURLFound = true;
+									addDistribution(downloadURLStmt,
+											distributionStmt,
+											datasetMongoDBObj, topDataset);
+
+								}
+							} catch (Exception ex) {
+								ex.printStackTrace();
+								apiStatus.setHasError(true);
+								apiStatus.setMessage(ex.getMessage());
+							}
+						}
+						break;
 					}
 				}
-				// break;
-				// }
+
+				else {
+
+					// find downloadURL property
+					StmtIterator stmtDownloadURL = null;
+
+					for (Property downloadProperty : RDFProperties.downloadURL) {
+						stmtDownloadURL = inModel.listStatements(
+								distributionStmt.getObject().asResource(),
+								downloadProperty, (RDFNode) null);
+						if (stmtDownloadURL.hasNext())
+							break;
+					}
+
+					// case there is an downloadURL property
+					while (stmtDownloadURL.hasNext()) {
+						// store downloadURL statement
+						Statement downloadURLStmt = stmtDownloadURL.next();
+
+						try {
+							if (FileUtils.acceptedFormats(downloadURLStmt
+									.getObject().toString())) {
+
+								downloadURLFound = true;
+								addDistribution(downloadURLStmt,
+										distributionStmt, datasetMongoDBObj,
+										topDataset);
+
+							}
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							apiStatus.setHasError(true);
+							apiStatus.setMessage(ex.getMessage());
+						}
+					}
+
+				}
 			}
 		}
 
@@ -248,9 +292,8 @@ public class InputRDFParser {
 
 		// creating mongodb distribution object
 		DistributionMongoDBObject distributionMongoDBObj = new DistributionMongoDBObject(
-				downloadURLStmt.getObject()
-				.toString());
-		
+				downloadURLStmt.getObject().toString());
+
 		distributionMongoDBObj.setResourceUri(stmtDistribution.getSubject()
 				.toString());
 

@@ -32,6 +32,8 @@ public class RDFProperties {
 	public static final Property type = RDF.type;
 	
 	public static final Property title = property(NS.DCT_URI, "title");
+	public static final Property dataIdDistribution = property(NS.VOID_URI, "distribution");
+	public static final Resource dataIdDataset = resource(NS.DATAID_URI, "Dataset");
 	public static final Property label = property(NS.RDFS_URI, "label");
 	public static final Property description = property(NS.DCT_URI, "description");
 	public static final Resource linkset = resource(NS.VOID_URI, "Linkset");
