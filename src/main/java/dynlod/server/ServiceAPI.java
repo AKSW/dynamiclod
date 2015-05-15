@@ -18,7 +18,7 @@ import dynlod.linksets.MakeLinksets;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
 
 public class ServiceAPI extends HttpServlet {
-	
+
 	static HttpServletRequest staticRequest;
 
 	protected void doPost(HttpServletRequest request,
@@ -31,10 +31,10 @@ public class ServiceAPI extends HttpServlet {
 		manageRequest(request, response);
 	}
 
-	public static String getServerURL(){
+	public static String getServerURL() {
 		return staticRequest.getRequestURL().toString();
 	}
-	
+
 	private void manageRequest(HttpServletRequest request,
 			HttpServletResponse response) {
 		staticRequest = request;
@@ -73,14 +73,18 @@ public class ServiceAPI extends HttpServlet {
 
 				for (String datasetURI : parameters.get("datasetStatus")) {
 
-					APIStatus apiStatus = APIFactory.createStatusDataset(datasetURI);
-					if (apiStatus!=null) {
-						out.write(apiStatus.getMessageJSON().toString());
-						out.write("\n");
-					}
-					else{
-						out.write("Error: we couldn't find your dataset. ");
-						out.write("\n");
+					APIStatus apiStatus = APIFactory
+							.createStatusDataset(datasetURI);
+					try {
+						if (apiStatus != null) {
+							out.write(apiStatus.getMessageJSON().toString());
+							out.write("\n");
+						} else {
+							out.write("Error: we couldn't find your dataset. ");
+							out.write("\n");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}
