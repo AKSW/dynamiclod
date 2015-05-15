@@ -29,7 +29,7 @@ public class APIStatus extends API {
 			HashMap<String, String> extraMessages = new HashMap<String, String>();
 			if(distribution.getStatus().equals(DistributionMongoDBObject.STATUS_ERROR)){
 				success = false;
-				extraMessages.put(DistributionMongoDBObject.LAST_ERROR_MSG, distribution.getDownloadUrl());
+				extraMessages.put(DistributionMongoDBObject.LAST_ERROR_MSG, distribution.getLastErrorMsg());
 			}
 			extraMessages.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
 			extraMessages.put(DistributionMongoDBObject.TOP_DATASET, distribution.getTopDataset());
