@@ -10,7 +10,7 @@
 
 	<servlet>
 		<servlet-name>LinksetTimer</servlet-name>
-		<servlet-class>dataid.linksets.LinksetTimer</servlet-class>
+		<servlet-class>dynlod.linksets.LinksetTimer</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 	
