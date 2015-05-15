@@ -197,13 +197,11 @@ public class InputRDFParser {
 
 				// give priority for nt files (case it's a dataid file)
 				if (isDataid) {
-					System.out.println("ASASASS");
 					if (!stmtDistribution.hasNext()
 							|| distributionStmt.getObject().toString()
 									.contains(".nt")) {
 						// find downloadURL property
 						StmtIterator stmtDownloadURL = null;
-						System.out.println("PORRRRRRRRRRRRRRA");
 
 						for (Property downloadProperty : RDFProperties.downloadURL) {
 							stmtDownloadURL = inModel.listStatements(
