@@ -251,7 +251,8 @@ public class InputRDFParser {
 				downloadURLStmt.getObject()
 				.toString());
 		
-		distributionMongoDBObj.setResourceUri(stmtDistribution.getObject().toString());
+		distributionMongoDBObj.setResourceUri(stmtDistribution.getSubject()
+				.toString());
 
 		distributionMongoDBObj.addDefaultDataset(subsetMongoDBObj.getUri());
 

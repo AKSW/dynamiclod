@@ -383,6 +383,5 @@ public class DistributionMongoDBObject extends DataIDDB {
 		this.resourceUri = resourceUri;
 	}
 	
-	
 
 }
