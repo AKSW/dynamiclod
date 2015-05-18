@@ -36,8 +36,6 @@ public class ResourceTree extends HttpServlet {
 			HttpServletResponse response) {
 		d = DatasetQueries.getDatasetsNotVocab();
 
-		JsonObject core = new JsonObject();
-		JsonObject data = new JsonObject();
 		JsonArray data2 = new JsonArray();
 
 		JsonArray datasetArray = new JsonArray();
@@ -72,7 +70,7 @@ public class ResourceTree extends HttpServlet {
 			data2.add(datasetArray);
 			
 		}
-		core.put("core", data2);
+	
 		try {
 			response.getWriter().print(datasetArray);
 		} catch (IOException e) {

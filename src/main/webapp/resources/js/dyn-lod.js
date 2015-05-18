@@ -6,8 +6,8 @@ var h = window.innerHeight || document.documentElement.clientHeight
 
 // var width = w - 240;
 // var height = h - 240;
-var width = 450;
-var height = 450;
+var width = 660;
+var height = 690;
 
 makeGraph("");
 

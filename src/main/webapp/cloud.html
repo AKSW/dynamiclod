@@ -51,17 +51,17 @@ text {
 		</div>
 
 		<div class="row">
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<div id="tree"></div>
 
 				<button onclick="submitMe()">Filter</button>
 
 			</div>
-			<div class="col-md-8">
+			<div class="col-md-9">
 				<div
-					style="width: 500px; height: 500px; border: 1px solid #d8d8d8; margin-top: 40px; margin-right: 50px">
+					style="width: 680px; height: 700px; border: 1px solid #d8d8d8; margin-top: 40px; margin-right: 50px">
 					<div id="diagram"
-						style="margin-top: 40px; margin-right: 50px; margin-left: 20px;">
+						style="margin-top: 10px; margin-right: 10px; margin-left: 10px;">
 
 					</div>
 				</div>
@@ -71,7 +71,7 @@ text {
 
 </body>
 <script type="text/javascript">
-	$.getJSON("ResourceTree", function(data) {
+	$.post("ResourceTree", function(data) {
 		$('#tree').jstree({
 			"core" : {"data": data,
 				 'animation' : 0,
@@ -88,7 +88,7 @@ text {
 			"plugins" : [ "themes", "html_data", "checkbox", "ui" ]
 		});
 		data
-	});
+	}, 'json');
 
 	function submitMe() {
 
