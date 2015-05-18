@@ -40,10 +40,8 @@ function makeGraph(param) {
 
 	var nodeMap = {};
 
-	d3
-			.json(
-					requestLink,
-					function(error, circleData) {
+	$.post(requestLink,
+					function(circleData) {
 
 						if (circleData.nodes.length == 0)
 							return;
@@ -238,7 +236,7 @@ function makeGraph(param) {
 
 						// apply the zoom behavior to the svg image
 						zoomListener(rootSvg);
-					});
+					},'json');
 }
 
 function getUrlParameter(sParam) {
