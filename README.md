@@ -1,7 +1,7 @@
 DynamicLOD
 ==========
 
-Source code of Dynamic LOD Cloud based on DataIDs files. More info about DataID Unit please check http://wiki.dbpedia.org/coop/DataIDUnit. 
+Source code of Dynamic-LOD.
 
 
 ## Requirements
@@ -23,7 +23,17 @@ In order to run the project you need to start the Jetty server using the followi
 `mvn jetty:start`
 
  Now the server must be acessible at the address:
-`http://localhost:8080/dataid/index.xhtml` .
+`http://localhost:9090/dataid/`.
 
-After adding dataid files, you should create the links beetween datasets. For this, click "Update Linksets" and wait all linksets to be created.
+ A good starting point is add a VoID or a DataID file to you customized cloud. Thus, you can use the API:
+`http://localhost:9090/dataid/api?addDataset=http://lod-cloud.net/data/void.ttl&rdfFormat=ttl`.
+
+To check you datasets status, you can access: 
+`http://localhost:9090/dataid/api?datasetStatus=http://lod-cloud.net/data/void.ttl`
+
+Finaly, after the server streams your files and count the links, you can access the RDF data about the discovered linksets via:
+`http://localhost:9090/dataid/api?retrieveDataset=http://lod-cloud.net/`
+
+To access your customized diagram, you must access:
+`http://localhost:9090/dataid/cloud.html?dataset=http://lod-cloud.net/`
 
