@@ -73,21 +73,36 @@ text {
 <script type="text/javascript">
 	$.getJSON("ResourceTree", function(data) {
 		$('#tree').jstree({
-			"core" : data,
+			"core" : {"data": data,
+				 'animation' : 0,
+				 "themes":{
+			            "icons":false
+			        }
+				 } ,
 
+			"checkbox" : {
+				 "three_state": false,
+				 "real_checkboxes" : true ,
+				 "cascade" : "down" 
+			},
 			"plugins" : [ "themes", "html_data", "checkbox", "ui" ]
 		});
 		data
 	});
 
 	function submitMe() {
-	var result = "";
-		$(".jstree-clicked").each(function(i, element) {
-			result = result + $(element).attr("id") + "&dataset=";
+
+		var result = "";
+		$('#tree').jstree('get_checked').forEach(function(l) {
+			result = result + l + "&dataset=";
 		});
-		if (result != ""){
-			console.log("Ciro "+ result);			
-			result = result.substring(0, result.length- 9);
+
+		//	var result = "";
+		//		$(".jstree-clicked").each(function(i, element) {
+		//			result = result + $(element).attr("id") + "&dataset=";
+		//		});
+		if (result != "") {
+			result = result.substring(0, result.length - 9);
 		}
 		makeGraph(result);
 	}

@@ -38,6 +38,7 @@ public class ResourceTree extends HttpServlet {
 
 		JsonObject core = new JsonObject();
 		JsonObject data = new JsonObject();
+		JsonArray data2 = new JsonArray();
 
 		JsonArray datasetArray = new JsonArray();
 		for (DatasetMongoDBObject dataset : d) {
@@ -56,7 +57,7 @@ public class ResourceTree extends HttpServlet {
 					DistributionMongoDBObject d = new DistributionMongoDBObject(distribution);
 					jsondistribution.put("parent", dataset.getUri());
 					jsondistribution.put("id", d.getUri());
-					jsondistribution.put("text", d.getTitle());
+					jsondistribution.put("text", d.getTitle() +" (Distribution)");
 					datasetArray.add(jsondistribution);
 			}
 			if (parent_list.size() == 0) {
@@ -68,12 +69,12 @@ public class ResourceTree extends HttpServlet {
 				jsonparent.put("text", dataset.getTitle());
 				datasetArray.add(jsonparent);
 			}
-			data.put("data", datasetArray);
+			data2.add(datasetArray);
 			
 		}
-		core.put("core", data);
+		core.put("core", data2);
 		try {
-			response.getWriter().print(data);
+			response.getWriter().print(datasetArray);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

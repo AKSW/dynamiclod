@@ -88,11 +88,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 			for (String datasetURI : parameters.get("dataset")) {
 				
 				datasetURI = datasetURI.replace("@@@@@", "#");
-				System.out.println("- - "+datasetURI);
 
 				if (LinksetQueries.checkIfDistributionExists(datasetURI)) {
-					
-					System.out.println("Distribution: "+ datasetURI);
 					
 					// get indegree and outdegree for a distribution
 					ArrayList<LinksetMongoDBObject> in = LinksetQueries
@@ -133,8 +130,6 @@ public class CreateD3JSONFormat extends HttpServlet {
 					}
 
 				} else if (LinksetQueries.checkIfDatasetExists(datasetURI)) {
-					
-					System.out.println("Dataset: "+ datasetURI);
 					
 					// get indegree and outdegree for a distribution
 					ArrayList<LinksetMongoDBObject> in = LinksetQueries
