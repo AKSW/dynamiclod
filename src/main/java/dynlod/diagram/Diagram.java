@@ -48,5 +48,16 @@ public class Diagram {
 		
 		return edges;
 	}
+	
+	public void printSelectedBubbles(String[] b1){
+
+		for (Bubble bubble : bubbles) {
+			for (String b : b1){
+				if(bubble.uri.equals(b)){
+					bubble.setColor("rgb(189, 189, 189)");
+				}
+			}
+		}
+	}
 
 }

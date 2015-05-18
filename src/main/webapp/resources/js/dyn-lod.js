@@ -6,8 +6,8 @@ var h = window.innerHeight || document.documentElement.clientHeight
 
 // var width = w - 240;
 // var height = h - 240;
-var width = 660;
-var height = 690;
+var width = 740;
+var height = 650;
 
 makeGraph("");
 
@@ -86,8 +86,8 @@ function makeGraph(param) {
 						svgContainer.append("svg:defs").selectAll("marker")
 								.data([ "end" ]).enter().append("svg:marker")
 								.attr("id", String).attr("viewBox",
-										"0 -5 10 10").attr("refX", 20).attr(
-										"refY", -1.5).attr("markerWidth", 6)
+										"0 -5 10 10").attr("refX", 27).attr(
+										"refY", -1).attr("markerWidth", 6)
 								.attr("markerHeight", 6).attr("orient", "auto")
 								.append("svg:path").attr("d", "M0,-5L10,0L0,5");
 
@@ -130,10 +130,10 @@ function makeGraph(param) {
 								.enter()
 								.append("foreignObject")
 								.attr('width', function(d) {
-									return d.radius + 13;
+									return d.radius + 15;
 								})
 								.attr('height', function(d) {
-									return d.radius + 11;
+									return d.radius + 14;
 								})
 								.html(
 										function(d) {
@@ -192,7 +192,7 @@ function makeGraph(param) {
 											text.attr("x", function(d) {
 												return d.x - d.radius / 2 - 6;
 											}).attr("y", function(d) {
-												return d.y - d.radius / 2 - 5;
+												return d.y - d.radius / 2 - 7;
 											});
 
 										})

@@ -5,6 +5,7 @@
 <script src="resources/jquery-ui/jquery-ui.js"></script>
 <script src="resources/js/jstree/src/jstree.js"></script>
 <script src="resources/js/jstree/src/jstree.checkbox.js"></script>
+<link href="resources/css/dyn-lod.css" rel="stylesheet"></link>
 
 <link rel="stylesheet"
 	href="resources/js/jstree/dist/themes/default/style.min.css" />
@@ -63,10 +64,27 @@ header
 <script src="resources/js/dyn-lod.js"></script>
 
 <body>
-<div class="container" style=" height:100%;">
-	<div id="menu"></div>
+	<script>
+		$(function() {
+			$("#menu").load("menu.html");
+		});
+	</script>
 
-	<div style="margin-left: 15px;">
+	<div id="menu"></div>
+<div class="container" style=" height:100%;">
+
+
+
+		<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="panel-title"></div>
+					<img alt="" style="float: right; margin-top: 40px"
+						src="http://aksw.org/extensions/site/sites//local/images/logo-aksw.png">
+					<div class="pull-right"></div>
+				</div>
+				<div class="panel-body">
+
+
 
 		<div class="page-header">
 			<h2>LOD-Diagram</h2>
@@ -74,18 +92,19 @@ header
 
 		<div class="row">
 			<div class="col-md-3">
-				<div style="overflow-y:scroll; min-height:100%; max-height:100%;" >
+				<div style="overflow-y:scroll; min-height:95%; max-height:95%;" >
 					<div id="tree"></div>
 
 				</div>
 				<div>
-					<button id="filter" style="margin-top: 5px" onclick="submitMe()">Filter</button> <img id="loading_gif" alt="" src="resources/loading.gif" style="display: none; ">
+					<button class="btn btn-primary" id="filter" style="margin-top: 0px" onclick="submitMe()">Filter</button> 
+					<img id="loading_gif" alt="" src="resources/loading.gif" style="display: none; ">
 				</div>
 
 			</div>
 			<div class="col-md-9">
 				<div
-					style="width: 680px; height: 710px; border: 1px solid #d8d8d8; margin-top: 40px; margin-right: 50px">
+					style="width: 760px; height: 670px; border: 1px solid #d8d8d8; margin-top: 20px; margin-right: 50px">
 					<div id="diagram"
 						style="margin-top: 10px; margin-right: 10px; margin-left: 10px;">
 

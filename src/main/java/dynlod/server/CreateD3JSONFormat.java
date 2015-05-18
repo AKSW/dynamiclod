@@ -171,6 +171,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 					}
 				}
 			}
+			diagram.printSelectedBubbles(parameters.get("dataset"));
 			nodes = diagram.getBubblesJSON();
 			links = diagram.getLinksJSON();
 			

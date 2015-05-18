@@ -40,23 +40,18 @@ public class Bubble {
 				setText(tmp.getUri());
 			setName(tmp.getDownloadUrl());
 			setUri(tmp.getUri());
-			
-
-//			if(tmp.getTriples()>10000000)
-//				setRadius(28);
-//			else
-//			else{
-//				setRadius(tmp.getTriples()/833333);
-//			}
-//			if(getRadius()<27)
+	
 				setRadius(31);
 
+
 			if (tmp.getIsVocabulary()){
-				setColor("rgb(255, 127, 14)");
+				setColor("rgb(253, 174, 107)");
 				setRadius(27);
 			}
+
 			else
-				setColor("green");
+			setColor("rgb(116, 196, 118)");
+		
 
 			dynLodObject = (DistributionMongoDBObject) source;
 		}
@@ -73,12 +68,16 @@ public class Bubble {
 			
 			setName(tmp.getUri());
 			setUri(tmp.getUri());
-			setRadius(20);
+		
 
-			if (tmp.getIsVocabulary())
-				setColor("rgb(255, 127, 14)");
+			setRadius(31);
+
+			if (tmp.getIsVocabulary()){
+				setColor("rgb(253, 174, 107)");
+				setRadius(27);
+			}
 			else
-				setColor("green");
+			setColor("rgb(116, 196, 118)");
 
 			dynLodObject = (DatasetMongoDBObject) source;
 		}
