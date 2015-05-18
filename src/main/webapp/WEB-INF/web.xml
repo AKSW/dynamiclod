@@ -23,10 +23,6 @@
 		<servlet-class>dynlod.server.ResourceTree</servlet-class>
 	</servlet>	
 	<servlet>
-		<servlet-name>ReDownloadBadFiles</servlet-name>
-		<servlet-class>dynlod.server.ReDownloadBadFiles</servlet-class>
-	</servlet>	
-	<servlet>
 		<servlet-name>CreateD3JSONFormat</servlet-name>
 		<servlet-class>dynlod.server.CreateD3JSONFormat</servlet-class>
 	</servlet>
