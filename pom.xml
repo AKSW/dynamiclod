@@ -130,6 +130,7 @@
 				<configuration>
 					<port>9090</port>
 					<path>/dataid</path>
+					
 					<maxPostSize>33554432</maxPostSize>
 				</configuration>
 			</plugin>
