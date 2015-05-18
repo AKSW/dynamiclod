@@ -27,7 +27,7 @@ console.log(requestLink);
 function makeGraph(param) {
 	if (param != "") {
 		param=param.replace(new RegExp("#", "g"), '@@@@@');
-		param = param.replace("_anchor", "");
+		param=param.replace(new RegExp("_anchor", "g"), '');
 		requestLink = "/dataid/CreateD3JSONFormat?dataset=" + param;
 		console.log(param);
 	}
