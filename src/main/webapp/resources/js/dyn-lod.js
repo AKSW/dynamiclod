@@ -46,6 +46,8 @@ function makeGraph(param) {
 						if (circleData.nodes.length == 0)
 							return;
 
+						$("#loading_gif").hide();
+						$("#filter").prop('disabled', false);
 						d3.select("svg").remove();
 
 						console.log(circleData);

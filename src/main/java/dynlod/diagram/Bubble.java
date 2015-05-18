@@ -42,17 +42,18 @@ public class Bubble {
 			setUri(tmp.getUri());
 			
 
-			if(tmp.getTriples()>50000000)
-				setRadius(30);
-			else{
-				setRadius(tmp.getTriples()/833333);
-			}
-			if(getRadius()<23)
-				setRadius(23);
+//			if(tmp.getTriples()>10000000)
+//				setRadius(28);
+//			else
+//			else{
+//				setRadius(tmp.getTriples()/833333);
+//			}
+//			if(getRadius()<27)
+				setRadius(31);
 
 			if (tmp.getIsVocabulary()){
 				setColor("rgb(255, 127, 14)");
-				setRadius(25);
+				setRadius(27);
 			}
 			else
 				setColor("green");

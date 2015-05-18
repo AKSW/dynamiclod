@@ -78,7 +78,9 @@ header
 					<div id="tree"></div>
 
 				</div>
-					<button onclick="submitMe()">Filter</button>
+				<div>
+					<button id="filter" style="margin-top: 5px" onclick="submitMe()">Filter</button> <img id="loading_gif" alt="" src="resources/loading.gif" style="display: none; ">
+				</div>
 
 			</div>
 			<div class="col-md-9">
@@ -92,6 +94,8 @@ header
 			</div>
 		</div>
 	</div>
+	
+	
 </div>
 
 </body>
@@ -118,15 +122,14 @@ header
 	function submitMe() {
 
 		var result = "";
+		$("#loading_gif").show();
+		$("#filter").prop('disabled', true);
+		
 		$('#tree').jstree('get_checked').forEach(function(l) {
 			if(isValidURL(l))
 				result = result + l + "&dataset="; 
 		});
 
-		//	var result = "";
-		//		$(".jstree-clicked").each(function(i, element) {
-		//			result = result + $(element).attr("id") + "&dataset=";
-		//		});
 		if (result != "") {
 			result = result.substring(0, result.length - 9);
 		}
@@ -143,5 +146,9 @@ header
 	        return false;
 	    }
 	} 
+
+
+	
+	
 </script>
 </html>
