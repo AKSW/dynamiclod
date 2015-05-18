@@ -49,16 +49,15 @@ public class ResourceTree extends HttpServlet {
 				jsonparent.put("text", dataset.getTitle());
 				datasetArray.add(jsonparent);
 				
-				List<String> distribution_list = dataset.getDistributionsURIs();
+			}
+			List<String> distribution_list = dataset.getDistributionsURIs();
 				for (String distribution : distribution_list) {
 					JsonObject jsondistribution = new JsonObject();
 					DistributionMongoDBObject d = new DistributionMongoDBObject(distribution);
-					jsondistribution.put("parent", parent);
+					jsondistribution.put("parent", dataset.getUri());
 					jsondistribution.put("id", d.getUri());
 					jsondistribution.put("text", d.getTitle());
 					datasetArray.add(jsondistribution);
-					System.out.println(distribution);
-				}
 			}
 			if (parent_list.size() == 0) {
 				JsonObject jsonparent = new JsonObject();
@@ -68,24 +67,13 @@ public class ResourceTree extends HttpServlet {
 				
 				jsonparent.put("text", dataset.getTitle());
 				datasetArray.add(jsonparent);
-				
-				List<String> distribution_list = dataset.getDistributionsURIs();
-				for (String distribution : distribution_list) {
-					JsonObject jsondistribution = new JsonObject();
-					DistributionMongoDBObject d = new DistributionMongoDBObject(distribution);
-					jsondistribution.put("parent", dataset.getUri());
-					jsondistribution.put("id", d.getUri());
-					jsondistribution.put("text", d.getTitle());
-					datasetArray.add(jsondistribution);
-					
-				}
 			}
 			data.put("data", datasetArray);
 			
 		}
 		core.put("core", data);
 		try {
-			response.getWriter().print(core);
+			response.getWriter().print(data);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

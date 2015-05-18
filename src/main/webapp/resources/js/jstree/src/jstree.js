@@ -711,7 +711,7 @@
 							}
 							if(!this._data.core.ready) {
 								setTimeout($.proxy(function() {
-									if(this.element && !this.get_container_ul().find('.jstree-loading').length) {
+									if(!this.get_container_ul().find('.jstree-loading').length) {
 										this._data.core.ready = true;
 										if(this._data.core.selected.length) {
 											if(this.settings.core.expand_selected_onload) {
@@ -826,10 +826,7 @@
 				.on('focus.jstree', $.proxy(function () {
 						if(+(new Date()) - was_click > 500 && !this._data.core.focused) {
 							was_click = 0;
-							var act = this.get_node(this.element.attr('aria-activedescendant'), true);
-							if(act) {
-								act.find('> .jstree-anchor').focus();
-							}
+							this.get_node(this.element.attr('aria-activedescendant'), true).find('> .jstree-anchor').focus();
 						}
 					}, this))
 				.on('mouseenter.jstree', '.jstree-anchor', $.proxy(function (e) {
@@ -1471,7 +1468,6 @@
 		 * @trigger model.jstree, changed.jstree
 		 */
 		_append_json_data : function (dom, data, cb, force_processing) {
-			if(this.element === null) { return; }
 			dom = this.get_node(dom);
 			dom.children = [];
 			dom.children_d = [];
@@ -1765,7 +1761,6 @@
 					}
 				},
 				rslt = function (rslt, worker) {
-					if(this.element === null) { return; }
 					this._cnt = rslt.cnt;
 					this._model.data = rslt.mod; // breaks the reference in load_node - careful
 
@@ -1932,7 +1927,7 @@
 			if(tmp.length) {
 				data.icon = tmp.hasClass('jstree-themeicon-hidden') ? false : tmp.attr('rel');
 			}
-			if(data.state.icon !== undefined) {
+			if(data.state.icon) {
 				data.icon = data.state.icon;
 			}
 			if(data.icon === undefined || data.icon === null || data.icon === "") {
@@ -2830,7 +2825,7 @@
 						if(p[i] === l) {
 							c = !c;
 						}
-						if(!this.is_disabled(p[i]) && (c || p[i] === o || p[i] === l)) {
+						if(c || p[i] === o || p[i] === l) {
 							this.select_node(p[i], true, false, e);
 						}
 						else {
@@ -3721,7 +3716,7 @@
 			old_ins = origin ? origin : (this._model.data[obj.id] ? this : $.jstree.reference(obj.id));
 			is_multi = !old_ins || !old_ins._id || (this._id !== old_ins._id);
 			old_pos = old_ins && old_ins._id && old_par && old_ins._model.data[old_par] && old_ins._model.data[old_par].children ? $.inArray(obj.id, old_ins._model.data[old_par].children) : -1;
-			if(old_ins && old_ins._id) {
+			if(old_ins || old_ins._id) {
 				obj = old_ins._model.data[obj.id];
 			}
 
@@ -3893,7 +3888,7 @@
 			old_ins = origin ? origin : (this._model.data[obj.id] ? this : $.jstree.reference(obj.id));
 			is_multi = !old_ins || !old_ins._id || (this._id !== old_ins._id);
 
-			if(old_ins && old_ins._id) {
+			if(old_ins || old_ins._id) {
 				obj = old_ins._model.data[obj.id];
 			}
 
@@ -4089,12 +4084,11 @@
 		},
 		/**
 		 * put a node in edit mode (input field to rename the node)
-		 * @name edit(obj [, default_text, callback])
+		 * @name edit(obj [, default_text])
 		 * @param  {mixed} obj
-		 * @param  {String} default_text the text to populate the input with (if omitted or set to a non-string value the node's text value is used)
-		 * @param  {Function} callback a function to be called once the text box is blurred, it is called in the instance's scope and receives the node and a status parameter - true if the rename is successful, false otherwise. You can access the node's title using .text
+		 * @param  {String} default_text the text to populate the input with (if omitted the node text value is used)
 		 */
-		edit : function (obj, default_text, callback) {
+		edit : function (obj, default_text) {
 			var rtl, w, a, s, t, h1, h2, fn, tmp;
 			obj = this.get_node(obj);
 			if(!obj) { return false; }
@@ -4136,21 +4130,14 @@
 						},
 						"blur" : $.proxy(function () {
 							var i = s.children(".jstree-rename-input"),
-								v = i.val(),
-								f = this.settings.core.force_text,
-								nv;
+								v = i.val();
 							if(v === "") { v = t; }
 							h1.remove();
 							s.replaceWith(a);
 							s.remove();
-							t = f ? t : $('<div></div>').append($.parseHTML(t)).html();
 							this.set_text(obj, t);
-							nv = !!this.rename_node(obj, f ? $('<div></div>').text(v).text() : $('<div></div>').append($.parseHTML(v)).html());
-							if(!nv) {
+							if(this.rename_node(obj, $('<div></div>').text(v)[this.settings.core.force_text ? 'text' : 'html']()) === false) {
 								this.set_text(obj, t); // move this up? and fix #483
-							}
-							if(callback) {
-								callback.call(this, tmp, nv);
 							}
 						}, this),
 						"keydown" : function (event) {

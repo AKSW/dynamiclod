@@ -20,6 +20,12 @@ public class Diagram {
 	}
 
 	public void addLink(Link link) {
+		if(link.source.name.equals(link.target.name))
+			return;
+		for (Link l : links) {
+			if(l.source.name.equals(link.source.name) && l.target.name.equals(link.target.name))
+				return ;		
+		}
 		links.add(link);
 	}
 

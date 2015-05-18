@@ -86,6 +86,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 		if (parameters.containsKey("dataset")) {
 			Diagram diagram = new Diagram();
 			for (String datasetURI : parameters.get("dataset")) {
+				
+				datasetURI = datasetURI.replace("@@@@@", "#");
 
 				if (LinksetQueries.checkIfDistributionExists(datasetURI)) {
 					// get indegree and outdegree for a distribution
@@ -95,8 +97,6 @@ public class CreateD3JSONFormat extends HttpServlet {
 							.getLinksetsOutDegreeByDistribution(datasetURI);
 
 					for (LinksetMongoDBObject linkset : in) {
-						DistributionMongoDBObject distribution = new DistributionMongoDBObject(
-								linkset.getObjectsDistributionTarget());
 						Bubble target = new Bubble(
 								new DistributionMongoDBObject(linkset
 										.getSubjectsDistributionTarget()));
@@ -113,8 +113,6 @@ public class CreateD3JSONFormat extends HttpServlet {
 					}
 					// add linksets to jena model
 					for (LinksetMongoDBObject linkset : out) {
-						DistributionMongoDBObject distribution = new DistributionMongoDBObject(
-								linkset.getSubjectsDistributionTarget());
 						Bubble target = new Bubble(
 								new DistributionMongoDBObject(linkset
 										.getSubjectsDistributionTarget()));
@@ -139,8 +137,6 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 					// add linksets to jena model
 					for (LinksetMongoDBObject linkset : in) {
-						DatasetMongoDBObject dataset = new DatasetMongoDBObject(
-								linkset.getObjectsDatasetTarget());
 						Bubble target = new Bubble(
 								new DatasetMongoDBObject(linkset
 										.getSubjectsDatasetTarget()));
@@ -157,8 +153,6 @@ public class CreateD3JSONFormat extends HttpServlet {
 					}
 					// add linksets to jena model
 					for (LinksetMongoDBObject linkset : out) {
-						DatasetMongoDBObject dataset = new DatasetMongoDBObject(
-								linkset.getSubjectsDatasetTarget());
 						Bubble target = new Bubble(
 								new DatasetMongoDBObject(linkset
 										.getSubjectsDatasetTarget()));
@@ -177,6 +171,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 			}
 			nodes = diagram.getBubblesJSON();
 			links = diagram.getLinksJSON();
+			
 			printOutput(nodes, links, response);
 		}
 

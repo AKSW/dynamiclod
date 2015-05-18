@@ -3,6 +3,11 @@
 <script src="resources/js/d3.v3.min.js"></script>
 <script src="resources/js/jquery-2.1.0.js"></script>
 <script src="resources/jquery-ui/jquery-ui.js"></script>
+<script src="resources/js/jstree/src/jstree.js"></script>
+<script src="resources/js/jstree/src/jstree.checkbox.js"></script>
+
+<link rel="stylesheet"
+	href="resources/js/jstree/dist/themes/default/style.min.css" />
 <link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet"></link>
 <link href="resources/bootstrap/css/bootstrap-theme.min.css"
 	rel="stylesheet"></link>
@@ -45,12 +50,46 @@ text {
 			<h2>LOD-Diagram</h2>
 		</div>
 
-		<div id="diagram"
-			style="width: 95%; border: 1px solid #d8d8d8; margin-top: 40px">
+		<div class="row">
+			<div class="col-md-4">
+				<div id="tree"></div>
 
+				<button onclick="submitMe()">Filter</button>
+
+			</div>
+			<div class="col-md-8">
+				<div
+					style="width: 500px; height: 500px; border: 1px solid #d8d8d8; margin-top: 40px; margin-right: 50px">
+					<div id="diagram"
+						style="margin-top: 40px; margin-right: 50px; margin-left: 20px;">
+
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
-
 </body>
+<script type="text/javascript">
+	$.getJSON("ResourceTree", function(data) {
+		$('#tree').jstree({
+			"core" : data,
+
+			"plugins" : [ "themes", "html_data", "checkbox", "ui" ]
+		});
+		data
+	});
+
+	function submitMe() {
+	var result = "";
+		$(".jstree-clicked").each(function(i, element) {
+			result = result + $(element).attr("id") + "&dataset=";
+		});
+		if (result != ""){
+			console.log("Ciro "+ result);			
+			result = result.substring(0, result.length- 9);
+		}
+		makeGraph(result);
+	}
+</script>
 </html>

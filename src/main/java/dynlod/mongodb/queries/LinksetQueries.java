@@ -141,7 +141,6 @@ public class LinksetQueries {
 			for (DBObject instance : instances) {
 				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)
 						.toString()));
-				System.out.println(instance.get(DataIDDB.URI).toString());
 			}
 
 			return list;
@@ -316,7 +315,6 @@ public class LinksetQueries {
 		
 		DBCursor d = collection.find(query).limit(1);
 		
-		System.out.println("="+datasetURL+".*");
 
 		if (d.hasNext()) {
 			return true;

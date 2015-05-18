@@ -13,7 +13,7 @@
 }(function ($, undefined) {
 	"use strict";
 /*!
- * jsTree 3.1.1
+ * jsTree 3.1.0
  * http://jstree.com/
  *
  * Copyright (c) 2014 Ivan Bozhanov (http://vakata.com)
@@ -71,7 +71,7 @@
 		 * specifies the jstree version in use
 		 * @name $.jstree.version
 		 */
-		version : '3.1.1',
+		version : '3.1.0',
 		/**
 		 * holds all the default options used when creating new instances
 		 * @name $.jstree.defaults
@@ -711,7 +711,7 @@
 							}
 							if(!this._data.core.ready) {
 								setTimeout($.proxy(function() {
-									if(this.element && !this.get_container_ul().find('.jstree-loading').length) {
+									if(!this.get_container_ul().find('.jstree-loading').length) {
 										this._data.core.ready = true;
 										if(this._data.core.selected.length) {
 											if(this.settings.core.expand_selected_onload) {
@@ -826,10 +826,7 @@
 				.on('focus.jstree', $.proxy(function () {
 						if(+(new Date()) - was_click > 500 && !this._data.core.focused) {
 							was_click = 0;
-							var act = this.get_node(this.element.attr('aria-activedescendant'), true);
-							if(act) {
-								act.find('> .jstree-anchor').focus();
-							}
+							this.get_node(this.element.attr('aria-activedescendant'), true).find('> .jstree-anchor').focus();
 						}
 					}, this))
 				.on('mouseenter.jstree', '.jstree-anchor', $.proxy(function (e) {
@@ -1471,7 +1468,6 @@
 		 * @trigger model.jstree, changed.jstree
 		 */
 		_append_json_data : function (dom, data, cb, force_processing) {
-			if(this.element === null) { return; }
 			dom = this.get_node(dom);
 			dom.children = [];
 			dom.children_d = [];
@@ -1765,7 +1761,6 @@
 					}
 				},
 				rslt = function (rslt, worker) {
-					if(this.element === null) { return; }
 					this._cnt = rslt.cnt;
 					this._model.data = rslt.mod; // breaks the reference in load_node - careful
 
@@ -1932,7 +1927,7 @@
 			if(tmp.length) {
 				data.icon = tmp.hasClass('jstree-themeicon-hidden') ? false : tmp.attr('rel');
 			}
-			if(data.state.icon !== undefined) {
+			if(data.state.icon) {
 				data.icon = data.state.icon;
 			}
 			if(data.icon === undefined || data.icon === null || data.icon === "") {
@@ -2830,7 +2825,7 @@
 						if(p[i] === l) {
 							c = !c;
 						}
-						if(!this.is_disabled(p[i]) && (c || p[i] === o || p[i] === l)) {
+						if(c || p[i] === o || p[i] === l) {
 							this.select_node(p[i], true, false, e);
 						}
 						else {
@@ -3721,7 +3716,7 @@
 			old_ins = origin ? origin : (this._model.data[obj.id] ? this : $.jstree.reference(obj.id));
 			is_multi = !old_ins || !old_ins._id || (this._id !== old_ins._id);
 			old_pos = old_ins && old_ins._id && old_par && old_ins._model.data[old_par] && old_ins._model.data[old_par].children ? $.inArray(obj.id, old_ins._model.data[old_par].children) : -1;
-			if(old_ins && old_ins._id) {
+			if(old_ins || old_ins._id) {
 				obj = old_ins._model.data[obj.id];
 			}
 
@@ -3893,7 +3888,7 @@
 			old_ins = origin ? origin : (this._model.data[obj.id] ? this : $.jstree.reference(obj.id));
 			is_multi = !old_ins || !old_ins._id || (this._id !== old_ins._id);
 
-			if(old_ins && old_ins._id) {
+			if(old_ins || old_ins._id) {
 				obj = old_ins._model.data[obj.id];
 			}
 
@@ -4089,12 +4084,11 @@
 		},
 		/**
 		 * put a node in edit mode (input field to rename the node)
-		 * @name edit(obj [, default_text, callback])
+		 * @name edit(obj [, default_text])
 		 * @param  {mixed} obj
-		 * @param  {String} default_text the text to populate the input with (if omitted or set to a non-string value the node's text value is used)
-		 * @param  {Function} callback a function to be called once the text box is blurred, it is called in the instance's scope and receives the node and a status parameter - true if the rename is successful, false otherwise. You can access the node's title using .text
+		 * @param  {String} default_text the text to populate the input with (if omitted the node text value is used)
 		 */
-		edit : function (obj, default_text, callback) {
+		edit : function (obj, default_text) {
 			var rtl, w, a, s, t, h1, h2, fn, tmp;
 			obj = this.get_node(obj);
 			if(!obj) { return false; }
@@ -4136,21 +4130,14 @@
 						},
 						"blur" : $.proxy(function () {
 							var i = s.children(".jstree-rename-input"),
-								v = i.val(),
-								f = this.settings.core.force_text,
-								nv;
+								v = i.val();
 							if(v === "") { v = t; }
 							h1.remove();
 							s.replaceWith(a);
 							s.remove();
-							t = f ? t : $('<div></div>').append($.parseHTML(t)).html();
 							this.set_text(obj, t);
-							nv = !!this.rename_node(obj, f ? $('<div></div>').text(v).text() : $('<div></div>').append($.parseHTML(v)).html());
-							if(!nv) {
+							if(this.rename_node(obj, $('<div></div>').text(v)[this.settings.core.force_text ? 'text' : 'html']()) === false) {
 								this.set_text(obj, t); // move this up? and fix #483
-							}
-							if(callback) {
-								callback.call(this, tmp, nv);
 							}
 						}, this),
 						"keydown" : function (event) {
@@ -4793,7 +4780,6 @@
 		 * @plugin checkbox
 		 */
 		this._undetermined = function () {
-			if(this.element === null) { return; }
 			var i, j, k, l, o = {}, m = this._model.data, t = this.settings.checkbox.tie_selection, s = this._data[ t ? 'core' : 'checkbox' ].selected, p = [], tt = this;
 			for(i = 0, j = s.length; i < j; i++) {
 				if(m[s[i]] && m[s[i]].parents) {
@@ -6447,13 +6433,6 @@
 		 */
 		show_only_matches : false,
 		/**
-		 * Indicates if the children of matched element are shown (when show_only_matches is true)
-		 * This setting can be changed at runtime when calling the search method. Default is `false`.
-		 * @name $.jstree.defaults.search.show_only_matches_children
-		 * @plugin search
-		 */
-		show_only_matches_children : false,
-		/**
 		 * Indicates if all nodes opened to reveal the search result, should be closed when the search is cleared or a new search is performed. Default is `true`.
 		 * @name $.jstree.defaults.search.close_opened_onclear
 		 * @plugin search
@@ -6483,7 +6462,6 @@
 			this._data.search.res = [];
 			this._data.search.opn = [];
 			this._data.search.som = false;
-			this._data.search.smc = false;
 
 			this.element
 				.on('before_open.jstree', $.proxy(function (e, data) {
@@ -6500,9 +6478,6 @@
 
 								this.element.find(".jstree-node").hide().filter('.jstree-last').filter(function() { return this.nextSibling; }).removeClass('jstree-last');
 								o = o.add(this._data.search.dom);
-								if(this._data.search.smc) {
-									this._data.search.dom.children(".jstree-children").find(".jstree-node").show();
-								}
 								o.parentsUntil(".jstree").addBack().show()
 									.filter(".jstree-children").each(function () { $(this).children(".jstree-node:visible").eq(-1).addClass("jstree-last"); });
 							}
@@ -6512,9 +6487,6 @@
 						if(this._data.search.som) {
 							if(data.nodes.length) {
 								this.element.find(".jstree-node").hide().filter('.jstree-last').filter(function() { return this.nextSibling; }).removeClass('jstree-last');
-								if(this._data.search.smc) {
-									data.nodes.children(".jstree-children").find(".jstree-node").show();
-								}
 								data.nodes.parentsUntil(".jstree").addBack().show()
 									.filter(".jstree-children").each(function () { $(this).children(".jstree-node:visible").eq(-1).addClass("jstree-last"); });
 							}
@@ -6537,7 +6509,7 @@
 		 * @plugin search
 		 * @trigger search.jstree
 		 */
-		this.search = function (str, skip_async, show_only_matches, inside, append, show_only_matches_children) {
+		this.search = function (str, skip_async, show_only_matches, inside, append) {
 			if(str === false || $.trim(str.toString()) === "") {
 				return this.clear_search();
 			}
@@ -6555,9 +6527,6 @@
 			}
 			if(show_only_matches === undefined) {
 				show_only_matches = s.show_only_matches;
-			}
-			if(show_only_matches_children === undefined) {
-				show_only_matches_children = s.show_only_matches_children;
 			}
 			if(!skip_async && a !== false) {
 				if($.isFunction(a)) {
@@ -6594,7 +6563,6 @@
 				this._data.search.res = [];
 				this._data.search.opn = [];
 				this._data.search.som = show_only_matches;
-				this._data.search.smc = show_only_matches_children;
 			}
 
 			f = new $.vakata.search(str, true, { caseSensitive : s.case_sensitive, fuzzy : s.fuzzy });

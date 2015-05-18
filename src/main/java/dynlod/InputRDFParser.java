@@ -270,11 +270,9 @@ public class InputRDFParser {
 							apiStatus.setMessage(ex.getMessage());
 						}
 					}
-
 				}
 			}
 		}
-
 	}
 
 	public void addDistribution(Statement downloadURLStmt,
