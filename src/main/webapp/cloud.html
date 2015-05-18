@@ -11,7 +11,6 @@
 <link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet"></link>
 <link href="resources/bootstrap/css/bootstrap-theme.min.css"
 	rel="stylesheet"></link>
-<link href="resources/css/dyn-lod.css" rel="stylesheet"></link>
 
 <script src="resources/js/dyn-lod.js"></script>
 <style>
@@ -32,16 +31,39 @@ text {
 	font: 10px sans-serif;
 	pointer-events: none;
 }
-</style>
 
-<script>
-	$(function() {
-		$("#menu").load("menu.html");
-	});
-</script>
+.container
+{
+    display:table;
+    width: 100%;
+    margin-top: -50px;
+    padding-top: 50px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+header
+{
+    height: 50px;
+}
+
+@media (min-width:992px) {
+    .row {
+        position: relative;
+    }
+    .col-md-3 {
+        position: absolute;
+        height: 100%;
+        max-height: 100%;
+    }
+    .col-md-9 {
+        margin-left: 25%; /*Or float:right;*/
+   display: table-cell;
+}
+</style>
 <script src="resources/js/dyn-lod.js"></script>
 
 <body>
+<div class="container" style=" height:100%;">
 	<div id="menu"></div>
 
 	<div style="margin-left: 15px;">
@@ -52,14 +74,16 @@ text {
 
 		<div class="row">
 			<div class="col-md-3">
-				<div id="tree"></div>
+				<div style="overflow-y:scroll; min-height:100%; max-height:100%;" >
+					<div id="tree"></div>
 
-				<button onclick="submitMe()">Filter</button>
+				</div>
+					<button onclick="submitMe()">Filter</button>
 
 			</div>
 			<div class="col-md-9">
 				<div
-					style="width: 680px; height: 700px; border: 1px solid #d8d8d8; margin-top: 40px; margin-right: 50px">
+					style="width: 680px; height: 710px; border: 1px solid #d8d8d8; margin-top: 40px; margin-right: 50px">
 					<div id="diagram"
 						style="margin-top: 10px; margin-right: 10px; margin-left: 10px;">
 
@@ -68,6 +92,7 @@ text {
 			</div>
 		</div>
 	</div>
+</div>
 
 </body>
 <script type="text/javascript">
