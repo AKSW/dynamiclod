@@ -95,7 +95,7 @@ text {
 		var result = "";
 		$('#tree').jstree('get_checked').forEach(function(l) {
 			if(isValidURL(l))
-			result = result + l + "&dataset=";
+				result = result + l + "&dataset=";
 		});
 
 		//	var result = "";

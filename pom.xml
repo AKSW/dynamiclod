@@ -126,11 +126,11 @@
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
+				<version>2.3-SNAPSHOT</version>
 				<configuration>
 					<port>9090</port>
 					<path>/dataid</path>
-					<reload>manual</reload>
+					<maxPostSize>33554432</maxPostSize>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -164,4 +164,20 @@
 			<url>http://mvn.linkeddata.org/content/groups/linkeddata.org/</url>
 		</repository>
 	</repositories>
+
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>apache.snapshots</id>
+			<name>Apache Snapshots</name>
+			<url>https://repository.apache.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 </project>
