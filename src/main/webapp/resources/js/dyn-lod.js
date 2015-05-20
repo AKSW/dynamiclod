@@ -26,8 +26,8 @@ console.log(requestLink);
 
 function makeGraph(param) {
 	if (param != "") {
-		param=param.replace(new RegExp("#", "g"), '@@@@@');
-		param=param.replace(new RegExp("_anchor", "g"), '');
+		param = param.replace(new RegExp("#", "g"), '@@@@@');
+		param = param.replace(new RegExp("_anchor", "g"), '');
 		requestLink = "/dataid/CreateD3JSONFormat?dataset=" + param;
 		console.log(param);
 	}
@@ -40,15 +40,16 @@ function makeGraph(param) {
 
 	var nodeMap = {};
 
-	$.post(requestLink,
+	$
+			.post(
+					requestLink,
 					function(circleData) {
-
-						if (circleData.nodes.length == 0)
-							return;
 
 						$("#loading_gif").hide();
 						$("#filter").prop('disabled', false);
 						d3.select("svg").remove();
+						if (circleData.nodes.length == 0)
+							return;
 
 						console.log(circleData);
 
@@ -172,7 +173,7 @@ function makeGraph(param) {
 																		+ (sourcePadding * normY), targetX = d.target.x
 																		- (targetPadding * normX), targetY = d.target.y
 																		- (targetPadding * normY);
-															
+
 																return 'M'
 																		+ sourceX
 																		+ ','
@@ -238,7 +239,7 @@ function makeGraph(param) {
 
 						// apply the zoom behavior to the svg image
 						zoomListener(rootSvg);
-					},'json');
+					}, 'json');
 }
 
 function getUrlParameter(sParam) {
