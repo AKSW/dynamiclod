@@ -2,8 +2,9 @@ package dynlod.API;
 
 import java.util.ArrayList;
 
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public abstract class API extends Thread{
 	
@@ -24,12 +25,12 @@ public abstract class API extends Thread{
 		return r.toString();
 	}
 	
-	public String getMessageJSON() {
-		JsonObject j = new JsonObject();
-		JsonArray ja = new JsonArray();
+	public String getMessageJSON() { 
+		JSONObject j = new JSONObject(); 
+		JSONArray ja = new JSONArray();
 		
 		for (APIMessage msg : message) {
-			ja.add(msg.toJSON());
+			ja.put(msg.toJSON());
 		}
 		j.put("messages",ja);
 		return j.toString();

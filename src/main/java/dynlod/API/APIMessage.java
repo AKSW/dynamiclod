@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.jena.atlas.json.JsonObject;
+import org.json.JSONObject;
 
 public class APIMessage {
 
@@ -36,8 +36,8 @@ public class APIMessage {
 		return "Success: " + error + ". Message: " + message;
 	}
 
-	public JsonObject toJSON() {
-		JsonObject j = new JsonObject();
+	public JSONObject toJSON() {
+		JSONObject j = new JSONObject();
 		j.put("success", error);
 		j.put("message", message);
 
@@ -47,7 +47,7 @@ public class APIMessage {
 			j.put((String) pair.getKey(), (String) pair.getValue());
 		}
 
-		JsonObject returnObject = new JsonObject(); 
+		JSONObject returnObject = new JSONObject(); 
 		returnObject.put(key, j); 
 		
 		return returnObject;
