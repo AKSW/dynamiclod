@@ -133,6 +133,10 @@ public class Manager {
 						downloadedFile.objectFilePath = p.objectFile;
 						downloadedFile.totalTriples = p.totalTriples;
 						downloadedFile.objectLines = p.objectTriples;
+						
+						//remove dump file
+						File f = new File(DynlodGeneralProperties.DUMP_PATH+ downloadedFile.hashFileName); 
+						if(f.isFile()) f.delete();
 					}
 
 					// uptate status of distribution

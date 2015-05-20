@@ -148,9 +148,9 @@ public class MakeLinksets {
 						BufferedReader br = new BufferedReader(new FileReader(
 								distribution.getObjectPath()));
 
-						logger.debug("Loading objects from: "
-								+ distribution.getObjectPath()
-								+ ". This might take a time, please be patient.");
+//						logger.debug("Loading objects from: "
+//								+ distribution.getObjectPath()
+//								+ ". This might take a time, please be patient.");
 
 						String sCurrentLine;
 
@@ -221,11 +221,11 @@ public class MakeLinksets {
 
 						} else {
 
-							logger.debug("New filters were't found!");
+//							logger.debug("New filters were't found!");
 						}
 
-						logger.debug("Loaded objects from: "
-								+ distribution.getObjectPath());
+//						logger.debug("Loaded objects from: "
+//								+ distribution.getObjectPath());
 
 						// save linksets into mongodb
 						saveLinksets(listOfDataThreads, c);

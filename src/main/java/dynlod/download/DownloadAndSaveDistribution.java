@@ -125,7 +125,7 @@ public class DownloadAndSaveDistribution extends Download {
 		if (httpContentLength < 1) {
 			httpContentLength = f.length();
 		}
-		f.delete();
+		
 		
 		httpConn.disconnect();
 		inputStream.close();
