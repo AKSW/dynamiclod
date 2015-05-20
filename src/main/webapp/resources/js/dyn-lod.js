@@ -14,12 +14,14 @@ makeGraph("");
 // console.log(getUrlParameter("dataset"));
 
 var baseRequestLink = "/dataid/CreateD3JSONFormat?";
+var hasDatasetParam = false;
 
 if (typeof getUrlParameter("getAllDistributions") != 'undefined') {
 	requestLink = baseRequestLink + "getAllDistributions=" + "&";
 }
 if (typeof getUrlParameter("dataset") != 'undefined') {
 	requestLink = baseRequestLink + "dataset=" + getUrlParameter("dataset") + "&";
+	hasDatasetParam = true;
 }
 
 console.log(requestLink);
@@ -31,7 +33,7 @@ function makeGraph(param) {
 		requestLink = "/dataid/CreateD3JSONFormat?dataset=" + param;
 		console.log(param);
 	}
-	else if(param == "" && typeof getUrlParameter("dataset") == 'undefined'){
+	else if(param == "" && !hasDatasetParam){
 		requestLink = baseRequestLink + "getAllDistributions=" + "&";
 	}
 
