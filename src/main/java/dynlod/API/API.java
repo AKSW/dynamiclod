@@ -33,7 +33,7 @@ public abstract class API extends Thread{
 			ja.put(msg.toJSON());
 		}
 		j.put("messages",ja);
-		return j.toString();
+		return j.toString(2);
 	}
 
 	public void addMessage(APIMessage message) {

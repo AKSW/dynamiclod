@@ -14,6 +14,12 @@
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 	
+    <servlet>
+		<servlet-name>StartService</servlet-name>
+		<servlet-class>dynlod.linksets.StartService</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	
 	<servlet>
 		<servlet-name>API</servlet-name>
 		<servlet-class>dynlod.server.ServiceAPI</servlet-class>
