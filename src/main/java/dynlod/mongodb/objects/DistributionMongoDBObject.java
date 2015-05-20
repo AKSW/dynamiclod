@@ -140,6 +140,11 @@ public class DistributionMongoDBObject extends DataIDDB {
 		if (!defaultDatasets.contains(defaultDataset))
 			this.defaultDatasets.add(defaultDataset);
 	}
+	
+	public void removeDefaultDataset(String defaultDataset) {
+		if (defaultDatasets.contains(defaultDataset))
+			this.defaultDatasets.remove(defaultDataset);
+	}
 
 	public boolean updateObject(boolean checkBeforeInsert) {
 		// save object case it doens't exists

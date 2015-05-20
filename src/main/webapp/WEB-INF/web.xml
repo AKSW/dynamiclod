@@ -21,9 +21,13 @@
 	</servlet>
 	
 	<servlet>
+		<servlet-name>RemoveData</servlet-name>
+		<servlet-class>dynlod.server.RemoveData</servlet-class>
+	</servlet>	
+	<servlet>
 		<servlet-name>API</servlet-name>
 		<servlet-class>dynlod.server.ServiceAPI</servlet-class>
-	</servlet>		
+	</servlet>			
 	<servlet>
 		<servlet-name>ResourceTree</servlet-name>
 		<servlet-class>dynlod.server.ResourceTree</servlet-class>
@@ -46,6 +50,11 @@
 	<servlet-mapping>
 		<servlet-name>CreateD3JSONFormat</servlet-name>
 		<url-pattern>/CreateD3JSONFormat/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>RemoveData</servlet-name>
+		<url-pattern>/RemoveData/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

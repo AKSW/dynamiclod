@@ -49,9 +49,9 @@ public class DatasetMongoDBObject extends DataIDDB {
 	private boolean isVocabulary = false;
 	
 
-	private ArrayList<String> subsetsURIs = new ArrayList<String> ();
+	public ArrayList<String> subsetsURIs = new ArrayList<String> ();
 
-	private ArrayList<String>  distributionsURIs = new ArrayList<String> ();
+	public ArrayList<String>  distributionsURIs = new ArrayList<String> ();
 	
 	private ArrayList<String> parentDatasetsURI = new ArrayList<String>();
 
@@ -142,6 +142,11 @@ public class DatasetMongoDBObject extends DataIDDB {
 			subsetsURIs.add(subsetURI);
 	}
 
+	public void removeSubsetURI(String subsetURI) {
+		if (subsetsURIs.contains(subsetURI) && subsetURI!=null)
+			subsetsURIs.remove(subsetURI);
+	}
+	
 	public void addDistributionURI(String distributionURI) {
 		if (!distributionsURIs.contains(distributionURI) && distributionURI!=null)
 			distributionsURIs.add(distributionURI);
@@ -194,6 +199,11 @@ public class DatasetMongoDBObject extends DataIDDB {
 	public void addParentDatasetURI(String parentDatasetURI) {
 		if (!parentDatasetsURI.contains(parentDatasetURI) && parentDatasetURI!=null)
 			parentDatasetsURI.add(parentDatasetURI);
+	}
+
+	public void removeParentDatasetURI(String parentDatasetURI) {
+		if (parentDatasetsURI.contains(parentDatasetURI) && parentDatasetURI!=null)
+			parentDatasetsURI.remove(parentDatasetURI);
 	}
 
 	public String getAccess_url() {

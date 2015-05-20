@@ -29,6 +29,7 @@ public class DynlodGeneralProperties {
 			MONGODB_HOST = prop.getProperty("MONGODB_HOST");
 			MONGODB_PORT = Integer.valueOf(prop.getProperty("MONGODB_PORT"));
 			MONGODB_DB = prop.getProperty("MONGODB_DB");
+			REMOVE_DATASET_PASS = prop.getProperty("REMOVE_DATASET_PASS");
 			MONGODB_SECURE_MODE = Boolean.valueOf(prop.getProperty("MONGODB_SECURE_MODE"));
 			MONGODB_USERNAME = prop.getProperty("MONGODB_USERNAME");
 			MONGODB_PASSWORD = prop.getProperty("MONGODB_PASSWORD");
@@ -129,5 +130,6 @@ public class DynlodGeneralProperties {
 	// other properties
 	public static String USE_MULTITHREAD;
 	public static String LOV_URL;
+	public static String REMOVE_DATASET_PASS;
 
 }

@@ -143,6 +143,13 @@ abstract public class DataIDDB {
 					+ " could not be found in database.");
 		}
 	}
+	
+	public boolean remove(){
+		DBCursor d = objectCollection.find(mongoDBObject); 
+		if(d.hasNext())
+			objectCollection.remove(d.next());
+		return true;
+	}
 
 	protected DBObject search() {
 
