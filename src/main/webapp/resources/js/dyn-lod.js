@@ -31,7 +31,7 @@ function makeGraph(param) {
 		requestLink = "/dataid/CreateD3JSONFormat?dataset=" + param;
 		console.log(param);
 	}
-	else{
+	else if(param == "" && param==""){
 		requestLink = baseRequestLink + "getAllDistributions=" + "&";
 	}
 
