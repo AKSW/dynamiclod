@@ -13,13 +13,13 @@ makeGraph("");
 
 // console.log(getUrlParameter("dataset"));
 
-var requestLink = "/dataid/CreateD3JSONFormat?";
+var baseRequestLink = "/dataid/CreateD3JSONFormat?";
 
 if (typeof getUrlParameter("getAllDistributions") != 'undefined') {
-	requestLink = requestLink + "getAllDistributions=" + "&";
+	requestLink = baseRequestLink + "getAllDistributions=" + "&";
 }
 if (typeof getUrlParameter("dataset") != 'undefined') {
-	requestLink = requestLink + "dataset=" + getUrlParameter("dataset") + "&";
+	requestLink = baseRequestLink + "dataset=" + getUrlParameter("dataset") + "&";
 }
 
 console.log(requestLink);
@@ -30,6 +30,9 @@ function makeGraph(param) {
 		param = param.replace(new RegExp("_anchor", "g"), '');
 		requestLink = "/dataid/CreateD3JSONFormat?dataset=" + param;
 		console.log(param);
+	}
+	else{
+		requestLink = baseRequestLink + "getAllDistributions=" + "&";
 	}
 
 	var color = d3.scale.category20();
