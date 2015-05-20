@@ -24,7 +24,7 @@ public abstract class API extends Thread{
 		return r.toString();
 	}
 	
-	public JsonObject getMessageJSON() {
+	public String getMessageJSON() {
 		JsonObject j = new JsonObject();
 		JsonArray ja = new JsonArray();
 		
@@ -32,7 +32,7 @@ public abstract class API extends Thread{
 			ja.add(msg.toJSON());
 		}
 		j.put("messages",ja);
-		return j;
+		return j.toString();
 	}
 
 	public void addMessage(APIMessage message) {

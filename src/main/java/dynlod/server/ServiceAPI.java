@@ -77,7 +77,7 @@ public class ServiceAPI extends HttpServlet {
 							.createStatusDataset(datasetURI);
 					try {
 						if (apiStatus != null) {
-							out.write(apiStatus.getMessageJSON().toString());
+							out.write(apiStatus.getMessageJSON());
 							out.write("\n");
 						} else {
 							out.write("Error: we couldn't find your dataset. ");
