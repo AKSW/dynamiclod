@@ -1,6 +1,7 @@
 package dynlod.server;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.mongodb.queries.Queries;
 
 public class RemoveData extends HttpServlet {
+	
+	PrintWriter out;
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -31,7 +34,9 @@ public class RemoveData extends HttpServlet {
 	}
 
 	private void manageRequest(HttpServletRequest request,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws IOException {
+		
+		out = response.getWriter();
 
 		Map<String, String[]> parameters = request.getParameterMap();
 
@@ -39,12 +44,17 @@ public class RemoveData extends HttpServlet {
 			if (parameters.get("pass")[0]
 					.equals(DynlodGeneralProperties.REMOVE_DATASET_PASS)) {
 
+				out.write("Pass ok. \n");
+				
 				if (parameters.containsKey("removeDataset")) {
+					out.write("Removing: "+parameters.get("removeDataset")[0]+"\n");
 					safelyRemoveDataset(parameters.get("removeDataset")[0],
 							parameters.get("removeDataset")[0],
 							parameters.get("removeDataset")[0]);
 				}
 			}
+			else
+				out.write("Pass error.\n");
 		}
 	}
 
