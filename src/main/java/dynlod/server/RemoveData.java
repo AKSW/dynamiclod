@@ -47,10 +47,11 @@ public class RemoveData extends HttpServlet {
 				out.write("Pass ok. \n");
 				
 				if (parameters.containsKey("removeDataset")) {
-					out.write("Removing: "+parameters.get("removeDataset")[0]+"\n");
-					safelyRemoveDataset(parameters.get("removeDataset")[0],
-							parameters.get("removeDataset")[0],
-							parameters.get("removeDataset")[0]);
+					String dataset = parameters.get("removeDataset")[0].replace("_escaped_fragment","#");
+					out.write("Removing: "+dataset+"\n");
+					safelyRemoveDataset(dataset,
+							dataset,
+							dataset);
 				}
 			}
 			else
