@@ -89,7 +89,7 @@ public class APIRetrieve extends API {
 
 			for (String d1 : distributionSubject.getDefaultDatasets()) {
 				for (String d2 : distributionObject.getDefaultDatasets()) {
-					addLinksetToModel(d1,d2,linkset.getLinks());
+					addLinksetToModel(d2,d1,linkset.getLinks());
 				}
 			}
 
