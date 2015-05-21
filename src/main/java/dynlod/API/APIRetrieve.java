@@ -12,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.queries.DatasetQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 import dynlod.ontology.Dataset;
 import dynlod.ontology.NS;
@@ -128,6 +129,7 @@ public class APIRetrieve extends API {
 			name = dataset.getTitle();
 
 		r.addProperty(Dataset.title, name);
+		r.addProperty(RDFProperties.triples, String.valueOf(DatasetQueries.getNumberOfTriples(dataset)));
 		r.addProperty(RDFProperties.subset,outModel.createResource(subset));
 	}
 
