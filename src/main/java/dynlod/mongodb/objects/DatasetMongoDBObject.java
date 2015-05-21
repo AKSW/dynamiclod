@@ -59,6 +59,10 @@ public class DatasetMongoDBObject extends DataIDDB {
 		super(COLLECTION_NAME, uri);
 		loadObject();
 	}
+	public DatasetMongoDBObject(String uri, boolean isRegex) {
+		super(COLLECTION_NAME, uri, isRegex);
+		loadObject();
+	}
 
 	public boolean updateObject(boolean checkBeforeInsert) {
 
@@ -107,6 +111,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 			// mongoDBObject = (BasicDBObject) obj;
 
 			label = (String) obj.get(LABEL);
+			uri = (String) obj.get(URI);
 			title = (String) obj.get(TITLE);
 			dataIdFileName = (String) obj.get(DATAID_FILENAME);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);

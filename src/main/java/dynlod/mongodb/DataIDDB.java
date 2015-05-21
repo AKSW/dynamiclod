@@ -40,6 +40,8 @@ abstract public class DataIDDB {
 	public static final String URI = "_id";
 
 	protected String uri = null;
+	
+	protected boolean isRegex = false;
 
 	// abstract methods
 	abstract public boolean updateObject(boolean checkBeforeInsert)
@@ -59,6 +61,26 @@ abstract public class DataIDDB {
 			objectCollection = getInstance().getCollection(collectionName);
 
 			mongoDBObject.put(URI, uri);
+
+			this.uri = uri;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public DataIDDB(String collectionName, String uri, boolean isRegex) {
+
+		try {
+			getInstance();
+
+			this.collectionName = collectionName;
+
+			objectCollection = getInstance().getCollection(collectionName);
+
+			if(isRegex)
+				mongoDBObject.put(URI,  new BasicDBObject("$regex", uri+".*"));
 
 			this.uri = uri;
 

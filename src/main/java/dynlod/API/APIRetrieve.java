@@ -2,6 +2,8 @@ package dynlod.API;
 
 import java.util.ArrayList;
 
+import org.junit.Test;
+
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -11,14 +13,12 @@ import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.mongodb.queries.LinksetQueries;
-import dynlod.mongodb.queries.Queries;
 import dynlod.ontology.Dataset;
 import dynlod.ontology.NS;
 import dynlod.ontology.RDFProperties;
 
 public class APIRetrieve extends API {
 
-	public String URI;
 	public Model outModel = null;
 
 	@Override
@@ -26,20 +26,15 @@ public class APIRetrieve extends API {
 		// TODO Auto-generated method stub
 
 	}
+//	public APIRetrieve() {
+//		// TODO Auto-generated constructor stub
+//	}
 
 	public APIRetrieve(String URI) {
 
-		this.URI = URI;
-
 		outModelInit();
-
-		if (LinksetQueries.checkIfDistributionExists(URI)) {
-			retrieveByDistribution();
-
-		} else if (LinksetQueries.checkIfDatasetExists(URI)) {
-			retrieveByDataset();
-		}
-
+		DatasetMongoDBObject d = new DatasetMongoDBObject(URI, true);
+		getDatasetChildren(d);
 		printModel();
 
 	}
@@ -60,83 +55,48 @@ public class APIRetrieve extends API {
 		outModel.write(System.out, "TURTLE");
 	}
 
-	public void retrieveByDistribution() {
-
+	public void retrieveByDistribution(String distributionURI) {
 		// get indegree and outdegree for a distribution
 		ArrayList<LinksetMongoDBObject> in = LinksetQueries
-				.getLinksetsInDegreeByDistribution(URI);
+				.getLinksetsInDegreeByDistribution(distributionURI);
 		ArrayList<LinksetMongoDBObject> out = LinksetQueries
-				.getLinksetsOutDegreeByDistribution(URI);
+				.getLinksetsOutDegreeByDistribution(distributionURI);
 
 		// add choosen distribution to jena
-		addDistributionToModel(new DistributionMongoDBObject(URI));
+//		addDistributionToModel(new DistributionMongoDBObject(distributionURI));
 
 		// add linksets to jena model
 		for (LinksetMongoDBObject linkset : in) {
-			DistributionMongoDBObject distribution = new DistributionMongoDBObject(
-					linkset.getObjectsDistributionTarget());
-			ArrayList<String> DatasetList = Queries.getMongoDBObject(
-					DatasetMongoDBObject.COLLECTION_NAME,
-					DatasetMongoDBObject.URI, distribution.getTopDataset());
-			if (DatasetList.size() > 0) {
-				DatasetMongoDBObject d = new DatasetMongoDBObject(
-						DatasetList.iterator().next());
-				if (!d.getIsVocabulary()) {
-					addDistributionToModel(distribution);
-					addDistributionLinksetToModel(linkset);
-				}
-			}
-		}
-		// add linksets to jena model
-		for (LinksetMongoDBObject linkset : out) {
-			DistributionMongoDBObject distribution = new DistributionMongoDBObject(
+			DistributionMongoDBObject distributionSubject = new DistributionMongoDBObject(
 					linkset.getSubjectsDistributionTarget());
-			ArrayList<String> DatasetList = Queries.getMongoDBObject(
-					DatasetMongoDBObject.COLLECTION_NAME,
-					DatasetMongoDBObject.URI, distribution.getTopDataset());
-			if (DatasetList.size() > 0) {
-				DatasetMongoDBObject d = new DatasetMongoDBObject(
-						DatasetList.iterator().next());
-				if (!d.getIsVocabulary()) {
-					addDistributionToModel(distribution);
-					addDistributionLinksetToModel(linkset);
+
+			DistributionMongoDBObject distributionObject = new DistributionMongoDBObject(
+					linkset.getObjectsDistributionTarget());
+
+			for (String d1 : distributionSubject.getDefaultDatasets()) {
+				for (String d2 : distributionObject.getDefaultDatasets()) {
+					addLinksetToModel(d2,d1,linkset.getLinks());
 				}
-			}
-		}
-
-	}
-
-	public void retrieveByDataset() {
-
-		// get indegree and outdegree for a distribution
-		ArrayList<LinksetMongoDBObject> in = LinksetQueries
-				.getLinksetsInDegreeByDataset(URI);
-		ArrayList<LinksetMongoDBObject> out = LinksetQueries
-				.getLinksetsOutDegreeByDataset(URI);
-
-		// add choosen distribution to jena
-		addDatasetToModel(new DatasetMongoDBObject(URI));
-
-		// add linksets to jena model
-		for (LinksetMongoDBObject linkset : in) {
-			DatasetMongoDBObject dataset = new DatasetMongoDBObject(
-					linkset.getObjectsDatasetTarget());
-			if (!dataset.getIsVocabulary()) {
-				addDatasetToModel(dataset);
-				addDatasetLinksetToModel(linkset);
 			}
 		}
 		// add linksets to jena model
 		for (LinksetMongoDBObject linkset : out) {
-			DatasetMongoDBObject dataset = new DatasetMongoDBObject(
-					linkset.getSubjectsDatasetTarget());
-			if (!dataset.getIsVocabulary()) {
-				addDatasetToModel(dataset);
-				addDatasetLinksetToModel(linkset);
+			DistributionMongoDBObject distributionSubject = new DistributionMongoDBObject(
+					linkset.getSubjectsDistributionTarget());
+
+			DistributionMongoDBObject distributionObject = new DistributionMongoDBObject(
+					linkset.getObjectsDistributionTarget());
+
+			for (String d1 : distributionSubject.getDefaultDatasets()) {
+				for (String d2 : distributionObject.getDefaultDatasets()) {
+					addLinksetToModel(d1,d2,linkset.getLinks());
+				}
 			}
+
 		}
 
 	}
+
 
 	private void addDistributionToModel(DistributionMongoDBObject distribution) {
 		// add distribution to jena model
@@ -154,7 +114,7 @@ public class APIRetrieve extends API {
 		r.addProperty(Dataset.title, name);
 	}
 
-	private void addDatasetToModel(DatasetMongoDBObject dataset) {
+	private void addDatasetToModel(DatasetMongoDBObject dataset, String subset) {
 		// add distribution to jena model
 		Resource r = outModel.createResource(dataset.getUri());
 		r.addProperty(Dataset.type,
@@ -168,45 +128,53 @@ public class APIRetrieve extends API {
 			name = dataset.getTitle();
 
 		r.addProperty(Dataset.title, name);
+		r.addProperty(RDFProperties.subset,outModel.createResource(subset));
 	}
 
-	private void addDistributionLinksetToModel(LinksetMongoDBObject linkset) {
+	private void addLinksetToModel(String source, String target, int links) {
+
+		// DatasetMongoDBObject d = new DatasetMongoDBObject(link)
+
 		// add linksets
-		Resource r = outModel.createResource(linkset.getUri());
-		Resource wasDerivedFrom = outModel.createResource(dynlod.server.ServiceAPI
-				.getServerURL());
+		String linksetURI = target+"_"+source;
+		Resource r = outModel.createResource(linksetURI);
+		Resource wasDerivedFrom = outModel
+				.createResource(dynlod.server.ServiceAPI.getServerURL());
 
 		r.addProperty(Dataset.type,
 				ResourceFactory.createResource(NS.VOID_URI + "Linkset"));
 		r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
-				+ "objectsTarget"), ResourceFactory.createResource(linkset
-				.getSubjectsDistributionTarget().toString()));
+				+ "objectsTarget"), ResourceFactory.createResource(source));
 		r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
-				+ "subjectsTarget"), ResourceFactory.createResource(linkset
-				.getObjectsDistributionTarget().toString()));
+				+ "subjectsTarget"), ResourceFactory.createResource(target));
 		r.addProperty(RDFProperties.wasDerivedFrom, wasDerivedFrom);
 		r.addProperty(ResourceFactory.createProperty(NS.VOID_URI + "triples"),
-				ResourceFactory.createPlainLiteral(String.valueOf(linkset
-						.getLinks())));
+				ResourceFactory.createPlainLiteral(String.valueOf(links)));
+		
+//		describe dadaset with this uri as subset
+		addDatasetToModel(new DatasetMongoDBObject(source), linksetURI);
+		addDatasetToModel(new DatasetMongoDBObject(target), linksetURI);
+		
 	}
 
-	private void addDatasetLinksetToModel(LinksetMongoDBObject linkset) {
-		// add linksets
-		Resource r = outModel.createResource(linkset.getUri());
-		Resource wasDerivedFrom = outModel.createResource(dynlod.server.ServiceAPI
-				.getServerURL());
-		r.addProperty(Dataset.type,
-				ResourceFactory.createResource(NS.VOID_URI + "Linkset"));
-		r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
-				+ "objectsTarget"), ResourceFactory.createResource(linkset
-				.getSubjectsDatasetTarget().toString()));
-		r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
-				+ "subjectsTarget"), ResourceFactory.createResource(linkset
-				.getObjectsDatasetTarget().toString()));
-		r.addProperty(RDFProperties.wasDerivedFrom, wasDerivedFrom);
-		r.addProperty(ResourceFactory.createProperty(NS.VOID_URI + "triples"),
-				ResourceFactory.createPlainLiteral(String.valueOf(linkset
-						.getLinks())));
+	@Test
+//	public void t(){
+//		outModelInit();
+//		getDatasetChildren(new DatasetMongoDBObject("http://gerbil.aksw.org/gerbil/dataId/corpora/N3-RSS-500#dataset"));
+//		printModel();
+//	}
+	
+	public void getDatasetChildren(DatasetMongoDBObject d) {
+		for (String child : d.getSubsetsURIs()) {
+			DatasetMongoDBObject datasetChild = new DatasetMongoDBObject(child);
+			getDatasetChildren(datasetChild);
+			addDatasetToModel(d, child);
+		}
+
+		for (String dist : d.getDistributionsURIs()) {
+			retrieveByDistribution(dist);
+		}
+
 	}
 
 }
