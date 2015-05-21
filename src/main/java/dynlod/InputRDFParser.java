@@ -302,8 +302,10 @@ public class InputRDFParser {
 
 		// case there is title property
 		if (stmtDistribution.getSubject().getProperty(RDFProperties.title) != null) {
-			distributionMongoDBObj.setTitle(stmtDistribution.getSubject()
+			distributionMongoDBObj.setTitle(stmtDistribution
 					.getProperty(RDFProperties.title).getObject().toString());
+			System.out.println("AKI! "+ stmtDistribution.getSubject().toString());
+
 		}
 
 		// case there is format property

@@ -193,10 +193,6 @@ public class Manager {
 								0.000001);
 					}
 
-					// get authority domain
-					String authority = getAuthorotyDomainFromSubjectFile(DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
-							+ downloadedFile.hashFileName);
-
 					// load file to filter and take the process time
 					FileToFilter f = new FileToFilter();
 
@@ -395,22 +391,6 @@ public class Manager {
 		logger.info("END");
 	}
 
-	private String getAuthorotyDomainFromSubjectFile(String filePath) {
-		String authority = "";
-		FileReader namereader;
-		try {
-			namereader = new FileReader(new File(filePath));
-			BufferedReader in = new BufferedReader(namereader);
-			String tmp = in.readLine();
-			tmp = tmp.substring(1, tmp.length() - 1);
-			URL url = new URL(tmp);
-			authority = url.getProtocol() + "://" + url.getHost();
-			namereader.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return authority;
-	}
 	
 	private void checkLOV(){
 		// check if LOV was already downloaded
