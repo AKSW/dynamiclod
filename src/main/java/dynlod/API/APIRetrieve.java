@@ -133,8 +133,10 @@ public class APIRetrieve extends API {
 
 	private void addLinksetToModel(String source, String target, int links) {
 
-		// DatasetMongoDBObject d = new DatasetMongoDBObject(link)
+		 DatasetMongoDBObject datasetSource = new DatasetMongoDBObject(source);
+		 DatasetMongoDBObject datasetTarget = new DatasetMongoDBObject(target);
 
+		 if(!datasetSource.getIsVocabulary() && !datasetTarget.getIsVocabulary()){
 		// add linksets
 		String linksetURI = target+"_"+source;
 		Resource r = outModel.createResource(linksetURI);
@@ -152,8 +154,9 @@ public class APIRetrieve extends API {
 				ResourceFactory.createPlainLiteral(String.valueOf(links)));
 		
 //		describe dadaset with this uri as subset
-		addDatasetToModel(new DatasetMongoDBObject(source), linksetURI);
-		addDatasetToModel(new DatasetMongoDBObject(target), linksetURI);
+		addDatasetToModel(datasetSource, linksetURI);
+		addDatasetToModel(datasetTarget, linksetURI);
+		 }
 		
 	}
 
