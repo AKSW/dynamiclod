@@ -301,11 +301,20 @@ public class InputRDFParser {
 				.toString());
 
 		// case there is title property
-		if (stmtDistribution.getSubject().getProperty(RDFProperties.title) != null) {
-			distributionMongoDBObj.setTitle(stmtDistribution
-					.getProperty(RDFProperties.title).getObject().toString());
-			System.out.println("AKI! "+ stmtDistribution.getSubject().toString());
+		try {
+			if (stmtDistribution.getSubject().getProperty(RDFProperties.title) != null) {
+				distributionMongoDBObj.setTitle(stmtDistribution
+						.getProperty(RDFProperties.title).getObject()
+						.toString());
 
+			}
+		} catch (Exception e) {
+			if (stmtDistribution.getSubject().getProperty(RDFProperties.title) != null) {
+				distributionMongoDBObj.setTitle(stmtDistribution.getSubject()
+						.getProperty(RDFProperties.title).getObject()
+						.toString());
+
+			}
 		}
 
 		// case there is format property
