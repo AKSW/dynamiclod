@@ -9,10 +9,36 @@ import com.mongodb.DBObject;
 
 import dynlod.mongodb.DataIDDB;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
+import dynlod.mongodb.objects.DistributionMongoDBObject;
 
 public class DatasetQueries {
-	// return number of datasets
 	
+	static long triples = 0; 
+	
+	public static long getNumberOfTriples(String dataset){
+		triples=0;
+		getNumberOfTriples(new DatasetMongoDBObject(dataset));
+		return triples;
+	}
+	public static long getNumberOfTriples(DatasetMongoDBObject dataset){
+		triples=0;
+		getTriples(dataset);
+		return triples;
+	}
+
+	private static void getTriples(DatasetMongoDBObject dataset){
+	
+		for (String subset : dataset.getSubsetsURIs()) {
+			getTriples(new DatasetMongoDBObject(subset));
+		}
+		
+		for (String dist : dataset.getDistributionsURIs()) {
+			DistributionMongoDBObject d= new DistributionMongoDBObject(dist);
+			triples=triples+d.getTriples();
+		}
+	}
+	
+	// return number of datasets
 	public static int getNumberOfDatasets() {
 		int numberOfDatasets = 0;
 		try {
