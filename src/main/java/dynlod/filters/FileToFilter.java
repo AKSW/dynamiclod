@@ -5,15 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import dynlod.DynlodGeneralProperties;
-import dynlod.Manager;
-import dynlod.download.CheckWhetherDownload;
-import dynlod.ontology.Linkset;
 
 public class FileToFilter {
 	

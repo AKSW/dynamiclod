@@ -22,7 +22,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.ontology.Dataset;
 import dynlod.ontology.NS;
 import dynlod.ontology.RDFProperties;
 import dynlod.utils.FileUtils;
@@ -60,10 +59,10 @@ public class InputRDFParser {
 
 		for (Resource datasetResource : RDFProperties.Dataset) {
 			if (topic == null)
-				datasetsStmt = inModel.listStatements(null, Dataset.type,
+				datasetsStmt = inModel.listStatements(null, RDFProperties.type,
 						datasetResource);
 			else
-				datasetsStmt = inModel.listStatements(topic, Dataset.type,
+				datasetsStmt = inModel.listStatements(topic, RDFProperties.type,
 						datasetResource);
 			if (datasetsStmt.hasNext()) {
 				if (datasetResource.equals(RDFProperties.dataIdDataset))
@@ -363,7 +362,7 @@ public class InputRDFParser {
 
 		ResIterator hasSomeDatasets = null;
 		for (Resource datasetResource : RDFProperties.Dataset) {
-			hasSomeDatasets = inModel.listResourcesWithProperty(Dataset.type,
+			hasSomeDatasets = inModel.listResourcesWithProperty(RDFProperties.type,
 					datasetResource);
 			if (hasSomeDatasets.hasNext())
 				break;

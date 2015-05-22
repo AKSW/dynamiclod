@@ -14,7 +14,6 @@ import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DatasetQueries;
 import dynlod.mongodb.queries.LinksetQueries;
-import dynlod.ontology.Dataset;
 import dynlod.ontology.NS;
 import dynlod.ontology.RDFProperties;
 
@@ -102,7 +101,7 @@ public class APIRetrieve extends API {
 	private void addDistributionToModel(DistributionMongoDBObject distribution) {
 		// add distribution to jena model
 		Resource r = outModel.createResource(distribution.getDownloadUrl());
-		r.addProperty(Dataset.type,
+		r.addProperty(RDFProperties.type,
 				ResourceFactory.createResource(NS.DCAT_URI + "distribution"));
 
 		String name;
@@ -112,13 +111,13 @@ public class APIRetrieve extends API {
 		else
 			name = distribution.getTitle();
 
-		r.addProperty(Dataset.title, name);
+		r.addProperty(RDFProperties.title, name);
 	}
 
 	private void addDatasetToModel(DatasetMongoDBObject dataset, String subset) {
 		// add distribution to jena model
 		Resource r = outModel.createResource(dataset.getUri());
-		r.addProperty(Dataset.type,
+		r.addProperty(RDFProperties.type,
 				ResourceFactory.createResource(NS.VOID_URI + "Dataset"));
 
 		String name;
@@ -128,7 +127,7 @@ public class APIRetrieve extends API {
 		else
 			name = dataset.getTitle();
 
-		r.addProperty(Dataset.title, name);
+		r.addProperty(RDFProperties.title, name);
 		r.addProperty(RDFProperties.triples, String.valueOf(DatasetQueries.getNumberOfTriples(dataset)));
 		r.addProperty(RDFProperties.subset,outModel.createResource(subset));
 	}
@@ -145,7 +144,7 @@ public class APIRetrieve extends API {
 		Resource wasDerivedFrom = outModel
 				.createResource(dynlod.server.ServiceAPI.getServerURL());
 
-		r.addProperty(Dataset.type,
+		r.addProperty(RDFProperties.type,
 				ResourceFactory.createResource(NS.VOID_URI + "Linkset"));
 		r.addProperty(ResourceFactory.createProperty(NS.VOID_URI
 				+ "objectsTarget"), ResourceFactory.createResource(source));
