@@ -31,7 +31,7 @@ public class Download {
 	protected static final int BUFFER_SIZE = 16384;
 	public URL url = null;
 
-	InputStream inputStream = null;
+	protected InputStream inputStream = null;
 
 	final byte[] buffer = new byte[BUFFER_SIZE];
 	int n = 0;
@@ -57,7 +57,7 @@ public class Download {
 
 	}
 
-	protected InputStream getStream() throws Exception {
+	protected void openStream() throws Exception {
 		openConnection();
 
 		// opens input stream from HTTP connection
@@ -68,7 +68,7 @@ public class Download {
 		// get some data from headers
 		getMetadataFromHTTPHeaders(httpConn);
 		
-		return inputStream;
+		this.inputStream = inputStream;
 
 	}
 
@@ -103,7 +103,7 @@ public class Download {
 		logger.debug("fileName = " + fileName);
 	}
 
-	protected InputStream getBZip2InputStream(InputStream inputStream)
+	protected void checkBZip2InputStream()
 			throws Exception {
 
 		// check whether file is bz2 type
@@ -118,14 +118,13 @@ public class Download {
 			logger.info("Done creating BZip2CompressorInputStream! New file name is "
 					+ getFileName());
 		}
-		return inputStream;
 	}
 
-	protected InputStream getGZipInputStream(InputStream inputStream)
+	protected void checkGZipInputStream()
 			throws Exception {
 
 		// check whether file is gz type
-		if (getExtension().equals("gz")) {
+		if (getExtension().equals("gz") || getExtension().equals("tgz")) {
 			logger.info("File extension is " +getExtension()+ ", creating GzipCompressorInputStream...");
 			System.out.println(new FileNameFromURL().getFileName(url.toString(),
 					httpDisposition));
@@ -133,15 +132,14 @@ public class Download {
 			inputStream = new GzipCompressorInputStream(
 					httpConn.getInputStream(), true);
 			setFileName(getFileName().replace(".gz", ""));
-			setExtension(null);
+			setExtension("tar");
 
 			logger.info("Done creating GzipCompressorInputStream! New file name is "
 					+ getFileName());
 		}
-		return inputStream;
 	}
 
-	protected InputStream getZipInputStream(InputStream inputStream)
+	protected void checkZipInputStream()
 			throws Exception {
 		// check whether file is zip type
 		if (getExtension().equals("zip")) {
@@ -151,16 +149,21 @@ public class Download {
 			httpConn = (HttpURLConnection) url.openConnection();
 			ZipInputStream zip = new ZipInputStream( httpConn.getInputStream());
 			ZipEntry entry = zip.getNextEntry();
+			while(entry != null ){
+				if(!entry.isDirectory())
+					break;
+				else entry = zip.getNextEntry();
+			}
+			
 			setFileName(entry.getName());
 			setExtension(FilenameUtils.getExtension(getFileName()));
 			inputStream = zip;
 			logger.info("Done, we found a single file: " + fileName);
 			
 		}
-		return inputStream;
 	}
 	
-	protected InputStream getTarInputStream(InputStream inputStream)
+	protected void checkTarInputStream() 
 			throws Exception {
 
 		// check whether file is zip type
@@ -171,13 +174,18 @@ public class Download {
 //			d.checkTarFile(data);		
 			TarArchiveInputStream tar = new TarArchiveInputStream(data);
 			TarArchiveEntry entry = (TarArchiveEntry) tar.getNextEntry();
+			while(entry != null ){
+				if(entry.isFile() && !entry.isDirectory())
+					break;
+				else entry = (TarArchiveEntry) tar.getNextEntry();
+			}
+			
 			setFileName(entry.getName());
 			setExtension(FilenameUtils.getExtension(getFileName()));
 			inputStream = tar;
-			logger.info("Done, we found a single file: " + fileName);
+			logger.info("Done, we found a file: " + fileName);
 			
 		}
-		return inputStream;
 	}
 
 	public String getFileName() {

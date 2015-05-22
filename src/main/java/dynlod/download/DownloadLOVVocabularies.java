@@ -31,10 +31,10 @@ public class DownloadLOVVocabularies extends Download {
 
 	public void downloadLOV(String url) throws Exception {
 		this.url = new URL(url);
-		InputStream inputStream = getStream();
+		openStream();
 
 		// allowing bzip2 format
-		inputStream = getGZipInputStream(inputStream);
+		checkGZipInputStream();
 		
 		if (!Formats.getEquivalentFormat(getExtension()).equals(
 				Formats.DEFAULT_NQUADS)){
