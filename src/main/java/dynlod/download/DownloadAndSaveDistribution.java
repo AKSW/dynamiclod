@@ -59,18 +59,18 @@ public class DownloadAndSaveDistribution extends Download {
 
 	public void downloadDistribution() throws Exception {
 
-		inputStream = getStream();
+		openStream();
 
 		// allowing bzip2 format
-		inputStream = getBZip2InputStream(inputStream);
+		checkBZip2InputStream();
 		
 		// allowing gzip format
-		inputStream = getGZipInputStream(inputStream);
+		checkGZipInputStream();
 		
 		// allowing zip format
-		inputStream = getZipInputStream(inputStream);
+		checkZipInputStream();
 
-		inputStream = getTarInputStream(inputStream);
+		checkTarInputStream();
 
 		hashFileName = FileUtils.stringToHash(url.toString());
 		objectFilePath = DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH

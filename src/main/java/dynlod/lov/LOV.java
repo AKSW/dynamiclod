@@ -60,10 +60,10 @@ public class LOV extends Download {
 //		setUrl(new URL("http://data.pokepedia.fr/dumps/pokepedia-fr_rdfdump.tar.gz"));
 //		
 		// download lov file
-		InputStream inputStream = getStream();
+		openStream();
 
 		// allowing gzip format
-		inputStream = getGZipInputStream(inputStream);
+		checkGZipInputStream();
 		
 //		inputStream = getTarInputStream(inputStream);
 		
