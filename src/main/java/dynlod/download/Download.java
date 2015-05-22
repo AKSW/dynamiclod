@@ -131,6 +131,9 @@ public class Download {
 			inputStream = new GzipCompressorInputStream(
 					httpConn.getInputStream(), true);
 			setFileName(getFileName().replace(".gz", ""));
+			if(getFileName().contains(".tar"))
+				setExtension("tar");
+			setFileName(getFileName().replace(".tgz", ".tar"));
 			if (getExtension().equals("tgz"))
 				setExtension("tar");
 			else
