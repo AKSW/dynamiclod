@@ -60,8 +60,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	public static final String LAST_TIME_LINKSET = "lastTimeLinkset";
 
-	public static final String DOMAIN = "domain";
-
 	public static final String TITLE = "title";
 
 	public static final String HTTP_BYTE_SIZE = "httpByteSize";

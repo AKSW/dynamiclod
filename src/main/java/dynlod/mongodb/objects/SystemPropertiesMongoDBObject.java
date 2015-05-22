@@ -18,8 +18,6 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 
 	public static final String LINKSET_TIME_FINISHED = "linksetTimeFinished";
 
-	public static final String LINKSET_NEXT_ROUND = "linksetNextRound";
-
 	public static final String LINKSET_STATUS = "linksetStatus";
 
 	public static final String LINKSET_NEED_UPDATE = "linksetNeedUpdate";
@@ -31,8 +29,6 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 	private Date linksetTimeStarted; 
 	
 	private Date linksetTimeFinished; 
-	
-	private Date linksetNextRound; 
 	
 	private String linksetStatus;
 	
@@ -51,8 +47,6 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 			mongoDBObject.put(LINKSET_TIME_STARTED, linksetTimeStarted);
 
 			mongoDBObject.put(LINKSET_TIME_FINISHED, linksetTimeFinished);
-
-			mongoDBObject.put(LINKSET_NEXT_ROUND, linksetNextRound);
 
 			mongoDBObject.put(LINKSET_STATUS, linksetStatus);
 
@@ -86,8 +80,6 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 			
 			linksetTimeFinished = (Date) obj.get(LINKSET_TIME_FINISHED);
 			
-			linksetNextRound = (Date) obj.get(LINKSET_NEXT_ROUND);
-			
 			linksetStatus = (String) obj.get(LINKSET_STATUS);
 			
 			linksetNeedUpdate = (Boolean) obj.get(LINKSET_NEED_UPDATE);
@@ -119,14 +111,6 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 
 	public void setLinksetTimeFinished(Date linksetTimeFinished) {
 		this.linksetTimeFinished = linksetTimeFinished;
-	}
-
-	public Date getLinksetNextRound() {
-		return linksetNextRound;
-	}
-
-	public void setLinksetNextRound(Date linksetNextRound) {
-		this.linksetNextRound = linksetNextRound;
 	}
 
 	public String getLinksetStatus() {
