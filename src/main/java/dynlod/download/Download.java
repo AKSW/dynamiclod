@@ -40,7 +40,7 @@ public class Download {
 	public String fileName = null;
 	public String extension = null;
 	public String RDFFormat = null;
-	
+
 	HttpURLConnection httpConn = null;
 
 	String accessURL = null;
@@ -62,12 +62,12 @@ public class Download {
 
 		// opens input stream from HTTP connection
 		InputStream inputStream = httpConn.getInputStream();
-		
+
 		logger.debug("InputStream from http connection opened");
 
 		// get some data from headers
 		getMetadataFromHTTPHeaders(httpConn);
-		
+
 		this.inputStream = inputStream;
 
 	}
@@ -103,8 +103,7 @@ public class Download {
 		logger.debug("fileName = " + fileName);
 	}
 
-	protected void checkBZip2InputStream()
-			throws Exception {
+	protected void checkBZip2InputStream() throws Exception {
 
 		// check whether file is bz2 type
 		if (getExtension().equals("bz2")) {
@@ -120,71 +119,74 @@ public class Download {
 		}
 	}
 
-	protected void checkGZipInputStream()
-			throws Exception {
+	protected void checkGZipInputStream() throws Exception {
 
 		// check whether file is gz type
 		if (getExtension().equals("gz") || getExtension().equals("tgz")) {
-			logger.info("File extension is " +getExtension()+ ", creating GzipCompressorInputStream...");
-			System.out.println(new FileNameFromURL().getFileName(url.toString(),
-					httpDisposition));
+			logger.info("File extension is " + getExtension()
+					+ ", creating GzipCompressorInputStream...");
+			System.out.println(new FileNameFromURL().getFileName(
+					url.toString(), httpDisposition));
 			httpConn = (HttpURLConnection) url.openConnection();
 			inputStream = new GzipCompressorInputStream(
 					httpConn.getInputStream(), true);
 			setFileName(getFileName().replace(".gz", ""));
-			setExtension("tar");
+			if (getExtension().equals("tgz"))
+				setExtension("tar");
+			else
+				setExtension(null);
 
 			logger.info("Done creating GzipCompressorInputStream! New file name is "
 					+ getFileName());
 		}
 	}
 
-	protected void checkZipInputStream()
-			throws Exception {
+	protected void checkZipInputStream() throws Exception {
 		// check whether file is zip type
 		if (getExtension().equals("zip")) {
 			logger.info("File extension is zip, creating ZipInputStream and checking compressed files...");
 			DownloadZipUtils d = new DownloadZipUtils();
-//			d.checkZipFile(url);
+			// d.checkZipFile(url);
 			httpConn = (HttpURLConnection) url.openConnection();
-			ZipInputStream zip = new ZipInputStream( httpConn.getInputStream());
+			ZipInputStream zip = new ZipInputStream(httpConn.getInputStream());
 			ZipEntry entry = zip.getNextEntry();
-			while(entry != null ){
-				if(!entry.isDirectory())
+			while (entry != null) {
+				if (!entry.isDirectory())
 					break;
-				else entry = zip.getNextEntry();
+				else
+					entry = zip.getNextEntry();
 			}
-			
+
 			setFileName(entry.getName());
 			setExtension(FilenameUtils.getExtension(getFileName()));
 			inputStream = zip;
 			logger.info("Done, we found a single file: " + fileName);
-			
+
 		}
 	}
-	
-	protected void checkTarInputStream() 
-			throws Exception {
+
+	protected void checkTarInputStream() throws Exception {
 
 		// check whether file is zip type
 		if (getExtension().equals("tar")) {
 			InputStream data = new BufferedInputStream(inputStream);
 			logger.info("File extension is tar, creating TarArchiveInputStream and checking compressed files...");
 			DownloadTarUtils d = new DownloadTarUtils();
-//			d.checkTarFile(data);		
+			// d.checkTarFile(data);
 			TarArchiveInputStream tar = new TarArchiveInputStream(data);
 			TarArchiveEntry entry = (TarArchiveEntry) tar.getNextEntry();
-			while(entry != null ){
-				if(entry.isFile() && !entry.isDirectory())
+			while (entry != null) {
+				if (entry.isFile() && !entry.isDirectory())
 					break;
-				else entry = (TarArchiveEntry) tar.getNextEntry();
+				else
+					entry = (TarArchiveEntry) tar.getNextEntry();
 			}
-			
+
 			setFileName(entry.getName());
 			setExtension(FilenameUtils.getExtension(getFileName()));
 			inputStream = tar;
 			logger.info("Done, we found a file: " + fileName);
-			
+
 		}
 	}
 
