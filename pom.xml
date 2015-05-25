@@ -141,9 +141,6 @@
 			<version>${openrdf-rio.version}</version>
 		</dependency>
 
-
-
-
 	</dependencies>
 
 	<build>

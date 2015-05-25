@@ -10,11 +10,17 @@ public class Formats {
 	
 	public static final String DEFAULT_NQUADS = "nq";
 	
+	public static final String DEFAULT_N3 = "n3";
+	
 	public static final String DEFAULT_RDFXML = "rdf";
 
 	private static final ArrayList<String> TURTLE_FORMATS = new ArrayList<String>(){{
 	    add("ttl");
 	    add("text/turtle");
+	}};	
+	
+	private static final ArrayList<String> N3_FORMATS = new ArrayList<String>(){{
+	    add("n3");
 	}};	
 	
 	private static final ArrayList<String> NTRIPLES_FORMATS = new ArrayList<String>(){{
@@ -37,6 +43,7 @@ public class Formats {
 		else if (NTRIPLES_FORMATS.contains(str)) return DEFAULT_NTRIPLES;
 		else if (RDFXML_FORMATS.contains(str)) return DEFAULT_RDFXML;
 		else if (NQUADS_FORMATS.contains(str)) return DEFAULT_NQUADS;
+		else if (N3_FORMATS.contains(str)) return DEFAULT_N3;
 		else return "";
 	}
 

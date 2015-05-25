@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -131,67 +132,70 @@ public class Download {
 			inputStream = new GzipCompressorInputStream(
 					httpConn.getInputStream(), true);
 			setFileName(getFileName().replace(".gz", ""));
-			if(getFileName().contains(".tar"))
-				setExtension("tar");
 			setFileName(getFileName().replace(".tgz", ".tar"));
+			if (getFileName().contains(".tar"))
+				setExtension("tar");
 			if (getExtension().equals("tgz"))
 				setExtension("tar");
 			else
 				setExtension(null);
 
 			logger.info("Done creating GzipCompressorInputStream! New file name is "
-					+ getFileName());
+					+ getFileName() + ", extension: "+getExtension());
 		}
 	}
 
-	protected void checkZipInputStream() throws Exception {
-		// check whether file is zip type
-		if (getExtension().equals("zip")) {
-			logger.info("File extension is zip, creating ZipInputStream and checking compressed files...");
-			DownloadZipUtils d = new DownloadZipUtils();
-			// d.checkZipFile(url);
-			httpConn = (HttpURLConnection) url.openConnection();
-			ZipInputStream zip = new ZipInputStream(httpConn.getInputStream());
-			ZipEntry entry = zip.getNextEntry();
-			while (entry != null) {
-				if (!entry.isDirectory())
-					break;
-				else
-					entry = zip.getNextEntry();
-			}
+//	protected void checkZipInputStream() throws Exception {
+//		// check whether file is zip type
+//		if (getExtension().equals("zip")) {
+//			logger.info("File extension is zip, creating ZipInputStream and checking compressed files...");
+//			DownloadZipUtils d = new DownloadZipUtils();
+//			// d.checkZipFile(url);
+//			httpConn = (HttpURLConnection) url.openConnection();
+//			ZipInputStream zip = new ZipInputStream(httpConn.getInputStream());
+//			ZipEntry entry = zip.getNextEntry();
+//			while (entry != null) {
+//				if (!entry.isDirectory())
+//					break;
+//				else
+//					entry = zip.getNextEntry();
+//			}
+//
+//			setFileName(entry.getName());
+//			setExtension(FilenameUtils.getExtension(getFileName()));
+//			inputStream = zip;
+//			logger.info("Done, we found a single file: " + fileName);
+//
+//		}
+//	}
 
-			setFileName(entry.getName());
-			setExtension(FilenameUtils.getExtension(getFileName()));
-			inputStream = zip;
-			logger.info("Done, we found a single file: " + fileName);
-
-		}
-	}
-
-	protected void checkTarInputStream() throws Exception {
-
-		// check whether file is zip type
-		if (getExtension().equals("tar")) {
-			InputStream data = new BufferedInputStream(inputStream);
-			logger.info("File extension is tar, creating TarArchiveInputStream and checking compressed files...");
-			DownloadTarUtils d = new DownloadTarUtils();
-			// d.checkTarFile(data);
-			TarArchiveInputStream tar = new TarArchiveInputStream(data);
-			TarArchiveEntry entry = (TarArchiveEntry) tar.getNextEntry();
-			while (entry != null) {
-				if (entry.isFile() && !entry.isDirectory())
-					break;
-				else
-					entry = (TarArchiveEntry) tar.getNextEntry();
-			}
-
-			setFileName(entry.getName());
-			setExtension(FilenameUtils.getExtension(getFileName()));
-			inputStream = tar;
-			logger.info("Done, we found a file: " + fileName);
-
-		}
-	}
+//	protected void checkTarInputStream() throws Exception {
+//
+//		// check whether file is zip type
+//		if (getExtension().equals("tar")) {
+//			InputStream data = new BufferedInputStream(inputStream);
+//			logger.info("File extension is tar, creating TarArchiveInputStream and checking compressed files...");
+//		
+//			TarArchiveInputStream tar = new TarArchiveInputStream(data);
+//			TarArchiveEntry entry = (TarArchiveEntry) tar.getNextEntry();
+//			while (entry != null) {
+//				if (entry.isFile() && !entry.isDirectory()) {
+//					InputStream n = null;
+//					n=tar;
+//				
+//					setFileName(entry.getName());
+//				}
+//
+//				entry = (TarArchiveEntry) tar.getNextEntry();
+//
+//			}
+//
+//			setExtension(FilenameUtils.getExtension(getFileName()));
+//			inputStream = tar;
+//			logger.info("Done, we found a file: " + fileName);
+//
+//		}
+//	}
 
 	public String getFileName() {
 		if (fileName == null) {

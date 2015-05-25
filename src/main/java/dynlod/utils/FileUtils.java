@@ -52,6 +52,8 @@ public class FileUtils {
 			return true;
 		else if (fileName.contains(".bzip"))
 			return true;
+		else if (fileName.contains(".tgz"))
+			return true;
 		else {
 			throw new DataIDException("File format not accepted: " + fileName);
 		}

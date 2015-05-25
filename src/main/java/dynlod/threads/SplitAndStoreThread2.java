@@ -1,10 +1,7 @@
 package dynlod.threads;
 
 import java.io.FileOutputStream;
-import java.util.NoSuchElementException;
 import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.openrdf.model.Statement;
 import org.openrdf.rio.helpers.RDFHandlerBase;
