@@ -1,8 +1,6 @@
 package dynlod.download;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,10 +11,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.ntriples.NTriplesParser;
+import org.openrdf.rio.rdfxml.RDFXMLParser;
+import org.openrdf.rio.turtle.TurtleParser;
 
 import dynlod.DynlodGeneralProperties;
 import dynlod.threads.GetDomainsFromTriplesThread;
-import dynlod.threads.SplitAndStoreThread;
+import dynlod.threads.SplitAndStoreThread2;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
 
@@ -83,40 +85,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 		if(RDFFormat == null || RDFFormat.equals(""))
 			RDFFormat = getExtension();
 		
-		if (Formats.getEquivalentFormat(RDFFormat).equals(
-				Formats.DEFAULT_NQUADS)) {
-			// parse graphs and call DownloadDistributionNTFormat()
-			
-		}
-
-		else if (Formats.getEquivalentFormat(RDFFormat).equals(
-				Formats.DEFAULT_NTRIPLES)) {
-			DownloadDistributionNTFormat();
-
-		} else if (Formats.getEquivalentFormat(RDFFormat).equals(
-				Formats.DEFAULT_TURTLE)
-				|| Formats.getEquivalentFormat(RDFFormat).equals(
-						Formats.DEFAULT_RDFXML)) {
-			int bytesRead = -1;
-			FileOutputStream outputStream = new FileOutputStream(DynlodGeneralProperties.DUMP_PATH +hashFileName);
-			while (-1 != (bytesRead = inputStream.read(buffer))) {
-				outputStream.write(buffer, 0, bytesRead);
-				contentLengthAfterDownloaded = contentLengthAfterDownloaded
-						+ bytesRead;
-				countBytesReaded = countBytesReaded + bytesRead;
-				if (aux % 1000 == 0) {
-					logger.info(countBytesReaded / 1024 / 1024
-							+ "MB uncompressed/lodaded.");
-					aux = 0;
-				}
-				aux++;
-			}
-			outputStream.close();
-		} else {
-			httpConn.disconnect();
-			inputStream.close();
-			throw new Exception("RDF format not supported: " + getExtension());
-		}
+		DownloadDistribution();
 
 		doneReadingFile = true;
 
@@ -132,16 +101,14 @@ public class DownloadAndSaveDistribution2 extends Download {
 	}
 	
 	
-	private void DownloadDistributionNTFormat() throws IOException, InterruptedException{
+	private void DownloadDistribution() throws IOException, InterruptedException{
 
 //		SplitAndStoreThread splitThread = new SplitAndStoreThread(
 //				bufferQueue, subjectQueue, objectQueue, getFileName());
 		
-		SplitAndStoreThread splitThread = new SplitAndStoreThread(
-				bufferQueue, subjectQueue, objectQueue, FileUtils.stringToHash(url.toString()));
+		SplitAndStoreThread2 splitThread = new SplitAndStoreThread2(
+				 subjectQueue, objectQueue, FileUtils.stringToHash(url.toString()));
 		
-		splitThread.start();
-
 		GetDomainsFromTriplesThread getDomainFromObjectsThread = new GetDomainsFromTriplesThread(
 				objectQueue, countObjectDomainsHashMap);
 		getDomainFromObjectsThread.start();
@@ -149,37 +116,54 @@ public class DownloadAndSaveDistribution2 extends Download {
 		GetDomainsFromTriplesThread getDomainFromSubjectsThread = new GetDomainsFromTriplesThread(
 				subjectQueue, countSubjectDomainsHashMap);
 		getDomainFromSubjectsThread.start();
+		
+		try {
 
-		String str = "";
-		BufferedInputStream b = new BufferedInputStream(inputStream);
-		while (-1 != (n = b.read(buffer))) {
-
-			str = new String(buffer, 0, n);
-			bufferQueue.add(str);
-			str = "";
-			contentLengthAfterDownloaded = contentLengthAfterDownloaded + n;
-
-			countBytesReaded = countBytesReaded + n;
-
-			if (aux % 1000 == 0) {
-				logger.info(countBytesReaded / 1024 / 1024
-						+ "MB uncompressed/lodaded.");
-				aux = 0;
+			RDFParser rdfParser = null;
+			
+			
+			if(RDFFormat.equals(Formats.DEFAULT_TURTLE)){
+				rdfParser = new TurtleParser();
+				logger.info("TurtleParser loaded.");
 			}
-			aux++;
-
-			// don't allow queue size bigger than 900;
-			while (bufferQueue.size() > 900) {
-				Thread.sleep(1);
+			else if(RDFFormat.equals(Formats.DEFAULT_NTRIPLES)){
+				rdfParser = new NTriplesParser();
+				logger.info("NTriplesParser loaded.");
 			}
+			else if(RDFFormat.equals(Formats.DEFAULT_RDFXML)){
+				rdfParser = new RDFXMLParser();
+				logger.info("RDFXMLParser loaded.");
+			}
+			else{
+				httpConn.disconnect();
+				inputStream.close();
+				logger.info("RDF format not supported: " + getExtension());
+				throw new Exception("RDF format not supported: " + getExtension());
+			}
+
+			rdfParser.setRDFHandler(splitThread);
+
+			try {
+				rdfParser.parse(inputStream,url.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 
 		}
+		
+		
+		
 
 		doneReadingFile = true;
 
 		// telling thread that we are done streaming
 		splitThread.setDoneReadingFile(true);
-		splitThread.join();
 
 //		fileName = splitThread.getFileName();
 		objectLines = splitThread.getObjectLines();
@@ -191,6 +175,8 @@ public class DownloadAndSaveDistribution2 extends Download {
 
 		getDomainFromSubjectsThread.setDoneSplittingString(true);
 		getDomainFromSubjectsThread.join();
+		
+		splitThread.closeQueues();
 
 		Iterator it = countObjectDomainsHashMap.entrySet().iterator();
 		while (it.hasNext()) {

@@ -8,6 +8,7 @@ import dynlod.DynlodGeneralProperties;
 import dynlod.Manager;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.queries.Queries;
+import dynlod.utils.FileUtils;
 
 // start service properly case service was killed in the middle of streaming
 public class StartService extends HttpServlet {
@@ -21,6 +22,7 @@ public class StartService extends HttpServlet {
 				if (DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH == null) {
 					new DynlodGeneralProperties().loadProperties();
 				}
+				FileUtils.checkIfFolderExists();
 
 				ArrayList<DistributionMongoDBObject> d = new ArrayList<DistributionMongoDBObject>();
 

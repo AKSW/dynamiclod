@@ -30,7 +30,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.DatasetGraph;
 
 import dynlod.DynlodGeneralProperties;
-import dynlod.Manager;
 import dynlod.download.Download;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;

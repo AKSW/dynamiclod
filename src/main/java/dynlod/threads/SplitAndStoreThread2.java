@@ -116,9 +116,9 @@ public class SplitAndStoreThread2 extends RDFHandlerBase {
 		String stObject = st.getObject().toString();
 
 		try {
-			if (!stObject.equals("<http://www.w3.org/2002/07/owl#Class>")
+			if (!stObject.equals("http://www.w3.org/2002/07/owl#Class")
 					&& !stPredicate
-							.equals("<http://www.w3.org/2000/01/rdf-schema#subClassOf>")) {
+							.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
 
 				// get subject and save to file
 				if (!tmpLastSubject.equals(stSubject)) {

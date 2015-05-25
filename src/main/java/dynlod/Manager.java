@@ -1,9 +1,5 @@
 package dynlod;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,8 +13,7 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import dynlod.download.CheckWhetherDownload;
-import dynlod.download.DownloadAndSaveDistribution;
-import dynlod.files.PrepareFiles;
+import dynlod.download.DownloadAndSaveDistribution2;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
 import dynlod.lov.LOV;
@@ -27,7 +22,6 @@ import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
 import dynlod.utils.FileUtils;
-import dynlod.utils.Formats;
 import dynlod.utils.Timer;
 
 public class Manager {
@@ -94,7 +88,7 @@ public class Manager {
 					distributionMongoDBObj.updateObject(true);
 
 					// now we need to download the distribution
-					DownloadAndSaveDistribution downloadedFile = new DownloadAndSaveDistribution(
+					DownloadAndSaveDistribution2 downloadedFile = new DownloadAndSaveDistribution2(
 							distributionMongoDBObj.getDownloadUrl(), distributionMongoDBObj.getFormat());
 
 					logger.info("Downloading distribution.");
@@ -108,36 +102,36 @@ public class Manager {
 
 					logger.info("Distribution downloaded. ");
 
-					// check if format is not ntriples
-					if (!downloadedFile.RDFFormat
-							.equals(Formats.DEFAULT_NTRIPLES)) {
-
-						// uptate status of distribution
-						distributionMongoDBObj
-						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
-					
-						distributionMongoDBObj.updateObject(true);
-
-						logger.info("Separating subjects and objects.");
-
-						PrepareFiles p = new PrepareFiles();
-						// separating subjects and objects using rapper and awk
-						// error to convert dbpedia files from turtle using
-						// rapper
-						
-						
-						p.separateSubjectAndObject(downloadedFile.hashFileName,
-								downloadedFile.RDFFormat);
-						downloadedFile.objectDomains = p.objectDomains;
-						downloadedFile.subjectDomains = p.subjectDomains;
-						downloadedFile.objectFilePath = p.objectFile;
-						downloadedFile.totalTriples = p.totalTriples;
-						downloadedFile.objectLines = p.objectTriples;
-						
-						//remove dump file
-						File f = new File(DynlodGeneralProperties.DUMP_PATH+ downloadedFile.hashFileName); 
-						if(f.isFile()) f.delete();
-					}
+//					// check if format is not ntriples
+//					if (!downloadedFile.RDFFormat
+//							.equals(Formats.DEFAULT_NTRIPLES)) {
+//
+//						// uptate status of distribution
+//						distributionMongoDBObj
+//						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
+//					
+//						distributionMongoDBObj.updateObject(true);
+//
+//						logger.info("Separating subjects and objects.");
+//
+//						PrepareFiles p = new PrepareFiles();
+//						// separating subjects and objects using rapper and awk
+//						// error to convert dbpedia files from turtle using
+//						// rapper
+//						
+//						
+//						p.separateSubjectAndObject(downloadedFile.hashFileName,
+//								downloadedFile.RDFFormat);
+//						downloadedFile.objectDomains = p.objectDomains;
+//						downloadedFile.subjectDomains = p.subjectDomains;
+//						downloadedFile.objectFilePath = p.objectFile;
+//						downloadedFile.totalTriples = p.totalTriples;
+//						downloadedFile.objectLines = p.objectTriples;
+//						
+//						//remove dump file
+//						File f = new File(DynlodGeneralProperties.DUMP_PATH+ downloadedFile.hashFileName); 
+//						if(f.isFile()) f.delete();
+//					}
 
 					// uptate status of distribution
 					distributionMongoDBObj
@@ -395,7 +389,6 @@ public class Manager {
 	private void checkLOV(){
 		// check if LOV was already downloaded
 		SystemPropertiesMongoDBObject g = new SystemPropertiesMongoDBObject();
-		System.out.println(g.getDownloadedLOV());
 		if (g.getDownloadedLOV()== null || !g.getDownloadedLOV()){
 				logger.info("LOV vocabularies still not lodaded! Loading now...");
 				try {

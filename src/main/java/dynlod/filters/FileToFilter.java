@@ -31,10 +31,15 @@ public class FileToFilter {
 			String sCurrentLine;
 			br = new BufferedReader(new FileReader(DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+
 					fileName));
+			String oi = null;
 			while ((sCurrentLine = br.readLine()) != null) {
+				sCurrentLine = sCurrentLine.replace("<", "");
+				sCurrentLine = sCurrentLine.replace(">", "");
 				filter.add(sCurrentLine);
 				subjectsLoadedIntoFilter++;
+				oi = sCurrentLine;
 			}
+			
 			logger.info("Bloom filter loaded "+subjectsLoadedIntoFilter + " lines.");
 			
 			
@@ -50,16 +55,16 @@ public class FileToFilter {
 		}
 		
 		try{
-			File f = new File(DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+
-							fileName);
-			f.delete();
-			
-			logger.debug("deleting "+ DynlodGeneralProperties.BASE_PATH+
-					fileName);
-			f = new File(DynlodGeneralProperties.BASE_PATH+
-					fileName);
-			
-			f.delete();
+//			File f = new File(DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+
+//							fileName);
+//			f.delete();
+//			
+//			logger.debug("deleting "+ DynlodGeneralProperties.BASE_PATH+
+//					fileName);
+//			f = new File(DynlodGeneralProperties.BASE_PATH+
+//					fileName);
+//			
+//			f.delete();
 	
 		}
 		catch(Exception e){
