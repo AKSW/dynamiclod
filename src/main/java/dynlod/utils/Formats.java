@@ -15,7 +15,7 @@ public class Formats {
 	private static final ArrayList<String> TURTLE_FORMATS = new ArrayList<String>(){{
 	    add("ttl");
 	    add("text/turtle");
-	}};
+	}};	
 	
 	private static final ArrayList<String> NTRIPLES_FORMATS = new ArrayList<String>(){{
 	    add("nt");

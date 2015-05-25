@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 
+import dynlod.DynlodGeneralProperties;
 import dynlod.Manager;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.queries.Queries;
@@ -16,7 +17,10 @@ public class StartService extends HttpServlet {
 		new Thread(new Runnable() {
 
 			public void run() {
-				// TODO Auto-generated method stub
+				
+				if (DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH == null) {
+					new DynlodGeneralProperties().loadProperties();
+				}
 
 				ArrayList<DistributionMongoDBObject> d = new ArrayList<DistributionMongoDBObject>();
 
