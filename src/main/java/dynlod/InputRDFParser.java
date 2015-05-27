@@ -62,8 +62,8 @@ public class InputRDFParser {
 				datasetsStmt = inModel.listStatements(null, RDFProperties.type,
 						datasetResource);
 			else
-				datasetsStmt = inModel.listStatements(topic, RDFProperties.type,
-						datasetResource);
+				datasetsStmt = inModel.listStatements(topic,
+						RDFProperties.type, datasetResource);
 			if (datasetsStmt.hasNext()) {
 				if (datasetResource.equals(RDFProperties.dataIdDataset))
 					isDataid = true;
@@ -151,10 +151,6 @@ public class InputRDFParser {
 						RDFProperties.linkset);
 				if (!stmtLinkset.hasNext()) {
 
-					datasetMongoDBObj.addSubsetURI(subset.getObject()
-							.toString());
-					datasetMongoDBObj.updateObject(true);
-
 					StmtIterator stmtDatasets3 = null;
 
 					for (Resource datasetsp : RDFProperties.Dataset) {
@@ -165,8 +161,12 @@ public class InputRDFParser {
 							break;
 					}
 
-					if (stmtDatasets3.hasNext())
+					if (stmtDatasets3.hasNext()) {
 						iterateSubsetsNew(stmtDatasets3, datasetURI, topDataset);
+						datasetMongoDBObj.addSubsetURI(subset.getObject()
+								.toString());
+						datasetMongoDBObj.updateObject(true);
+					}
 				}
 			}
 
@@ -362,8 +362,8 @@ public class InputRDFParser {
 
 		ResIterator hasSomeDatasets = null;
 		for (Resource datasetResource : RDFProperties.Dataset) {
-			hasSomeDatasets = inModel.listResourcesWithProperty(RDFProperties.type,
-					datasetResource);
+			hasSomeDatasets = inModel.listResourcesWithProperty(
+					RDFProperties.type, datasetResource);
 			if (hasSomeDatasets.hasNext())
 				break;
 		}

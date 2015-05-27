@@ -27,9 +27,6 @@ public class APIDataset extends API {
 				addMessage(new APIMessage("parserMsg",true, inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!"));
 				Manager m = new Manager(inputRDFParser.distributionsLinks);
 				System.out.println(inputRDFParser.distributionsLinks.size());
-				SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
-				systemProperties.setLinksetNeedUpdate(true);
-				systemProperties.updateObject(true);
 //				addMessage(new APIMessage(true, "Done!"));
 				
 			}

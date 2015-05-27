@@ -1,3 +1,5 @@
+
+
 var w = window.innerWidth || document.documentElement.clientWidth
 		|| document.body.clientWidth;
 
@@ -13,7 +15,7 @@ makeGraph("");
 
 // console.log(getUrlParameter("dataset"));
 
-var baseRequestLink = "/dataid/CreateD3JSONFormat?";
+var baseRequestLink = "/dataid/CreateD3JSONFormat2?";
 var hasDatasetParam = false;
 
 if (typeof getUrlParameter("getAllDistributions") != 'undefined') {
@@ -30,8 +32,8 @@ function makeGraph(param) {
 	if (param != "") {
 		param = param.replace(new RegExp("#", "g"), '@@@@@');
 		param = param.replace(new RegExp("_anchor", "g"), '');
-		requestLink = "/dataid/CreateD3JSONFormat?dataset=" + param;
-		console.log(param);
+		requestLink = "/dataid/CreateD3JSONFormat2?dataset=" + param;
+		console.log(requestLink);
 	}
 	else if(param == "" && !hasDatasetParam){
 		requestLink = baseRequestLink + "getAllDistributions=" + "&";

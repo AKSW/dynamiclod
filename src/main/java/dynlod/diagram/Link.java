@@ -1,12 +1,6 @@
 package dynlod.diagram;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
 
 public class Link {
 
@@ -33,5 +27,23 @@ public class Link {
 		
 		return link;
 	}
+
+	public Bubble getSource() {
+		return source;
+	}
+
+	public void setSource(Bubble source) {
+		this.source = source;
+	}
+
+	public Bubble getTarget() {
+		return target;
+	}
+
+	public void setTarget(Bubble target) {
+		this.target = target;
+	}
+	
+	
 
 }

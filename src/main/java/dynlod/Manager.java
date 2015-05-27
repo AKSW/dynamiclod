@@ -322,6 +322,11 @@ public class Manager {
 
 		}
 		logger.info("We are done reading your distributions.");
+		SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
+		systemProperties.setLinksetNeedUpdate(true);
+		systemProperties.updateObject(true);
+		
+		logger.info("Linksets will update soon.");
 		
 	}
 

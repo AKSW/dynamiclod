@@ -1,5 +1,7 @@
 package dynlod.diagram;
 
+import java.util.ArrayList;
+
 import org.json.JSONObject;
 
 import dynlod.mongodb.objects.DatasetMongoDBObject;
@@ -17,7 +19,11 @@ public class Bubble {
 
 	String color;
 	
+	boolean visible; 
+	
 	int radius;
+	
+	ArrayList<String> parentDataset = new ArrayList<String>();
 
 	public JSONObject getJSON() {
 		JSONObject node = new JSONObject();
@@ -30,13 +36,28 @@ public class Bubble {
 		return node;
 	}
 
+	public Bubble(Object source, boolean visible) {
+		this.visible = visible;
+		startBubble(source);
+	}
+	
+	public Bubble(Object source, boolean visible, String lastParentDataset) {
+		this.visible = visible;
+		parentDataset.add(lastParentDataset);
+		startBubble(source);
+	}
+	
 	public Bubble(Object source) {
+		startBubble(source);
+	}
+	
+	private void startBubble(Object source){
 		if (source instanceof DistributionMongoDBObject) {
 
 			DistributionMongoDBObject tmp = (DistributionMongoDBObject) source;
-			if (tmp.getTitle() != null && !tmp.getTitle().equals(""))
-				setText(tmp.getTitle());
-			else
+//			if (tmp.getTitle() != null && !tmp.getTitle().equals(""))
+//				setText(tmp.getTitle());
+//			else
 				setText(tmp.getUri());
 			setName(tmp.getDownloadUrl());
 			setUri(tmp.getUri());
@@ -50,7 +71,7 @@ public class Bubble {
 			}
 
 			else
-			setColor("rgb(116, 196, 118)");
+			setColor("rgb(66, 136, 78)");
 		
 
 			dynLodObject = (DistributionMongoDBObject) source;
@@ -59,11 +80,11 @@ public class Bubble {
 		else if (source instanceof DatasetMongoDBObject) {
 			DatasetMongoDBObject tmp = (DatasetMongoDBObject) source;
 
-			if (tmp.getTitle() != null || !tmp.getTitle().equals(""))
-				setText(tmp.getTitle());
-			else if (tmp.getLabel() != null || !tmp.getLabel().equals(""))
-				setText(tmp.getLabel());
-			else
+//			if (tmp.getTitle() != null || !tmp.getTitle().equals(""))
+//				setText(tmp.getTitle());
+//			else if (tmp.getLabel() != null || !tmp.getLabel().equals(""))
+//				setText(tmp.getLabel());
+//			else
 				setText(tmp.getUri());
 			
 			setName(tmp.getUri());
@@ -81,18 +102,18 @@ public class Bubble {
 
 			dynLodObject = (DatasetMongoDBObject) source;
 		}
-
 	}
 
 	public String getText() {
 
-		setText(text.split("@")[0]);
-		setText(text.split("http")[0]);
-
-		if (text.length() > 145) {
-			setText(text.substring(0, 145) + "...");
-		}
+//		setText(text.split("@")[0]);
+//		setText(text.split("http")[0]);
+//
+//		if (text.length() > 145) {
+//			setText(text.substring(0, 145) + "...");
+//		}
 		return text;
+//		return String.valueOf(isVisible());
 	}
 
 	public void setText(String text) {
@@ -130,6 +151,24 @@ public class Bubble {
 	public void setRadius(int radius) {
 		this.radius = radius;
 	}
+
+	public ArrayList<String> getParentDataset() {
+		return parentDataset;
+	}
+
+	public void addParentDataset(String parentDataset) {
+		if(!this.parentDataset.contains(parentDataset))
+			this.parentDataset.add(parentDataset);
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+	
 	
 	
 

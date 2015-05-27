@@ -94,8 +94,6 @@ public class DownloadAndSaveDistribution2 extends Download {
 
 		// setExtension(Formats.getEquivalentFormat(getExtension()));
 
-		System.out.println(" oi " + getExtension());
-
 		doneReadingFile = true;
 
 		// update file length
@@ -176,7 +174,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 						zip.read(content, 0, (int) entry.getSize());
 
 						try {
-							rdfParser.parse(new ByteArrayInputStream(content),
+							rdfParser.parse(new BufferedInputStream(new ByteArrayInputStream(content)),
 									url.toString());
 						} catch (RDFParseException e) {
 							e.printStackTrace();
@@ -206,7 +204,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 						tar.read(content, 0, (int) entry.getSize());
 
 						try {
-							rdfParser.parse(new ByteArrayInputStream(content),
+							rdfParser.parse(new BufferedInputStream(new ByteArrayInputStream(content)),
 									url.toString());
 						} catch (RDFParseException e) {
 							e.printStackTrace();
