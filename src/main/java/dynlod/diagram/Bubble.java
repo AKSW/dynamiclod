@@ -106,12 +106,12 @@ public class Bubble {
 
 	public String getText() {
 
-//		setText(text.split("@")[0]);
-//		setText(text.split("http")[0]);
-//
-//		if (text.length() > 145) {
-//			setText(text.substring(0, 145) + "...");
-//		}
+		setText(text.split("@")[0]);
+		setText(text.split("http")[0]);
+
+		if (text.length() > 145) {
+			setText(text.substring(0, 145) + "...");
+		}
 		return text;
 //		return String.valueOf(isVisible());
 	}
