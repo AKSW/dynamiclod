@@ -55,9 +55,9 @@ public class Bubble {
 		if (source instanceof DistributionMongoDBObject) {
 
 			DistributionMongoDBObject tmp = (DistributionMongoDBObject) source;
-//			if (tmp.getTitle() != null && !tmp.getTitle().equals(""))
-//				setText(tmp.getTitle());
-//			else
+			if (tmp.getTitle() != null && !tmp.getTitle().equals(""))
+				setText(tmp.getTitle());
+			else
 				setText(tmp.getUri());
 			setName(tmp.getDownloadUrl());
 			setUri(tmp.getUri());
@@ -80,11 +80,11 @@ public class Bubble {
 		else if (source instanceof DatasetMongoDBObject) {
 			DatasetMongoDBObject tmp = (DatasetMongoDBObject) source;
 
-//			if (tmp.getTitle() != null || !tmp.getTitle().equals(""))
-//				setText(tmp.getTitle());
-//			else if (tmp.getLabel() != null || !tmp.getLabel().equals(""))
-//				setText(tmp.getLabel());
-//			else
+			if (tmp.getTitle() != null || !tmp.getTitle().equals(""))
+				setText(tmp.getTitle());
+			else if (tmp.getLabel() != null || !tmp.getLabel().equals(""))
+				setText(tmp.getLabel());
+			else
 				setText(tmp.getUri());
 			
 			setName(tmp.getUri());
