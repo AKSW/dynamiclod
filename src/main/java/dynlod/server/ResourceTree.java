@@ -49,15 +49,15 @@ public class ResourceTree extends HttpServlet {
 				datasetArray.add(jsonparent);
 				
 			}
-			List<String> distribution_list = dataset.getDistributionsURIs();
-				for (String distribution : distribution_list) {
-					JsonObject jsondistribution = new JsonObject();
-					DistributionMongoDBObject d = new DistributionMongoDBObject(distribution);
-					jsondistribution.put("parent", dataset.getUri());
-					jsondistribution.put("id", d.getUri());
-					jsondistribution.put("text", d.getTitle() +" (Distribution)");
-					datasetArray.add(jsondistribution);
-			}
+//			List<String> distribution_list = dataset.getDistributionsURIs();
+//				for (String distribution : distribution_list) {
+//					JsonObject jsondistribution = new JsonObject();
+//					DistributionMongoDBObject d = new DistributionMongoDBObject(distribution);
+//					jsondistribution.put("parent", dataset.getUri());
+//					jsondistribution.put("id", d.getUri());
+//					jsondistribution.put("text", d.getTitle() +" (Distribution)");
+//					datasetArray.add(jsondistribution);
+//			}
 			if (parent_list.size() == 0) {
 				JsonObject jsonparent = new JsonObject();
 				jsonparent.put("parent", "#");

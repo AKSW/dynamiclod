@@ -23,7 +23,9 @@ import dynlod.mongodb.queries.LinksetQueries;
 public class CreateD3JSONFormat2 extends HttpServlet {
 
 	
-	boolean showDistribution = true;
+	boolean showDistribution = false;
+	
+	boolean showOntologies = false;
 	
 
 	protected void doPost(HttpServletRequest request,
@@ -59,6 +61,19 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 
 		Map<String, String[]> parameters = request.getParameterMap();
 
+		if (parameters.containsKey("showDistributions")) 
+			showDistribution = true;
+		else
+			showDistribution = false;
+			
+		
+
+		if (parameters.containsKey("showOntologies")) 
+			showOntologies = true;
+		else
+			showOntologies = false;
+		
+		
 		if (parameters.containsKey("getAllDistributions")) {
 
 			Diagram diagram = new Diagram();
@@ -89,23 +104,13 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 			Diagram diagramTemp = new Diagram();
 			for (String datasetURI : parameters.get("dataset")) {
 
-				datasetURI = datasetURI.replace("@@@@@", "#");
-				datasetURI = "http://gerbil.aksw.org/gerbil/dataId/corpora/N3-News-100#dataset";
-				int currentLevel = 4;
+				int currentLevel = 1;
+				if (parameters.containsKey("level")) {
+					currentLevel = Integer.parseInt(parameters.get("level")[0]);
+				}
 
-				iterateDataset(datasetURI, diagramTemp, datasetURI, currentLevel);
-
-				datasetURI = "http://gerbil.aksw.org/gerbil/dataId/corpora/N3-Reuters-128#dataset";
-				iterateDataset(datasetURI, diagramTemp, datasetURI, currentLevel);
-
-//				datasetURI = "http://gerbil.aksw.org/gerbil/dataId/corpora/N3-RSS-500#dataset";
-//				iterateDataset(datasetURI, diagramTemp, datasetURI, currentLevel);
-
-				
-				
+				iterateDataset(datasetURI, diagramTemp, datasetURI, currentLevel);				
 			}
-			diagramTemp.printSelectedBubbles(parameters.get("dataset"));
-			
 			
 			Diagram diagram = new Diagram();
 			
@@ -128,6 +133,8 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 				
 			}
 
+			
+			diagram.printSelectedBubbles(parameters.get("dataset"));
 			
 			nodes = diagram.getBubblesJSON();
 			links = diagram.getLinksJSON();
@@ -202,9 +209,15 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 				DistributionMongoDBObject a = new DistributionMongoDBObject(linkset.getObjectsDistributionTarget());
 				DistributionMongoDBObject b = new DistributionMongoDBObject(linkset.getSubjectsDistributionTarget());
 				
-				if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )				
-				makeLink0(new Bubble(a, showDistribution,lastParentDataset),
-						new Bubble(b, showDistribution,lastParentDataset), diagram);
+				if(!showOntologies){
+					if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )				
+						makeLink0(new Bubble(a, showDistribution,lastParentDataset),
+								new Bubble(b, showDistribution,lastParentDataset), diagram);
+				}
+				else
+					makeLink0(new Bubble(a, showDistribution,lastParentDataset),
+							new Bubble(b, showDistribution,lastParentDataset), diagram);
+				
 			}
 
 		}
