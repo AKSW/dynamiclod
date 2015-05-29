@@ -137,6 +137,78 @@ header
 
 </body>
 <script type="text/javascript">
+
+
+(function ($, undefined) {
+    "use strict";
+    var img = document.createElement('IMG');
+    img.src = "http://www.dpcd.vic.gov.au/__data/assets/image/0004/30667/help.gif";
+    img.className = "jstree-questionmark";
+
+    $.jstree.defaults.questionmark = $.noop;
+    $.jstree.plugins.questionmark = function (options, parent) {
+        this.bind = function () {
+            parent.bind.call(this);
+            this.element
+                .on("click.jstree", ".jstree-questionmark", $.proxy(function (e) {
+                        e.stopImmediatePropagation();
+                        this.settings.questionmark.call(this, this.get_node(e.target));
+                    }, this));
+        };
+        this.teardown = function () {
+            if(this.settings.questionmark) {
+                this.element.find(".jstree-questionmark").remove();
+            }
+            parent.teardown.call(this);
+        };
+        this.redraw_node = function(obj, deep, callback) {
+            obj = parent.redraw_node.call(this, obj, deep, callback);
+            if(obj) {
+                var tmp = img.cloneNode(true);
+                obj.insertBefore(tmp, obj.childNodes[2]);
+            }
+            return obj;
+        };
+    };
+})(jQuery);
+
+(function ($, undefined) {
+    "use strict";
+    var img = document.createElement('IMG');
+    img.type = 'checkbox';
+    img.title = "Select or deselect child nodes"
+    img.src = "resources/img/Tree_Node_Path.PNG";
+    img.className = "jstree-markChildren dataSelect";
+
+    $.jstree.defaults.markChildren = $.noop;
+    $.jstree.plugins.markChildren = function (options, parent) {
+        this.bind = function () {
+            parent.bind.call(this);
+            this.element
+                .on("click.jstree", ".jstree-markChildren", $.proxy(function (e) {
+                        e.stopImmediatePropagation();
+                        this.settings.markChildren.call(this, this.get_node(e.target));
+                        uncheck(this.get_node(e.target));
+                    }, this));
+        };
+        this.teardown = function () {
+            if(this.settings.markChildren) {
+                this.element.find(".jstree-markChildren").remove();
+            }
+            parent.teardown.call(this);
+        };
+        this.redraw_node = function(obj, deep, callback) {
+            obj = parent.redraw_node.call(this, obj, deep, callback);
+            if(obj) {
+                var tmp = img.cloneNode(true);
+                obj.insertBefore(tmp, obj.childNodes[2]);
+            }
+            return obj;
+        };
+    };
+})(jQuery);
+
+
 $('#myModal').on('shown.bs.modal', function () {
 	  $('#myInput').focus()
 	})
@@ -154,10 +226,33 @@ $.post("ResourceTree", function(data) {
 			 "real_checkboxes" : true ,
 			 "cascade" : "down" 
 		},
-		"plugins" : [ "themes", "html_data", "checkbox", "ui" ]
+		"plugins" : [ "themes", "html_data", "checkbox", "ui", "markChildren" ]
 	});
-	data
+	
+
 }, 'json');
+function uncheck(a){
+	node = $("#tree").jstree("get_node", (a)); 
+
+	   var roots = $('#tree').jstree(true).get_children_dom(node);
+	    roots.each(function(x, k) { 
+	    	var myimg = k.getElementsByTagName('img')[0];
+			
+	    	console.log(myimg)
+	    	if(myimg.classList.contains("dataSelect")){
+	    		$("#tree").jstree("deselect_node", ("#"+k.id)); 
+	    		$(myimg).removeClass('dataSelect');
+	    		$(myimg).addClass('dataDeselect');
+	    	}
+	    	else{
+	    		$("#tree").jstree("select_node", ("#"+k.id)); 
+	    		$(myimg).removeClass('dataDeselect');
+	    		$(myimg).addClass('dataSelect');
+	    	}
+	    		
+	  	});
+
+}
 	function submitMe() {
 	var level = $("#level").val();
 		var result = "";
@@ -177,7 +272,6 @@ $.post("ResourceTree", function(data) {
 		result=result+"&showDistributions=true"
 	if($("#ontologies").is(":checked"))
 		result=result+"&showOntologies=true"	
-		
 
 	result = result + "&level="+level;
 		

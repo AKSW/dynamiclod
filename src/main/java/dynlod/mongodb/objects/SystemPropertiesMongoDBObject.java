@@ -22,6 +22,7 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 
 	public static final String LINKSET_NEED_UPDATE = "linksetNeedUpdate";
 
+
 	// class properties
 
 	private Boolean downloadedLOV;
@@ -128,7 +129,5 @@ public class SystemPropertiesMongoDBObject extends DataIDDB {
 	public void setLinksetNeedUpdate(Boolean linksetNeedUpdate) {
 		this.linksetNeedUpdate = linksetNeedUpdate;
 	}
-	
-	
 
 }

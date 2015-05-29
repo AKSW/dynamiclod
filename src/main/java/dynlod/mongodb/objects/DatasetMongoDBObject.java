@@ -34,6 +34,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 	
 	public static final String ACCESS_URL = "access_url";
 	
+	public static final String DYN_LOD_ID = "dynLodID";
+	
 	
 
 	// class properties
@@ -45,7 +47,9 @@ public class DatasetMongoDBObject extends DataIDDB {
 	private String dataIdFileName;
 
 	private String access_url;
-	
+
+	private int dynLodID = 0;
+
 	private boolean isVocabulary = false;
 	
 
@@ -70,6 +74,10 @@ public class DatasetMongoDBObject extends DataIDDB {
 		try {
 			// updating subsets on mongodb
 			mongoDBObject.put(SUBSET_URIS, subsetsURIs);
+			
+			if(dynLodID == 0)
+				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
+			mongoDBObject.put(DYN_LOD_ID, dynLodID);
 			
 			// updating distributions on mongodb
 			mongoDBObject.put(DISTRIBUTIONS_URIS, distributionsURIs);
@@ -116,6 +124,9 @@ public class DatasetMongoDBObject extends DataIDDB {
 			dataIdFileName = (String) obj.get(DATAID_FILENAME);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
 			access_url = (String) obj.get(ACCESS_URL);
+			dynLodID = (Integer) obj.get(DYN_LOD_ID);
+			if(dynLodID == 0)
+				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
 
 			// loading subsets to object
 			BasicDBList subsetList = (BasicDBList) obj.get(SUBSET_URIS);
@@ -219,5 +230,8 @@ public class DatasetMongoDBObject extends DataIDDB {
 		this.access_url = access_url;
 	}
 	
+	public int getDynLodID() {
+		return dynLodID;
+	}
 
 }

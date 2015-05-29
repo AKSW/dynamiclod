@@ -33,6 +33,8 @@ public class DistributionMongoDBObject extends DataIDDB {
 	
 	public static final String STATUS_DONE = "DONE";
 	
+	public static final String DYN_LOD_ID = "dynLodID";
+	
 	
 	
 	// collection properties
@@ -75,6 +77,8 @@ public class DistributionMongoDBObject extends DataIDDB {
 	public static final String IS_VOCABULARY = "isVocabulary";
 	
 	public static final String RESOURCE_URI = "resourceUri";
+	
+	private int dynLodID = 0;
 
 	
 	private ArrayList<String> defaultDatasets = new ArrayList<String>();
@@ -168,6 +172,11 @@ public class DistributionMongoDBObject extends DataIDDB {
 			mongoDBObject.put(IS_VOCABULARY, isVocabulary);
 			mongoDBObject.put(LAST_ERROR_MSG, lastErrorMsg);
 			mongoDBObject.put(LAST_TIME_LINKSET, lastTimeLinkset);
+			
+			
+			if(dynLodID == 0)
+				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
+			mongoDBObject.put(DYN_LOD_ID, dynLodID);
 
 			insert(checkBeforeInsert);
 
@@ -211,6 +220,10 @@ public class DistributionMongoDBObject extends DataIDDB {
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
 			lastErrorMsg = (String) obj.get(LAST_ERROR_MSG);
 			lastTimeLinkset = (String) obj.get(LAST_TIME_LINKSET);
+			
+			dynLodID = (Integer) obj.get(DYN_LOD_ID);
+			if(dynLodID == 0)
+				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
 			
 			// loading default datasets to object
 			BasicDBList defaultDatasetList = (BasicDBList) obj
