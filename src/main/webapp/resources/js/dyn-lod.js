@@ -13,9 +13,11 @@ var height = 650;
 
 var level = 4;
 
-makeGraph("");
 
 // console.log(getUrlParameter("dataset"));
+var hasDatasetParam = false;
+
+var requestLink;
 
 var baseRequestLink = "/dataid/CreateD3JSONFormat2?";
 
@@ -23,23 +25,24 @@ if (typeof getUrlParameter("getAllDistributions") != 'undefined') {
 	requestLink = baseRequestLink + "getAllDistributions=" + "&";
 }
 if (typeof getUrlParameter("dataset") != 'undefined') {
-	requestLink = baseRequestLink + "dataset=" + getUrlParameter("dataset") + "&";
+	requestLink = getUrlParameter("dataset") + "&";
 	hasDatasetParam = true;
+	makeGraph(requestLink)
 }
+else makeGraph("");
 
 console.log(requestLink);
 
 function makeGraph(param) {
-	console.log(encodeURIComponent("OI#"))
 	if (param != "") {
 		param = param.replace(new RegExp("#", "g"), '%23');
 		param = param.replace(new RegExp("_anchor", "g"), '');
-		requestLink = "/dataid/CreateD3JSONFormat2?dataset=" + param;
-		
+		requestLink = "/dataid/CreateD3JSONFormat2?dataset=" + param;		
 	}
-	else if(param == "" && !hasDatasetParam){
+	else if(param == "" && (hasDatasetParam==false)){
 		requestLink = baseRequestLink + "getAllDistributions=" + "&";
 	}
+		
 
 	var color = d3.scale.category20();
 
