@@ -178,11 +178,11 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 
 		for (String distributionURI : d.getDistributionsURIs()) {
 			
-			 sourceVisible = true;
-			targetVisible = true;
 			
 			if (currentLevel > 0){
 				sourceVisible = true;
+				sourceVisible = true;
+				targetVisible = true;
 			}
 			if(showDistribution){
 				targetVisible = true;
