@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <script src="resources/js/d3.v3.min.js"></script>
 <script src="resources/js/jquery-2.1.0.js"></script>
 <script src="resources/bootstrap/js/bootstrap.min.js"></script>
@@ -32,6 +33,17 @@ text {
 	fill: #000;
 	font: 10px sans-serif;
 	pointer-events: none;
+}
+div.tooltip2 {
+  position: absolute;	
+  width: 100px;	
+  height: 28px;		
+  padding: 2px;	
+  font: 12px sans-serif;	
+  background: lightsteelblue;	
+  border: 0px;					
+  border-radius: 8px;
+ /*  pointer-events: none;	This line needs to be removed */
 }
 
 .container
@@ -103,10 +115,10 @@ header
 						Granularity level: <input type="number" id="level" name="income" value="1" style="margin-left:10px; width:40px">
 					</div>
 						<div class="checkbox">
-							 <label><input type="checkbox" name="ontologies" value="ontologies" id="ontologies">Show Ontologies</label>
+							 <label><input type="checkbox" name="ontologies" value="ontologies" id="ontologies">Show Ontologies (High granularity)</label>
 						</div>
 						<div class="checkbox">
-							<label><input type="checkbox" name="distributions"  value="distributions" id="distributions">Show Distributions</label>
+							<label><input type="checkbox" name="distributions"  value="distributions" id="distributions">Show Distributions Links</label>
 						</div>
 					</div>
 					

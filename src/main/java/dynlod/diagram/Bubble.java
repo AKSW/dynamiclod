@@ -19,7 +19,7 @@ public class Bubble {
 
 	String color;
 	
-	boolean visible; 
+	boolean visible = false; 
 	
 	int radius;
 	
@@ -157,8 +157,9 @@ public class Bubble {
 	}
 
 	public void addParentDataset(String parentDataset) {
-		if(!this.parentDataset.contains(parentDataset))
+		if(!this.parentDataset.contains(parentDataset)){
 			this.parentDataset.add(parentDataset);
+		}
 	}
 
 	public boolean isVisible() {

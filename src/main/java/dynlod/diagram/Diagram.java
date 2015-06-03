@@ -19,6 +19,10 @@ public class Diagram {
 		} else {
 			Bubble b = bubbles.get(source.getUri());
 			b.setText(source.getText());
+			if(source.isVisible()) b.setVisible(true);
+			if(!source.isVisible() && b.isVisible()) b.setVisible(true);
+			else if(!source.isVisible()) b.setVisible(false);
+			
 			for (String parent : source.getParentDataset()) {
 				b.addParentDataset(parent);
 			}

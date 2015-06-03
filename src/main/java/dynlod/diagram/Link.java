@@ -9,6 +9,7 @@ public class Link {
 	Bubble target;
 
 	int links;
+	
 
 	public Link(Bubble source, Bubble target, int links) {
 		this.source = source;
@@ -43,7 +44,15 @@ public class Link {
 	public void setTarget(Bubble target) {
 		this.target = target;
 	}
-	
+
+	public int getLinks() {
+		return links;
+	}
+
+	public void setLinks(int links) {
+		this.links = links;
+	}
+
 	
 
 }
