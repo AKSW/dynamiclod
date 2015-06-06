@@ -127,7 +127,9 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 				else
 				for(String s: link.getSource().getParentDataset()){
 					for(String t: link.getTarget().getParentDataset()){			
-					makeLink0(new Bubble(new DatasetMongoDBObject(s)), new Bubble(new DatasetMongoDBObject(t)), diagram, link.getLinks()); 
+					makeLink0(new Bubble(new DatasetMongoDBObject(s)), 
+							new Bubble(new DatasetMongoDBObject(t)), diagram, 
+							diagram.getPathWeight(s, t)); 
 					}
 				}
 				
