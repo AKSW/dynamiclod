@@ -17,6 +17,28 @@
 
 <script src="resources/js/dyn-lod.js"></script>
 <style>
+
+
+circle.node {
+  fill: lightsteelblue;
+  stroke: #555;
+  stroke-width: 3px;
+}
+circle.leaf {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+path.hull {
+  fill: lightsteelblue;
+  fill-opacity: 0.3;
+}
+line.link {
+  stroke: #333;
+  stroke-opacity: 0.5;
+}
+
+
+
 path.link {
 	fill: none;
 	stroke: #666;
@@ -111,11 +133,11 @@ header
 					<!-- button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">Options</button -->
 
 					<div>
-					<div style="float: right; margin-right: 30px">
+					<!-- div style="float: right; margin-right: 30px">
 						Granularity level: <input type="number" id="level" name="income" value="1" style="margin-left:10px; width:40px">
-					</div>
+					</div -->
 						<div class="checkbox">
-							 <label><input type="checkbox" name="ontologies" value="ontologies" id="ontologies">Show Ontologies (High granularity)</label>
+							 <label><input type="checkbox" name="ontologies" value="ontologies" id="ontologies">Show Ontologies </label>
 						</div>
 						<div class="checkbox">
 							<label><input type="checkbox" name="distributions"  value="distributions" id="distributions">Show Distributions Links</label>

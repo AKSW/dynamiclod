@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.queries.DatasetQueries;
 
 public class Bubble {
 
@@ -27,11 +28,23 @@ public class Bubble {
 
 	public JSONObject getJSON() {
 		JSONObject node = new JSONObject();
+		
+		String group =  parentDataset.iterator().next();
 
 		node.put("text", getText());
+		node.put("group", parentDataset.iterator().next());
+		DatasetMongoDBObject d = new DatasetMongoDBObject(group);
+		
+		if(!d.getTitle().equals(""))
+			node.put("group_name", d.getTitle());
+		else if(!d.getLabel().equals(""))
+			node.put("group_name", d.getLabel());
+		else
+			node.put("group_name", group);		
 		node.put("color", getColor());
 		node.put("name", getUri());
 		node.put("radius", getRadius());
+		
 
 		return node;
 	}

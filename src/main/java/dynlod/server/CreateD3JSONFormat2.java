@@ -105,41 +105,42 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 			for (String datasetURI : parameters.get("dataset")) {
 
 				int currentLevel = 1;
-				if (parameters.containsKey("level")) {
-					currentLevel = Integer.parseInt(parameters.get("level")[0]);
-				}
+//				if (parameters.containsKey("level")) {
+//					currentLevel = Integer.parseInt(parameters.get("level")[0]);
+//				}
 
 				iterateDataset(datasetURI, diagramTemp, datasetURI, currentLevel);				
 			}
 			
 			Diagram diagram = new Diagram();
 			
-			for (Bubble bubble : diagramTemp.getBubbles()) {
-				if(bubble.isVisible())
-					diagram.addBubble(bubble);
-			}
+//			for (Bubble bubble : diagramTemp.getBubbles()) {
+//				if(bubble.isVisible())
+//					diagram.addBubble(bubble);
+//			}
 			
-			for (Link link : diagramTemp.getLinks()) {
-				
-				if(link.getSource().isVisible() && link.getTarget().isVisible()){
-					makeLink0(link.getSource(), link.getTarget(), diagram, link.getLinks()); 
-				}
-				else
-				for(String s: link.getSource().getParentDataset()){
-					for(String t: link.getTarget().getParentDataset()){			
-					makeLink0(new Bubble(new DatasetMongoDBObject(s)), 
-							new Bubble(new DatasetMongoDBObject(t)), diagram, 
-							diagram.getPathWeight(s, t)); 
-					}
-				}
-				
-			}
+//			for (Link link : diagramTemp.getLinks()) {
+//				
+//				if(link.getSource().isVisible() && link.getTarget().isVisible()){
+//					makeLink0(link.getSource(), link.getTarget(), diagram, diagramTemp.getPathWeight(link.getSource().getName(), link.getTarget().getName())); 
+//				}
+//				else
+//				for(String s: link.getSource().getParentDataset()){
+//					for(String t: link.getTarget().getParentDataset()){			
+//					makeLink0(new Bubble(new DatasetMongoDBObject(s)), 
+//							new Bubble(new DatasetMongoDBObject(t)), diagram, 
+//							diagramTemp.getPathWeight(s, t)); 
+//					System.out.println(diagramTemp.getPathWeight(s, t));
+//					}
+//				}
+//				
+//			}
 
 			
-			diagram.printSelectedBubbles(parameters.get("dataset"));
+			diagramTemp.printSelectedBubbles(parameters.get("dataset"));
 			
-			nodes = diagram.getBubblesJSON();
-			links = diagram.getLinksJSON();
+			nodes = diagramTemp.getBubblesJSON();
+			links = diagramTemp.getLinksJSON();
 
 			printOutput(nodes, links, response);
 		}
@@ -152,45 +153,19 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 
 		
 		
-		
-		boolean sourceVisible;
-		boolean targetVisible;
-		
-		if (currentLevel > 0){
-			sourceVisible = true;
-			targetVisible = true;
-			lastParentDataset = datasetURI;
-		}
-		else if(currentLevel == 0){
-			sourceVisible = true;
-			targetVisible = false;
-		}
-		else{
-			sourceVisible = false;
-			targetVisible = false;
-		}
-		
 		for (String subset : d.getSubsetsURIs()) {
 			
 		
-			makeLink0(new Bubble(new DatasetMongoDBObject(datasetURI), sourceVisible,lastParentDataset),
-					  new Bubble(new DatasetMongoDBObject(subset), targetVisible,lastParentDataset), diagram, 0);				
+			makeLink0(new Bubble(new DatasetMongoDBObject(datasetURI), true,lastParentDataset),
+					  new Bubble(new DatasetMongoDBObject(subset), true,lastParentDataset), diagram, 0);				
 			iterateDataset(subset, diagram, lastParentDataset, --currentLevel);
 		}
 
 		for (String distributionURI : d.getDistributionsURIs()) {
 			
-			
-			if (currentLevel > 0){
-				sourceVisible = true;
-				sourceVisible = true;
-				targetVisible = true;
-			}
-			if(showDistribution){
-				targetVisible = true;
-			}
-			makeLink0(new Bubble(new DatasetMongoDBObject(datasetURI), sourceVisible,lastParentDataset),
-					new Bubble(new DistributionMongoDBObject(distributionURI), targetVisible,lastParentDataset), diagram, 0);
+
+			makeLink0(new Bubble(new DatasetMongoDBObject(datasetURI), true,lastParentDataset),
+					new Bubble(new DistributionMongoDBObject(distributionURI), true,lastParentDataset), diagram, 0);
 
 			// get indegree and outdegree for a distribution
 			ArrayList<LinksetMongoDBObject> in = LinksetQueries

@@ -15,13 +15,13 @@ import org.json.JSONArray;
 public class Diagram {
 
 	
-	DirectedWeightedMultigraph<String, DefaultWeightedEdge> g = new DirectedWeightedMultigraph<String, DefaultWeightedEdge>(
+	public DirectedWeightedMultigraph<String, DefaultWeightedEdge> g = new DirectedWeightedMultigraph<String, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 
 	
 	ArrayList<Link> links = new ArrayList<Link>();
 
-	HashMap<String, Bubble> bubbles = new HashMap<String, Bubble>();
+	public HashMap<String, Bubble> bubbles = new HashMap<String, Bubble>();
 
 	public void addBubble(Bubble source) {
 		if (!bubbles.containsKey(source.getUri())) {
@@ -50,8 +50,8 @@ public class Diagram {
 				return;
 		}
 		links.add(link);
-		DefaultWeightedEdge e = g.addEdge(link.source.getUri(), link.target.getUri());
-		g.setEdgeWeight(e, link.getLinks());
+		DefaultWeightedEdge e = g.addEdge(link.source.name, link.target.name);
+		g.setEdgeWeight(e,link.getLinks());
 	}
 
 	public JSONArray getBubblesJSON() {
@@ -137,6 +137,7 @@ public class Diagram {
 		if(source.equals(target)) return 0;
 		int weight = 0;
 		for (GraphPath<String, DefaultWeightedEdge> path : getAllDirectPathsBetween(g, source, target)) {
+
 			weight = (int) (weight + path.getWeight());
 		}
 		return weight;
