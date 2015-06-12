@@ -222,14 +222,11 @@ function makeGraph(param) {
 
 	var color = d3.scale.category20();
 
-//	var force = d3.layout.force().linkStrength(0.00001).friction(0.4)
-//			.linkDistance(50).charge(5).gravity(0.0000001).theta(1.9)
-//			.alpha(1.9).size([ width, height ]).start();
-
 	var nodeMap = {};
 
 	$.post(requestLink,
 					function(circleData) {
+		d3.select("svg").remove();
 		data = circleData;
 						$("#loading_gif").hide();
 						$("#filter").prop('disabled', false);
@@ -302,16 +299,6 @@ function getUrlParameter(sParam) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
 function init() {
 	  if (force) force.stop();
 
@@ -345,10 +332,10 @@ function init() {
 	    return 0.1;
 	    })
 //	    .gravity(0.05)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-	    .charge(-600)    // ... charge is important to turn single-linked groups to the outside
+//	    .charge(-600)    // ... charge is important to turn single-linked groups to the outside
 //	    .friction(0.5)   // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
 	    .friction(0.4)
-//	    .charge(5)
+	    .charge(-255)
 	    .gravity(0.00001)
 	    .theta(1.9)
 	    .alpha(1.9)
@@ -457,7 +444,7 @@ function init() {
 	  
 	  g.append("circle")
       // if (d.size) -- d.size > 0 when d is a group node.      
-      .attr("r", function(d) { return d.size ? d.size + dr +27 : d.radius; })
+      .attr("r", function(d) { return d.size ? 36 : d.radius; })
       .style("stroke", function(d){if(d.size>0) return "rgb(144, 209, 228)"})
       .style("stroke-width", function(d){if(d.size>0) return 5;})
       
