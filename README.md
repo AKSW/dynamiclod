@@ -6,7 +6,7 @@ Source code of Dynamic-LOD.
 
 ## Requirements
 This project uses external tools that you must install before start using.
-We use MongoDB to save relevant metadata for creation of linksets. Thus, for MongoDB the default installation is sufficient: `sudo apt-get install mongodb-server`. We also need rapper tool to parse files and you can install via apt-get `sudo apt-get install raptor-utils`. To compile and run the project, you need maven `sudo apt-get install maven` (version > 3.x).
+We use MongoDB to save relevant metadata for creation of linksets. Thus, for MongoDB the default installation is sufficient: `sudo apt-get install mongodb-server`. To compile and run the project, you need maven `sudo apt-get install maven` (version > 3.x).
 
 Important!!! After cloning the project from this repository, please access the folder /resources and edit the properties configuration file.
 
@@ -25,15 +25,13 @@ In order to run the project you need to start the Jetty server using the followi
  Now the server must be acessible at the address:
 `http://localhost:9090/dataid/`.
 
- A good starting point is add a VoID or a DataID file to you customized cloud. Thus, you can use the API:
+ A good starting point is add a VoID, DCAT or DataID file to you customized cloud. Thus, you can use the API:
 `http://localhost:9090/dataid/api?addDataset=http://lod-cloud.net/data/void.ttl&rdfFormat=ttl`.
 
 To check you datasets status, you can access: 
 `http://localhost:9090/dataid/api?datasetStatus=http://lod-cloud.net/data/void.ttl`
 
-Finaly, after the server streams your files and count the links, you can access the RDF data about the discovered linksets via:
+Finaly, you can access the RDF data about the discovered linksets via:
 `http://localhost:9090/dataid/api?retrieveDataset=http://lod-cloud.net/`
 
-To access your customized diagram, you must access:
-`http://localhost:9090/dataid/cloud.html?dataset=http://lod-cloud.net/`
 
