@@ -2,7 +2,7 @@ package dynlod.mongodb.objects;
 
 import com.mongodb.DBObject;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DataIDDB;
 
 public class LinksetMongoDBObject extends DataIDDB {
@@ -73,7 +73,7 @@ public class LinksetMongoDBObject extends DataIDDB {
 					return true;
 				else
 					return false;
-			} catch (DataIDException e) {
+			} catch (DynamicLODGeneralException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return false;

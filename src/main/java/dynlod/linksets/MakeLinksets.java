@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.filters.GoogleBloomFilter;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
@@ -84,7 +84,7 @@ public class MakeLinksets {
 							logger.error("distributionObjectPath is empty or null for "
 									+ distribution.getDownloadUrl()
 									+ " distribution;");
-							throw new DataIDException(
+							throw new DynamicLODGeneralException(
 									"distributionObjectPath is empty or null for "
 											+ distribution.getDownloadUrl()
 											+ " distribution;");

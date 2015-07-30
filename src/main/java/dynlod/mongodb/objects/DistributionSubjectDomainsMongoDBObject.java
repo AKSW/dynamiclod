@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DataIDDB;
 
 public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
@@ -29,7 +29,7 @@ public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
 			loadObject();
 		}
 
-		public boolean updateObject(boolean checkBeforeInsert) throws DataIDException {
+		public boolean updateObject(boolean checkBeforeInsert) throws DynamicLODGeneralException {
 
 			BasicDBObject mongoDBObject2 = new BasicDBObject();
 			
@@ -56,7 +56,7 @@ public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
 						return true;
 					else
 						return false;
-				} catch (DataIDException e) {
+				} catch (DynamicLODGeneralException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					return false;

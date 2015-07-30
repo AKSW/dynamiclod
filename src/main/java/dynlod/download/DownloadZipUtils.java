@@ -14,7 +14,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.utils.FileUtils;
 
 public class DownloadZipUtils {
@@ -28,7 +28,7 @@ public class DownloadZipUtils {
 		return false;
 	}
 
-	public void checkZipFile(URL url) throws DataIDException {
+	public void checkZipFile(URL url) throws DynamicLODGeneralException {
 		ZipInputStream zis = null;
 		try {
 			try {
@@ -45,17 +45,17 @@ public class DownloadZipUtils {
 				while ((entry = zis.getNextEntry()) != null) {
 					fileName = entry.getName();
 					if (count2 > 1) {
-						throw new DataIDException(
+						throw new DynamicLODGeneralException(
 								"Too many entries compressed! ZIP files should contains only the dump file.");
 					}
 					if (entry.isDirectory()) {
-						throw new DataIDException(
+						throw new DynamicLODGeneralException(
 								"We found a compressed directory ("
 										+ entry.getName()
 										+ "). ZIP files should contains only the dump file.");
 					}
 					if (!FileUtils.acceptedFormats(entry.getName())) {
-						throw new DataIDException(
+						throw new DynamicLODGeneralException(
 								"The file format is invalid. "
 										+ entry.getName());
 					}

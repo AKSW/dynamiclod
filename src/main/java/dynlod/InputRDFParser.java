@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
+import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
@@ -36,7 +37,7 @@ public class InputRDFParser {
 	int numberOfDistributions = 0;
 	public boolean someDownloadURLFound = false;
 	private String datasetURI;
-	private String dataIDURL;
+	private String fileURLHash;
 	private String access_url;
 
 	APIStatusMongoDBObject apiStatus = null;
@@ -74,16 +75,16 @@ public class InputRDFParser {
 		return datasetsStmt;
 	}
 
-	public List<DistributionMongoDBObject> parseDistributions() {
-
-		// this.distributionsLinks = distributionsLinks;
-		// this.bean = bean;
-
+	public List<DistributionMongoDBObject> parseDistributions() throws DynamicLODNoDatasetFoundException{
 		// select dataset
 		StmtIterator datasetsStmt = getFirstStmt();
 
 		if (datasetsStmt.hasNext())
 			iterateSubsetsNew(datasetsStmt, null, null);
+		else
+			throw new DynamicLODNoDatasetFoundException(
+					"We could not parse any datasets.");
+
 
 		return distributionsLinks;
 	}
@@ -113,7 +114,7 @@ public class InputRDFParser {
 			datasetMongoDBObj.setAccess_url(access_url);
 
 			// add DataID file path
-			datasetMongoDBObj.setDataIdFileName(dataIDURL);
+			datasetMongoDBObj.setDataIdFileName(fileURLHash);
 
 			// case there is title property
 			if (dataset.getSubject().getProperty(RDFProperties.title) != null) {
@@ -345,12 +346,23 @@ public class InputRDFParser {
 		}
 
 	}
+	
+	private ResIterator findDataset(){
+		ResIterator hasSomeDataset = null; 
+		for (Resource datasetResource : RDFProperties.Dataset) {
+			hasSomeDataset = inModel.listResourcesWithProperty(
+					RDFProperties.type, datasetResource);
+			if (hasSomeDataset.hasNext())
+				break;
+		}
+		return hasSomeDataset;
+	}
 
 	// read dataID file and return the dataset uri
 	public String readModel(String URL, String format) throws Exception {
 		apiStatus = new APIStatusMongoDBObject(URL);
 		access_url = URL;
-		String name = null;
+		String someDatasetURI = null;
 		format = getJenaFormat(format);
 		logger.info("Trying to read dataset: " + URL.toString());
 
@@ -360,33 +372,26 @@ public class InputRDFParser {
 
 		inModel.read(URLConnection.getInputStream(), null, format);
 
-		ResIterator hasSomeDatasets = null;
-		for (Resource datasetResource : RDFProperties.Dataset) {
-			hasSomeDatasets = inModel.listResourcesWithProperty(
-					RDFProperties.type, datasetResource);
-			if (hasSomeDatasets.hasNext())
-				break;
-		}
+		ResIterator hasSomeDataset = findDataset();
 
-		if (hasSomeDatasets.hasNext()) {
-			name = hasSomeDatasets.next().getURI().toString();
+		if (hasSomeDataset.hasNext()) {
+			someDatasetURI = hasSomeDataset.next().getURI().toString();
 			logger.info("Jena model created. ");
-			logger.info("Looks that this is a valid VoID/DataID file! " + name);
-			apiStatus
-					.setMessage("Looks that this is a valid VoID/DataID file! "
-							+ name);
+			logger.info("Looks that this is a valid VoID/DCAT/DataID file! " + someDatasetURI);
+			apiStatus.setMessage("Looks that this is a valid VoID/DCAT/DataID file! "
+							+ someDatasetURI);
 
-			dataIDURL = FileUtils.stringToHash(URL);
+			fileURLHash = FileUtils.stringToHash(URL);
 			inModel.write(new FileOutputStream(new File(
-					DynlodGeneralProperties.DATAID_PATH + dataIDURL)));
+					DynlodGeneralProperties.FILE_URL_PATH + fileURLHash)));
 		}
-		if (name == null) {
-			apiStatus.setMessage("It's not possible to find a dataset.");
+		else {
+			apiStatus.setMessage("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
 			apiStatus.setHasError(true);
-			throw new Exception("It's not possible to find a dataset.");
+			throw new DynamicLODNoDatasetFoundException("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
 		}
 
-		return name;
+		return someDatasetURI;
 	}
 
 	public String getJenaFormat(String format) {

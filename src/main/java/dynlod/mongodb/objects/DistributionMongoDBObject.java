@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DataIDDB;
 
 public class DistributionMongoDBObject extends DataIDDB {
@@ -190,7 +190,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 					return true;
 				else
 					return false;
-			} catch (DataIDException e) {
+			} catch (DynamicLODGeneralException e) {
 				e.printStackTrace();
 				return false;
 			}

@@ -3,23 +3,23 @@ package dynlod;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 
 import dynlod.download.CheckWhetherDownload;
 import dynlod.download.StreamAndCompareDistribution;
+import dynlod.exceptions.DynamicLODFileNotAcceptedException;
+import dynlod.exceptions.DynamicLODNoDatasetFoundException;
+import dynlod.exceptions.DynamicLODNoDistributionFoundException;
+import dynlod.exceptions.DynamicLODNoDownloadURLFoundException;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
 import dynlod.lov.LOV;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
-import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
@@ -27,7 +27,7 @@ import dynlod.utils.Timer;
 public class Manager {
 	final static Logger logger = Logger.getLogger(Manager.class);
 
-	private String name = null;
+	private String someDatasetURI = null;
 
 	// list of subset and their distributions
 	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
@@ -58,7 +58,7 @@ public class Manager {
 
 			// check is distribution need to be streamed
 			boolean needDownload = checkDistributionStatus(distributionMongoDBObj);
-			 needDownload = true;
+			needDownload = true;
 
 			logger.info("Distribution n. " + counter + ": "
 					+ distributionMongoDBObj.getUri());
@@ -124,72 +124,74 @@ public class Manager {
 							.setTriples(downloadedFile.totalTriples);
 
 					// remove old domains object
-//					ObjectId id = new ObjectId();
-//					DistributionObjectDomainsMongoDBObject d2 = new DistributionObjectDomainsMongoDBObject(
-//							id.get().toString());
-//					d2.setDistributionURI(distributionMongoDBObj.getUri());
-//					d2.remove();
-//					// save object domains
-//					int count = 0;
-//					Iterator it = downloadedFile.objectDomains.entrySet()
-//							.iterator();
-//					while (it.hasNext()) {
-//						Map.Entry pair = (Map.Entry) it.next();
-//						String d = (String) pair.getKey();
-//						// distributionMongoDBObj.addAuthorityObjects(d);
-//						count++;
-//						if (count % 100000 == 0) {
-//							logger.debug(count
-//									+ " different objects domain saved ("
-//									+ (downloadedFile.objectDomains.size() - count)
-//									+ " remaining).");
-//						}
-//
-//						id = new ObjectId();
-//						d2 = new DistributionObjectDomainsMongoDBObject(id
-//								.get().toString());
-//						d2.setObjectDomain(d);
-//						d2.setDistributionURI(distributionMongoDBObj.getUri());
-//
-//						d2.updateObject(false);
-//					}
-//
-//					// remove old subjects domains
-//					id = new ObjectId();
-//					DistributionSubjectDomainsMongoDBObject d3 = new DistributionSubjectDomainsMongoDBObject(
-//							id.get().toString());
-//					d3.setDistributionURI(distributionMongoDBObj.getUri());
-//					d3.remove();
-//
-//					// save subject domains
-//					count = 0;
-//					it = downloadedFile.subjectDomains.entrySet().iterator();
-//					while (it.hasNext()) {
-//						Map.Entry pair = (Map.Entry) it.next();
-//						String d = (String) pair.getKey();
-//						// distributionMongoDBObj.addAuthorityObjects(d);
-//						count++;
-//						if (count % 100000 == 0) {
-//							logger.debug(count
-//									+ " different subjects domain saved ("
-//									+ (downloadedFile.subjectDomains.size() - count)
-//									+ " remaining).");
-//						}
-//
-//						id = new ObjectId();
-//						d3 = new DistributionSubjectDomainsMongoDBObject(id
-//								.get().toString());
-//						d3.setSubjectDomain(d);
-//						d3.setDistributionURI(distributionMongoDBObj.getUri());
-//
-//						d3.updateObject(false);
-//					}
-//
-//					logger.info(downloadedFile.objectDomains.size()
-//							+ " different objects domain saved.");
-//
-//					logger.info(downloadedFile.subjectDomains.size()
-//							+ " different subjects domain saved.");
+					// ObjectId id = new ObjectId();
+					// DistributionObjectDomainsMongoDBObject d2 = new
+					// DistributionObjectDomainsMongoDBObject(
+					// id.get().toString());
+					// d2.setDistributionURI(distributionMongoDBObj.getUri());
+					// d2.remove();
+					// // save object domains
+					// int count = 0;
+					// Iterator it = downloadedFile.objectDomains.entrySet()
+					// .iterator();
+					// while (it.hasNext()) {
+					// Map.Entry pair = (Map.Entry) it.next();
+					// String d = (String) pair.getKey();
+					// // distributionMongoDBObj.addAuthorityObjects(d);
+					// count++;
+					// if (count % 100000 == 0) {
+					// logger.debug(count
+					// + " different objects domain saved ("
+					// + (downloadedFile.objectDomains.size() - count)
+					// + " remaining).");
+					// }
+					//
+					// id = new ObjectId();
+					// d2 = new DistributionObjectDomainsMongoDBObject(id
+					// .get().toString());
+					// d2.setObjectDomain(d);
+					// d2.setDistributionURI(distributionMongoDBObj.getUri());
+					//
+					// d2.updateObject(false);
+					// }
+					//
+					// // remove old subjects domains
+					// id = new ObjectId();
+					// DistributionSubjectDomainsMongoDBObject d3 = new
+					// DistributionSubjectDomainsMongoDBObject(
+					// id.get().toString());
+					// d3.setDistributionURI(distributionMongoDBObj.getUri());
+					// d3.remove();
+					//
+					// // save subject domains
+					// count = 0;
+					// it = downloadedFile.subjectDomains.entrySet().iterator();
+					// while (it.hasNext()) {
+					// Map.Entry pair = (Map.Entry) it.next();
+					// String d = (String) pair.getKey();
+					// // distributionMongoDBObj.addAuthorityObjects(d);
+					// count++;
+					// if (count % 100000 == 0) {
+					// logger.debug(count
+					// + " different subjects domain saved ("
+					// + (downloadedFile.subjectDomains.size() - count)
+					// + " remaining).");
+					// }
+					//
+					// id = new ObjectId();
+					// d3 = new DistributionSubjectDomainsMongoDBObject(id
+					// .get().toString());
+					// d3.setSubjectDomain(d);
+					// d3.setDistributionURI(distributionMongoDBObj.getUri());
+					//
+					// d3.updateObject(false);
+					// }
+					//
+					// logger.info(downloadedFile.objectDomains.size()
+					// + " different objects domain saved.");
+					//
+					// logger.info(downloadedFile.subjectDomains.size()
+					// + " different subjects domain saved.");
 
 					distributionMongoDBObj.setSuccessfullyDownloaded(true);
 					distributionMongoDBObj.updateObject(true);
@@ -237,23 +239,15 @@ public class Manager {
 
 	public Manager(String URL) {
 		try {
-			FileUtils.checkIfFolderExists();
-
-			logger.debug("Loading DataID file URL: " + URL + " url.");
+			logger.debug("Loading VoID/DCAT/DataID file. URL: " + URL);
 
 			// check file extension
 			FileUtils.acceptedFormats(URL.toString());
 
 			// create jena model
-			name = fileInputParserModel.readModel(URL, "ttl");
+			someDatasetURI = fileInputParserModel.readModel(URL, "ttl");
 
-			if (name == null) {
-				logger.error("Impossible to read dataset. Perhaps that's not a valid DataID file. Dataset: "
-						+ name);
-				return;
-			}
-
-			logger.info("We found at least one dataset: " + name);
+			logger.info("We found at least one dataset: " + someDatasetURI);
 
 			logger.info("Parsing model in order to find distributions...");
 
@@ -262,26 +256,35 @@ public class Manager {
 					.parseDistributions();
 			int numberOfDistributions = listOfSubsets.size();
 
-			// update view
-			if (numberOfDistributions > 0) {
-				// bean.setDownloadDatasetURI(listOfSubsets.get(0).getUri());
-				// DataIDBean.pushDownloadInfo();
-			}
-
 			if (!fileInputParserModel.someDownloadURLFound)
-				throw new Exception("No DownloadURL property found!");
+				throw new DynamicLODNoDownloadURLFoundException(
+						"No DownloadURL property found!");
 			else if (numberOfDistributions == 0)
-				throw new Exception("### 0 distribution found! ###");
+				throw new DynamicLODNoDistributionFoundException(
+						"### 0 distribution found! ###");
 
 			checkLOV();
 
 			// try to load distributions and make filters
 			streamAndCreateFilters();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
+		} catch (DynamicLODFileNotAcceptedException e1) {
+			logger.error(e1.getMessage());
+
+		} catch (DynamicLODNoDatasetFoundException e2) {
+			logger.error(e2.getMessage());
+
+		} catch (DynamicLODNoDownloadURLFoundException e3) {
+			logger.error(e3.getMessage());
+
+		} catch (DynamicLODNoDistributionFoundException e4) {
+			logger.error(e4.getMessage());
+
+		} catch (Exception e5) {
+			e5.printStackTrace();
+			logger.error(e5.getMessage());
 		}
+		
 		logger.info("END");
 	}
 
@@ -357,24 +360,22 @@ public class Manager {
 				logger.info("Created bloom filter with customized equation: "
 						+ DynlodGeneralProperties.FPP_EQUATION + " and value: "
 						+ result);
-				
+
 				// create filter for objects
 				filterObject = new GoogleBloomFilter(
 						(int) downloadedFile.objectLines, result);
-				
-				
+
 			} else {
 
-				if (downloadedFile.subjectLines > 1000000){
+				if (downloadedFile.subjectLines > 1000000) {
 					filterSubject = new GoogleBloomFilter(
 							(int) downloadedFile.subjectLines,
 							0.9 / downloadedFile.subjectLines);
 					filterObject = new GoogleBloomFilter(
 							(int) downloadedFile.objectLines,
 							0.9 / downloadedFile.objectLines);
-					
-				}
-				else{
+
+				} else {
 					filterSubject = new GoogleBloomFilter(
 							(int) downloadedFile.subjectLines, 0.0000001);
 					filterObject = new GoogleBloomFilter(
@@ -397,33 +398,41 @@ public class Manager {
 		timer.startTimer();
 
 		// Loading subject file to filter
-		f.loadFileToFilter(filterSubject, DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+downloadedFile.hashFileName);
-		distributionMongoDBObj.setTimeToCreateSubjectFilter(String.valueOf(timer
-				.stopTimer()));
+		f.loadFileToFilter(filterSubject,
+				DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
+						+ downloadedFile.hashFileName);
+		distributionMongoDBObj.setTimeToCreateSubjectFilter(String
+				.valueOf(timer.stopTimer()));
 
-		filterSubject.saveFilter( DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		filterSubject
+				.saveFilter(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH
+						+ downloadedFile.hashFileName);
 		// save filter
 
-		distributionMongoDBObj.setSubjectFilterPath(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		distributionMongoDBObj
+				.setSubjectFilterPath(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH
+						+ downloadedFile.hashFileName);
 		distributionMongoDBObj.setNumberOfSubjectTriples(String
 				.valueOf(f.elementsLoadedIntoFilter));
-		
 
 		timer = new Timer();
 		timer.startTimer();
 		// Loading object file to filter
-		f.loadFileToFilter(filterObject, DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH+downloadedFile.hashFileName);
+		f.loadFileToFilter(filterObject,
+				DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
+						+ downloadedFile.hashFileName);
 		distributionMongoDBObj.setTimeToCreateObjectFilter(String.valueOf(timer
 				.stopTimer()));
 
-		filterObject.saveFilter(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		filterObject.saveFilter(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH
+				+ downloadedFile.hashFileName);
 		// save filter
 
-		distributionMongoDBObj.setObjectFilterPath(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		distributionMongoDBObj
+				.setObjectFilterPath(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH
+						+ downloadedFile.hashFileName);
 		distributionMongoDBObj.setNumberOfObjectTriples(String
 				.valueOf(f.elementsLoadedIntoFilter));
-		
-		
 
 		return false;
 	}

@@ -48,7 +48,7 @@ public class DynlodGeneralProperties {
 			SUBJECT_PATH = BASE_PATH + "subjects/";
 			OBJECT_PATH = BASE_PATH + "objects/";
 			DUMP_PATH = BASE_PATH + "dump/";
-			DATAID_PATH = BASE_PATH + "dataid/";
+			FILE_URL_PATH = BASE_PATH + "dataid/";
 			AUTHORITY_FILTER_PATH = BASE_PATH + "authority_filter";
 			DISTRIBUTION_PREFIX = "distribution_";
 			SUBJECT_FILE_DISTRIBUTION_PATH = SUBJECT_PATH
@@ -92,7 +92,7 @@ public class DynlodGeneralProperties {
 	public static String DUMP_PATH;
 
 	// defining dataids file path
-	public static String DATAID_PATH;
+	public static String FILE_URL_PATH;
 
 	// defining dataset file suffix
 	public static String DISTRIBUTION_PREFIX;

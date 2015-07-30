@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.linksets.MakeLinksets2;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
@@ -130,7 +130,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 					try {
 						d2.updateObject(true);
 
-					} catch (DataIDException e) {
+					} catch (DynamicLODGeneralException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -144,7 +144,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 
 					try {
 						d2.updateObject(true);
-					} catch (DataIDException e) {
+					} catch (DynamicLODGeneralException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}

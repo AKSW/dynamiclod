@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import dynlod.DynlodGeneralProperties;
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 
 public class FileUtils {
 
@@ -29,7 +29,7 @@ public class FileUtils {
 		if (!f.exists())
 			f.mkdirs();
 
-		f = new File(DynlodGeneralProperties.DATAID_PATH);
+		f = new File(DynlodGeneralProperties.FILE_URL_PATH);
 		if (!f.exists())
 			f.mkdirs();
 		
@@ -40,7 +40,7 @@ public class FileUtils {
 
 	// TODO make this method more precise
 	public static boolean acceptedFormats(String fileName)
-			throws DataIDException {
+			throws DynamicLODGeneralException {
 
 		if (fileName.contains(".ttl"))
 			return true;
@@ -55,7 +55,7 @@ public class FileUtils {
 		else if (fileName.contains(".tgz"))
 			return true;
 		else {
-			throw new DataIDException("File format not accepted: " + fileName);
+			throw new DynamicLODGeneralException("File format not accepted: " + fileName);
 		}
 	}
 

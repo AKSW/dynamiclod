@@ -15,7 +15,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 import dynlod.DynlodGeneralProperties;
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 
 abstract public class DataIDDB {
 
@@ -45,7 +45,7 @@ abstract public class DataIDDB {
 
 	// abstract methods
 	abstract public boolean updateObject(boolean checkBeforeInsert)
-			throws DataIDException;
+			throws DynamicLODGeneralException;
 
 	abstract protected boolean loadObject();
 
@@ -118,11 +118,11 @@ abstract public class DataIDDB {
 		return db;
 	}
 
-	protected void insert(boolean checkBeforeInsert) throws DataIDException {
+	protected void insert(boolean checkBeforeInsert) throws DynamicLODGeneralException {
 
 		// adding object URI
 		if (uri == null){
-			throw new DataIDException(
+			throw new DynamicLODGeneralException(
 					"Error while saving. Object URI can't be null.");
 		}
 		// check if URI already exists
@@ -131,7 +131,7 @@ abstract public class DataIDDB {
 			tmp.put(URI, uri);
 			DBCursor d = objectCollection.find(tmp);
 			if (d.hasNext())
-				throw new DataIDException("Can't save object with URI: " + uri
+				throw new DynamicLODGeneralException("Can't save object with URI: " + uri
 						+ ". Object already exists.");
 		}
 
@@ -142,7 +142,7 @@ abstract public class DataIDDB {
 		objectCollection.insert(mongoDBObject);
 	}
 
-	protected boolean update() throws DataIDException {
+	protected boolean update() throws DynamicLODGeneralException {
 
 		if (uri == null)
 			return false;
@@ -161,7 +161,7 @@ abstract public class DataIDDB {
 		if (objectCollection.update(query, updateObj).isUpdateOfExisting())
 			return true;
 		else {
-			throw new DataIDException("Object with URI: " + uri
+			throw new DynamicLODGeneralException("Object with URI: " + uri
 					+ " could not be found in database.");
 		}
 	}

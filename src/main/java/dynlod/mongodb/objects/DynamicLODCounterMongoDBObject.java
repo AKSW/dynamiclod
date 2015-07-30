@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.mongodb.DBObject;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DataIDDB;
 
 public class DynamicLODCounterMongoDBObject extends DataIDDB {
@@ -43,7 +43,7 @@ public class DynamicLODCounterMongoDBObject extends DataIDDB {
 					return true;
 				else
 					return false;
-			} catch (DataIDException e) {
+			} catch (DynamicLODGeneralException e) {
 				e.printStackTrace();
 				return false;
 			}

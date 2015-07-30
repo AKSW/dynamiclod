@@ -13,7 +13,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.Logger;
 
-import dynlod.exceptions.DataIDException;
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.utils.FileUtils;
 
 public class DownloadTarUtils {
@@ -26,7 +26,7 @@ public class DownloadTarUtils {
 		return false;
 	}
 
-	public void checkTarFile(InputStream inputStream) throws DataIDException {
+	public void checkTarFile(InputStream inputStream) throws DynamicLODGeneralException {
 		TarArchiveInputStream is = null;
 		try {
 			try {
@@ -45,12 +45,12 @@ public class DownloadTarUtils {
 					fileName = entry.getName();
 					if (count2 > 1) {
 						is.close();
-						throw new DataIDException(
+						throw new DynamicLODGeneralException(
 								"Too many entries compressed! TAR files should contains only the dump file.");
 					}
 					if (entry.isDirectory()) {
 						is.close();
-						throw new DataIDException(
+						throw new DynamicLODGeneralException(
 								"We found a compressed directory ("
 										+ entry.getName()
 										+ "). TAR files should contains only the dump file.");
