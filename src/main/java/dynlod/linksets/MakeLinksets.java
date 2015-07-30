@@ -69,7 +69,7 @@ public class MakeLinksets {
 						// find which filters should be opened for this
 						// distribution
 						ArrayList<DistributionMongoDBObject> disributionsToCompare = DistributionQueries
-								.getDistributionsByAuthority((String) distribution
+								.getDistributionsByOutdegree((String) distribution
 										.getDownloadUrl());
 
 						// uptate status of distribution
@@ -115,7 +115,7 @@ public class MakeLinksets {
 										}
 										dataThread.filter = filter;
 
-										dataThread.subjectFilterPath = distributionToCompare
+										dataThread.filterPath = distributionToCompare
 												.getSubjectFilterPath();
 										dataThread.subjectDistributionURI = distributionToCompare
 												.getDownloadUrl();
@@ -278,10 +278,10 @@ public class MakeLinksets {
 			// l.setAvailability( (int)
 			// ((positive/dataThread.urlStatus.size())*100));
 			l.setLinks(dataThread.links);
-			l.setObjectsDistributionTarget(dataThread.objectDistributionURI);
-			l.setSubjectsDistributionTarget(dataThread.subjectDistributionURI);
-			l.setObjectsDatasetTarget(dataThread.objectDatasetURI);
-			l.setSubjectsDatasetTarget(dataThread.subjectDatasetURI);
+			l.setDistributionSource(dataThread.objectDistributionURI);
+			l.setDistributionTarget(dataThread.subjectDistributionURI);
+			l.setDatasetSource(dataThread.objectDatasetURI);
+			l.setDatasetTarget(dataThread.subjectDatasetURI);
 			l.updateObject(true);
 		}
 

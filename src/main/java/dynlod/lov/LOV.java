@@ -30,6 +30,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.DatasetGraph;
 
 import dynlod.DynlodGeneralProperties;
+import dynlod.Manager;
 import dynlod.download.Download;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
@@ -42,7 +43,7 @@ import dynlod.utils.Timer;
 public class LOV extends Download {
 	final static Logger logger = Logger.getLogger(LOV.class);
 
-	DistributionMongoDBObject dist = null;
+	DistributionMongoDBObject distribution = null;
 
 	@Test
 	public void loadLOVVocabularies() throws Exception {
@@ -151,11 +152,11 @@ public class LOV extends Download {
 					objects.add("<" + triple.getObject().toString() + ">");
 
 			}
-			dist = new DistributionMongoDBObject(node.getNameSpace());
+			distribution = new DistributionMongoDBObject(node.getNameSpace());
 			if (d.getTitle() != null)
-				dist.setTitle(d.getTitle());
+				distribution.setTitle(d.getTitle());
 			else if (d.getLabel() != null)
-				dist.setTitle(d.getLabel());
+				distribution.setTitle(d.getLabel());
 
 			SaveDist(node.getNameSpace(), subjects, objects);
 
@@ -165,6 +166,9 @@ public class LOV extends Download {
 
 	public void SaveDist(String nameSpace, ArrayList<String> subjects,
 			ArrayList<String> objects) throws Exception {
+		
+	
+		
 		File fout = new File(
 				DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
 						+ FileUtils.stringToHash(nameSpace));
@@ -200,48 +204,76 @@ public class LOV extends Download {
 			obj = "";
 		}
 
+
+
+		// make a filter with subjects and objects
+		GoogleBloomFilter subjectFilter;
+		GoogleBloomFilter objectFilter;
+		
+		if (subjects.size() > 1000000){
+			subjectFilter = new GoogleBloomFilter((int) subjects.size(),
+					(0.9) / subjects.size());
+			objectFilter = new GoogleBloomFilter((int) objects.size(),
+					(0.9) / objects.size());
+		}
+		else{
+			subjectFilter = new GoogleBloomFilter((int) subjects.size(), 0.0000001);
+			objectFilter = new GoogleBloomFilter((int) objects.size(), 0.0000001);
+			}
+
+		// creating filter for subjects
 		Timer t = new Timer();
 		t.startTimer();
-
-		// make a filter with subjects
-		GoogleBloomFilter filter;
-		if (subjects.size() > 1000000)
-			filter = new GoogleBloomFilter((int) subjects.size(),
-					(0.9) / subjects.size());
-		else
-			filter = new GoogleBloomFilter((int) subjects.size(), 0.0000001);
-
 		// load file to filter and take the process time
 		FileToFilter f = new FileToFilter();
 
 		// Loading file to filter
-		f.loadFileToFilter(filter, FileUtils.stringToHash(nameSpace));
+		f.loadFileToFilter(subjectFilter, DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+FileUtils.stringToHash(nameSpace));
 
-		filter.saveFilter(FileUtils.stringToHash(nameSpace));
+		subjectFilter.saveFilter(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH+FileUtils.stringToHash(nameSpace));
 		// save filter
 		String timer = t.stopTimer();
+		
+		
+		// creating filter for objects		
+		t = new Timer();
+		t.startTimer();
+		// load file to filter and take the process time
+		f = new FileToFilter();
+
+		// Loading file to filter
+		f.loadFileToFilter(objectFilter,DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH+ FileUtils.stringToHash(nameSpace));
+
+		objectFilter.saveFilter(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH+FileUtils.stringToHash(nameSpace));
+		// save filter
+		String timer2 = t.stopTimer();
+		
+		
 
 		ArrayList<String> parentDataset = new ArrayList<String>();
 		parentDataset.add(nameSpace);
 
-		dist.setDownloadUrl(nameSpace);
-		dist.setDefaultDatasets(parentDataset);
-		dist.setParentDataset(nameSpace);
-		dist.setTopDataset(nameSpace);
-		dist.setTriples(subjects.size() + objects.size());
-		dist.setTimeToCreateFilter(timer);
-		dist.setFormat("nq");
-		dist.setIsVocabulary(true);
-		dist.setNumberOfObjectTriples(String.valueOf(objects.size()));
-		dist.setNumberOfTriplesLoadedIntoFilter(String.valueOf(subjects.size()));
-		dist.setSuccessfullyDownloaded(true);
-		dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
-		dist.setSubjectFilterPath(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH
+		distribution.setDownloadUrl(nameSpace);
+		distribution.setDefaultDatasets(parentDataset);
+		distribution.setParentDataset(nameSpace);
+		distribution.setTopDataset(nameSpace);
+		distribution.setTriples(subjects.size() + objects.size());
+		distribution.setTimeToCreateSubjectFilter(timer);
+		distribution.setTimeToCreateObjectFilter(timer2);
+		distribution.setFormat("nq");
+		distribution.setIsVocabulary(true);
+		distribution.setNumberOfObjectTriples(String.valueOf(objects.size()));
+		distribution.setNumberOfSubjectTriples(String.valueOf(subjects.size()));
+		distribution.setSuccessfullyDownloaded(true);
+		distribution.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
+		distribution.setSubjectFilterPath(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH
 				+ FileUtils.stringToHash(nameSpace));
-		dist.setObjectPath(DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
+		distribution.setObjectFilterPath(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH
+				+ FileUtils.stringToHash(nameSpace));
+		distribution.setObjectPath(DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
 				+ FileUtils.stringToHash(nameSpace));
 
-		dist.updateObject(true);
+		distribution.updateObject(true);
 
 		ObjectId id = new ObjectId();
 		DistributionSubjectDomainsMongoDBObject ds = new DistributionSubjectDomainsMongoDBObject(

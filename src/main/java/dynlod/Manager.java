@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import dynlod.download.CheckWhetherDownload;
-import dynlod.download.DownloadAndSaveDistribution2;
+import dynlod.download.StreamAndCompareDistribution;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
 import dynlod.lov.LOV;
@@ -47,32 +47,21 @@ public class Manager {
 		while (distributions.hasNext()) {
 			counter++;
 
-			DistributionMongoDBObject distributionMongoDBObj = distributions.next();
+			DistributionMongoDBObject distributionMongoDBObj = distributions
+					.next();
 
 			// case there is no such distribution, create one.
 			if (distributionMongoDBObj.getStatus() == null) {
 				distributionMongoDBObj
-						.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD);
+						.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 			}
 
 			// check is distribution need to be streamed
-			boolean needDownload = false;
-
-			if (distributionMongoDBObj.getStatus().equals(
-					DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD))
-				needDownload = true;
-			else if (distributionMongoDBObj.getStatus().equals(
-					DistributionMongoDBObject.STATUS_DOWNLOADING))
-				needDownload = false;
-			else if (distributionMongoDBObj.getStatus().equals(
-					DistributionMongoDBObject.STATUS_ERROR))
-				needDownload = true;
-			else if (new CheckWhetherDownload()
-					.checkDistribution(distributionMongoDBObj))
-				needDownload = true;
+			boolean needDownload = checkDistributionStatus(distributionMongoDBObj);
+			 needDownload = true;
 
 			logger.info("Distribution n. " + counter + ": "
-					+distributionMongoDBObj.getUri());
+					+ distributionMongoDBObj.getUri());
 
 			if (!needDownload) {
 				logger.info("Distribution is already in the last version. No needs to download again. ");
@@ -84,12 +73,14 @@ public class Manager {
 
 					// uptate status of distribution to downloading
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_DOWNLOADING);
+							.setStatus(DistributionMongoDBObject.STATUS_STREAMING);
 					distributionMongoDBObj.updateObject(true);
 
 					// now we need to download the distribution
-					DownloadAndSaveDistribution2 downloadedFile = new DownloadAndSaveDistribution2(
-							distributionMongoDBObj.getDownloadUrl(), distributionMongoDBObj.getFormat());
+					StreamAndCompareDistribution downloadedFile = new StreamAndCompareDistribution(
+							distributionMongoDBObj.getDownloadUrl(),
+							distributionMongoDBObj.getFormat(),
+							distributionMongoDBObj.getUri());
 
 					logger.info("Downloading distribution.");
 
@@ -97,41 +88,10 @@ public class Manager {
 
 					// uptate status of distribution
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_DOWNLOADED);
+							.setStatus(DistributionMongoDBObject.STATUS_STREAMED);
 					distributionMongoDBObj.updateObject(true);
 
 					logger.info("Distribution downloaded. ");
-
-//					// check if format is not ntriples
-//					if (!downloadedFile.RDFFormat
-//							.equals(Formats.DEFAULT_NTRIPLES)) {
-//
-//						// uptate status of distribution
-//						distributionMongoDBObj
-//						.setStatus(DistributionMongoDBObject.STATUS_SEPARATING_SUBJECTS_AND_OBJECTS);
-//					
-//						distributionMongoDBObj.updateObject(true);
-//
-//						logger.info("Separating subjects and objects.");
-//
-//						PrepareFiles p = new PrepareFiles();
-//						// separating subjects and objects using rapper and awk
-//						// error to convert dbpedia files from turtle using
-//						// rapper
-//						
-//						
-//						p.separateSubjectAndObject(downloadedFile.hashFileName,
-//								downloadedFile.RDFFormat);
-//						downloadedFile.objectDomains = p.objectDomains;
-//						downloadedFile.subjectDomains = p.subjectDomains;
-//						downloadedFile.objectFilePath = p.objectFile;
-//						downloadedFile.totalTriples = p.totalTriples;
-//						downloadedFile.objectLines = p.objectTriples;
-//						
-//						//remove dump file
-//						File f = new File(DynlodGeneralProperties.DUMP_PATH+ downloadedFile.hashFileName); 
-//						if(f.isFile()) f.delete();
-//					}
 
 					// uptate status of distribution
 					distributionMongoDBObj
@@ -140,66 +100,7 @@ public class Manager {
 
 					logger.info("Creating bloom filter.");
 
-					// make a filter with subjects
-					GoogleBloomFilter filter;
-					if (downloadedFile.subjectLines != 0) {
-						
-						// get customized equation from properties file
-						if(DynlodGeneralProperties.FPP_EQUATION!=null){
-							
-							// equation parser
-							JexlEngine jexl = new JexlEngine();
-								jexl.setCache(512);
-								jexl.setLenient(false);
-								jexl.setSilent(false);
-
-								String calc = DynlodGeneralProperties.FPP_EQUATION;
-								Expression e = jexl.createExpression(calc);
-
-								// populate the context
-								JexlContext context = new MapContext();
-								context.set("distributionSize", downloadedFile.subjectLines);
-
-								// work it out
-								Double result = (Double) e.evaluate(context);								
-								
-							
-							filter = new GoogleBloomFilter(
-									(int) downloadedFile.subjectLines,
-									result);
-							
-							logger.info("Created bloom filter with customized equation: "+DynlodGeneralProperties.FPP_EQUATION + " and value: "+ result);
-						}
-						else{
-						
-						if (downloadedFile.subjectLines > 1000000)
-							filter = new GoogleBloomFilter(
-									(int) downloadedFile.subjectLines,
-									0.9 / downloadedFile.subjectLines);
-						else
-							filter = new GoogleBloomFilter(
-									(int) downloadedFile.subjectLines,
-									0.0000001);
-						}
-					} else {
-						filter = new GoogleBloomFilter(
-								(int) downloadedFile.contentLengthAfterDownloaded / 40,
-								0.000001);
-					}
-
-					// load file to filter and take the process time
-					FileToFilter f = new FileToFilter();
-
-					Timer timer = new Timer();
-					timer.startTimer();
-
-					// Loading file to filter
-					f.loadFileToFilter(filter, downloadedFile.hashFileName);
-					distributionMongoDBObj.setTimeToCreateFilter(String
-							.valueOf(timer.stopTimer()));
-
-					filter.saveFilter(downloadedFile.hashFileName);
-					// save filter
+					createBloomFilter(downloadedFile, distributionMongoDBObj);
 
 					// save distribution in a mongodb object
 
@@ -220,85 +121,79 @@ public class Manager {
 					distributionMongoDBObj
 							.setObjectPath(downloadedFile.objectFilePath);
 					distributionMongoDBObj
-							.setSubjectFilterPath(filter.fullFilePath);
-					distributionMongoDBObj
-							.setNumberOfTriplesLoadedIntoFilter(String
-									.valueOf(f.subjectsLoadedIntoFilter));
-					distributionMongoDBObj
 							.setTriples(downloadedFile.totalTriples);
 
 					// remove old domains object
-					ObjectId id = new ObjectId();
-					DistributionObjectDomainsMongoDBObject d2 = new DistributionObjectDomainsMongoDBObject(
-							id.get().toString());
-					d2.setDistributionURI(distributionMongoDBObj.getUri());
-					d2.remove();
-
-					// save object domains
-					int count = 0;
-					Iterator it = downloadedFile.objectDomains.entrySet()
-							.iterator();
-					while (it.hasNext()) {
-						Map.Entry pair = (Map.Entry) it.next();
-						String d = (String) pair.getKey();
-						// distributionMongoDBObj.addAuthorityObjects(d);
-						count++;
-						if (count % 100000 == 0) {
-							logger.debug(count
-									+ " different objects domain saved ("
-									+ (downloadedFile.objectDomains.size() - count)
-									+ " remaining).");
-						}
-
-						id = new ObjectId();
-						d2 = new DistributionObjectDomainsMongoDBObject(id
-								.get().toString());
-						d2.setObjectDomain(d);
-						d2.setDistributionURI(distributionMongoDBObj.getUri());
-
-						d2.updateObject(false);
-					}
-
-					// remove old subjects domains
-					id = new ObjectId();
-					DistributionSubjectDomainsMongoDBObject d3 = new DistributionSubjectDomainsMongoDBObject(
-							id.get().toString());
-					d3.setDistributionURI(distributionMongoDBObj.getUri());
-					d3.remove();
-
-					// save subject domains
-					count = 0;
-					it = downloadedFile.subjectDomains.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry pair = (Map.Entry) it.next();
-						String d = (String) pair.getKey();
-						// distributionMongoDBObj.addAuthorityObjects(d);
-						count++;
-						if (count % 100000 == 0) {
-							logger.debug(count
-									+ " different subjects domain saved ("
-									+ (downloadedFile.subjectDomains.size() - count)
-									+ " remaining).");
-						}
-
-						id = new ObjectId();
-						d3 = new DistributionSubjectDomainsMongoDBObject(id
-								.get().toString());
-						d3.setSubjectDomain(d);
-						d3.setDistributionURI(distributionMongoDBObj.getUri());
-
-						d3.updateObject(false);
-					}
-
-					logger.info(downloadedFile.objectDomains.size()
-							+ " different objects domain saved.");
-
-					logger.info(downloadedFile.subjectDomains.size()
-							+ " different subjects domain saved.");
+//					ObjectId id = new ObjectId();
+//					DistributionObjectDomainsMongoDBObject d2 = new DistributionObjectDomainsMongoDBObject(
+//							id.get().toString());
+//					d2.setDistributionURI(distributionMongoDBObj.getUri());
+//					d2.remove();
+//					// save object domains
+//					int count = 0;
+//					Iterator it = downloadedFile.objectDomains.entrySet()
+//							.iterator();
+//					while (it.hasNext()) {
+//						Map.Entry pair = (Map.Entry) it.next();
+//						String d = (String) pair.getKey();
+//						// distributionMongoDBObj.addAuthorityObjects(d);
+//						count++;
+//						if (count % 100000 == 0) {
+//							logger.debug(count
+//									+ " different objects domain saved ("
+//									+ (downloadedFile.objectDomains.size() - count)
+//									+ " remaining).");
+//						}
+//
+//						id = new ObjectId();
+//						d2 = new DistributionObjectDomainsMongoDBObject(id
+//								.get().toString());
+//						d2.setObjectDomain(d);
+//						d2.setDistributionURI(distributionMongoDBObj.getUri());
+//
+//						d2.updateObject(false);
+//					}
+//
+//					// remove old subjects domains
+//					id = new ObjectId();
+//					DistributionSubjectDomainsMongoDBObject d3 = new DistributionSubjectDomainsMongoDBObject(
+//							id.get().toString());
+//					d3.setDistributionURI(distributionMongoDBObj.getUri());
+//					d3.remove();
+//
+//					// save subject domains
+//					count = 0;
+//					it = downloadedFile.subjectDomains.entrySet().iterator();
+//					while (it.hasNext()) {
+//						Map.Entry pair = (Map.Entry) it.next();
+//						String d = (String) pair.getKey();
+//						// distributionMongoDBObj.addAuthorityObjects(d);
+//						count++;
+//						if (count % 100000 == 0) {
+//							logger.debug(count
+//									+ " different subjects domain saved ("
+//									+ (downloadedFile.subjectDomains.size() - count)
+//									+ " remaining).");
+//						}
+//
+//						id = new ObjectId();
+//						d3 = new DistributionSubjectDomainsMongoDBObject(id
+//								.get().toString());
+//						d3.setSubjectDomain(d);
+//						d3.setDistributionURI(distributionMongoDBObj.getUri());
+//
+//						d3.updateObject(false);
+//					}
+//
+//					logger.info(downloadedFile.objectDomains.size()
+//							+ " different objects domain saved.");
+//
+//					logger.info(downloadedFile.subjectDomains.size()
+//							+ " different subjects domain saved.");
 
 					distributionMongoDBObj.setSuccessfullyDownloaded(true);
 					distributionMongoDBObj.updateObject(true);
-//					bean.updateDistributionList = true;
+					// bean.updateDistributionList = true;
 
 					logger.info("Done saving mongodb distribution object.");
 
@@ -314,7 +209,7 @@ public class Manager {
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_ERROR);
 					distributionMongoDBObj.setLastErrorMsg(e.getMessage());
-			
+
 					e.printStackTrace();
 					distributionMongoDBObj.setSuccessfullyDownloaded(false);
 					distributionMongoDBObj.updateObject(true);
@@ -325,9 +220,9 @@ public class Manager {
 		SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
 		systemProperties.setLinksetNeedUpdate(true);
 		systemProperties.updateObject(true);
-		
+
 		logger.info("Linksets will update soon.");
-		
+
 	}
 
 	public Manager(List<DistributionMongoDBObject> distributionsLinks) {
@@ -369,17 +264,17 @@ public class Manager {
 
 			// update view
 			if (numberOfDistributions > 0) {
-//				bean.setDownloadDatasetURI(listOfSubsets.get(0).getUri());
-//				DataIDBean.pushDownloadInfo();
+				// bean.setDownloadDatasetURI(listOfSubsets.get(0).getUri());
+				// DataIDBean.pushDownloadInfo();
 			}
 
 			if (!fileInputParserModel.someDownloadURLFound)
 				throw new Exception("No DownloadURL property found!");
 			else if (numberOfDistributions == 0)
-				throw new Exception("### 0 distribution found! ###");				
+				throw new Exception("### 0 distribution found! ###");
 
 			checkLOV();
-			
+
 			// try to load distributions and make filters
 			streamAndCreateFilters();
 
@@ -390,24 +285,147 @@ public class Manager {
 		logger.info("END");
 	}
 
-	
-	private void checkLOV(){
+	private void checkLOV() {
 		// check if LOV was already downloaded
 		SystemPropertiesMongoDBObject g = new SystemPropertiesMongoDBObject();
-		if (g.getDownloadedLOV()== null || !g.getDownloadedLOV()){
-				logger.info("LOV vocabularies still not lodaded! Loading now...");
-				try {
-					new LOV().loadLOVVocabularies();
-					g.setDownloadedLOV(true);
-					g.updateObject(true);
-					logger.info("LOV vocabularies loaded!");
-				} catch (Exception e) {
-					e.printStackTrace();
-					g.setDownloadedLOV(false);
-					g.updateObject(true);
-					logger.info("We got an error trying to load LOV vocabularies! "+ e.getMessage());
-				}
+		if (g.getDownloadedLOV() == null || !g.getDownloadedLOV()) {
+			logger.info("LOV vocabularies still not lodaded! Loading now...");
+			try {
+				new LOV().loadLOVVocabularies();
+				g.setDownloadedLOV(true);
+				g.updateObject(true);
+				logger.info("LOV vocabularies loaded!");
+			} catch (Exception e) {
+				e.printStackTrace();
+				g.setDownloadedLOV(false);
+				g.updateObject(true);
+				logger.info("We got an error trying to load LOV vocabularies! "
+						+ e.getMessage());
+			}
 		}
+	}
+
+	private boolean checkDistributionStatus(
+			DistributionMongoDBObject distributionMongoDBObj) throws Exception {
+		boolean needDownload = false;
+
+		if (distributionMongoDBObj.getStatus().equals(
+				DistributionMongoDBObject.STATUS_WAITING_TO_STREAM))
+			needDownload = true;
+		else if (distributionMongoDBObj.getStatus().equals(
+				DistributionMongoDBObject.STATUS_STREAMING))
+			needDownload = false;
+		else if (distributionMongoDBObj.getStatus().equals(
+				DistributionMongoDBObject.STATUS_ERROR))
+			needDownload = true;
+		else if (new CheckWhetherDownload()
+				.checkDistribution(distributionMongoDBObj))
+			needDownload = true;
+
+		return needDownload;
+	}
+
+	public boolean createBloomFilter(
+			StreamAndCompareDistribution downloadedFile,
+			DistributionMongoDBObject distributionMongoDBObj) {
+		GoogleBloomFilter filterSubject;
+		GoogleBloomFilter filterObject;
+		if (downloadedFile.subjectLines != 0) {
+
+			// get customized equation from properties file
+			if (DynlodGeneralProperties.FPP_EQUATION != null) {
+
+				// equation parser
+				JexlEngine jexl = new JexlEngine();
+				jexl.setCache(512);
+				jexl.setLenient(false);
+				jexl.setSilent(false);
+
+				String calc = DynlodGeneralProperties.FPP_EQUATION;
+				Expression e = jexl.createExpression(calc);
+
+				// populate the context
+				JexlContext context = new MapContext();
+				context.set("distributionSize", downloadedFile.subjectLines);
+
+				// create filter for subjects
+				Double result = (Double) e.evaluate(context);
+
+				filterSubject = new GoogleBloomFilter(
+						(int) downloadedFile.subjectLines, result);
+
+				logger.info("Created bloom filter with customized equation: "
+						+ DynlodGeneralProperties.FPP_EQUATION + " and value: "
+						+ result);
+				
+				// create filter for objects
+				filterObject = new GoogleBloomFilter(
+						(int) downloadedFile.objectLines, result);
+				
+				
+			} else {
+
+				if (downloadedFile.subjectLines > 1000000){
+					filterSubject = new GoogleBloomFilter(
+							(int) downloadedFile.subjectLines,
+							0.9 / downloadedFile.subjectLines);
+					filterObject = new GoogleBloomFilter(
+							(int) downloadedFile.objectLines,
+							0.9 / downloadedFile.objectLines);
+					
+				}
+				else{
+					filterSubject = new GoogleBloomFilter(
+							(int) downloadedFile.subjectLines, 0.0000001);
+					filterObject = new GoogleBloomFilter(
+							(int) downloadedFile.objectLines, 0.0000001);
+				}
+			}
+		} else {
+			filterSubject = new GoogleBloomFilter(
+					(int) downloadedFile.contentLengthAfterDownloaded / 40,
+					0.000001);
+			filterObject = new GoogleBloomFilter(
+					(int) downloadedFile.contentLengthAfterDownloaded / 40,
+					0.000001);
+		}
+
+		// load file to filter and take the process time
+		FileToFilter f = new FileToFilter();
+
+		Timer timer = new Timer();
+		timer.startTimer();
+
+		// Loading subject file to filter
+		f.loadFileToFilter(filterSubject, DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+downloadedFile.hashFileName);
+		distributionMongoDBObj.setTimeToCreateSubjectFilter(String.valueOf(timer
+				.stopTimer()));
+
+		filterSubject.saveFilter( DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		// save filter
+
+		distributionMongoDBObj.setSubjectFilterPath(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		distributionMongoDBObj.setNumberOfSubjectTriples(String
+				.valueOf(f.elementsLoadedIntoFilter));
+		
+
+		timer = new Timer();
+		timer.startTimer();
+		// Loading object file to filter
+		f.loadFileToFilter(filterObject, DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH+downloadedFile.hashFileName);
+		distributionMongoDBObj.setTimeToCreateObjectFilter(String.valueOf(timer
+				.stopTimer()));
+
+		filterObject.saveFilter(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		// save filter
+
+		distributionMongoDBObj.setObjectFilterPath(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH+downloadedFile.hashFileName);
+		distributionMongoDBObj.setNumberOfObjectTriples(String
+				.valueOf(f.elementsLoadedIntoFilter));
+		
+		
+
+		return false;
 	}
 
 }

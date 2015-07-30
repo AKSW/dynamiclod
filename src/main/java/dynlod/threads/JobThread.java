@@ -28,21 +28,21 @@ public class JobThread implements Runnable {
 					dataThread.weightCount++;
 					dataThread.count++;
 					
-					if(dataThread.count%dataThread.setSize==0)
-						dataThread.weight++;
-					
-					if(dataThread.weightCount%dataThread.weight==0){
-						String url = lines[i].replace("<", "").replace(">", "");
-						
-						if(c.putIfAbsent(url, -1) == null){
-//							new ResourceAvailability((dataThread.count%dataThread.setSize), url, 2000, dataThread.urlStatus, c);
-							dataThread.listURLToTest.put(dataThread.count%dataThread.setSize, url);
-						}
-//						else
-//							dataThread.urlStatus.put((dataThread.count%dataThread.setSize), 
-//									new ResourceInstance(url, c.putIfAbsent(url, 0)));
-						dataThread.weightCount = 0;						
-					}
+//					if(dataThread.count%dataThread.setSize==0)
+//						dataThread.weight++;
+//					
+//					if(dataThread.weightCount%dataThread.weight==0){
+//						String url = lines[i].replace("<", "").replace(">", "");
+//						
+//						if(c.putIfAbsent(url, -1) == null){
+////							new ResourceAvailability((dataThread.count%dataThread.setSize), url, 2000, dataThread.urlStatus, c);
+//							dataThread.listURLToTest.put(dataThread.count%dataThread.setSize, url);
+//						}
+////						else
+////							dataThread.urlStatus.put((dataThread.count%dataThread.setSize), 
+////									new ResourceInstance(url, c.putIfAbsent(url, 0)));
+//						dataThread.weightCount = 0;						
+//					}
 
 				}
 			}

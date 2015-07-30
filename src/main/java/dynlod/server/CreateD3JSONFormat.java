@@ -66,9 +66,9 @@ public class CreateD3JSONFormat extends HttpServlet {
 			for (LinksetMongoDBObject linkset : linksets) {
 
 				Bubble target = new Bubble(new DistributionMongoDBObject(
-						linkset.getSubjectsDistributionTarget()));
+						linkset.getDistributionTarget()));
 				Bubble source = new Bubble(new DistributionMongoDBObject(
-						linkset.getObjectsDistributionTarget()));
+						linkset.getDistributionSource()));
 
 				Link link = new Link(source, target, linkset.getLinks());
 
@@ -100,10 +100,10 @@ public class CreateD3JSONFormat extends HttpServlet {
 					for (LinksetMongoDBObject linkset : in) {
 						Bubble target = new Bubble(
 								new DistributionMongoDBObject(linkset
-										.getSubjectsDistributionTarget()));
+										.getDistributionTarget()));
 						Bubble source = new Bubble(
 								new DistributionMongoDBObject(
-										linkset.getObjectsDistributionTarget()));
+										linkset.getDistributionSource()));
 
 						Link link = new Link(source, target, linkset.getLinks());
 
@@ -116,10 +116,10 @@ public class CreateD3JSONFormat extends HttpServlet {
 					for (LinksetMongoDBObject linkset : out) {
 						Bubble target = new Bubble(
 								new DistributionMongoDBObject(linkset
-										.getSubjectsDistributionTarget()));
+										.getDistributionTarget()));
 						Bubble source = new Bubble(
 								new DistributionMongoDBObject(
-										linkset.getObjectsDistributionTarget()));
+										linkset.getDistributionSource()));
 
 						Link link = new Link(source, target, linkset.getLinks());
 
@@ -141,10 +141,10 @@ public class CreateD3JSONFormat extends HttpServlet {
 					for (LinksetMongoDBObject linkset : in) {
 						Bubble target = new Bubble(
 								new DatasetMongoDBObject(linkset
-										.getSubjectsDatasetTarget()));
+										.getDatasetTarget()));
 						Bubble source = new Bubble(
 								new DatasetMongoDBObject(
-										linkset.getObjectsDatasetTarget()));
+										linkset.getDatasetSource()));
 
 						Link link = new Link(source, target, linkset.getLinks());
 
@@ -157,10 +157,10 @@ public class CreateD3JSONFormat extends HttpServlet {
 					for (LinksetMongoDBObject linkset : out) {
 						Bubble target = new Bubble(
 								new DatasetMongoDBObject(linkset
-										.getSubjectsDatasetTarget()));
+										.getDatasetTarget()));
 						Bubble source = new Bubble(
 								new DatasetMongoDBObject(
-										linkset.getObjectsDatasetTarget()));
+										linkset.getDatasetSource()));
 
 						Link link = new Link(source, target, linkset.getLinks());
 

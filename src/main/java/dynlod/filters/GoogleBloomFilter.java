@@ -54,19 +54,15 @@ public class GoogleBloomFilter implements DataIDFilterInterface {
 		return filter.mightContain(s.getBytes());
 	}
 
-	public boolean saveFilter(String distributionName) {
-
-		String path = DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH
-				+ distributionName;
-		fullFilePath = path;
+	public boolean saveFilter(String file) {
 
 		try {
-			filter.writeTo(new FileOutputStream(new File(path)));
+			filter.writeTo(new FileOutputStream(new File(file)));
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		logger.debug("Filter saved: "+path);
+		logger.debug("Filter saved: "+file);
 		
 		return true;
 	}

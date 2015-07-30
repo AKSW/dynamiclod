@@ -1,11 +1,9 @@
-package dynlod.linksets;
+package dynlod;
 
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 
-import dynlod.DynlodGeneralProperties;
-import dynlod.Manager;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.queries.Queries;
 import dynlod.utils.FileUtils;
@@ -30,14 +28,14 @@ public class StartService extends HttpServlet {
 				ArrayList<String> q = Queries.getMongoDBObject(
 						DistributionMongoDBObject.COLLECTION_NAME,
 						DistributionMongoDBObject.STATUS,
-						DistributionMongoDBObject.STATUS_DOWNLOADING);
+						DistributionMongoDBObject.STATUS_STREAMING);
 				System.out
 						.println("re-download distributions with \"Downloading\" status");
 
 				for (String s : q) {
 					DistributionMongoDBObject dist = new DistributionMongoDBObject(
 							s);
-					dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD);
+					dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 					dist.updateObject(true);
 					d.add(dist);
 				}
@@ -49,7 +47,7 @@ public class StartService extends HttpServlet {
 				q = Queries.getMongoDBObject(
 						DistributionMongoDBObject.COLLECTION_NAME,
 						DistributionMongoDBObject.STATUS,
-						DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD);
+						DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 				System.out
 						.println("download distributions with \"STATUS_WAITING_TO_DOWNLOAD\" status");
 

@@ -13,29 +13,29 @@ public class LinksetTimer extends HttpServlet implements Runnable {
 
 	public void run() {
 
-		while (true) {
-			SystemPropertiesMongoDBObject systemProperties = null;
-
-			systemProperties = new SystemPropertiesMongoDBObject();
-			
-			if(systemProperties.getLinksetNeedUpdate()==null){
-				systemProperties.setLinksetNeedUpdate(true);
-				systemProperties.updateObject(true);
-			}
-			
-
-			if (systemProperties.getLinksetNeedUpdate()==true) {
-				systemProperties.setLinksetNeedUpdate(false);
-				systemProperties.updateObject(true);
-				MakeLinksets m = new MakeLinksets();
-				m.updateLinksets();
-			}
-
-			try {
-				Thread.sleep(30000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+//		while (true) {
+//			SystemPropertiesMongoDBObject systemProperties = null;
+//
+//			systemProperties = new SystemPropertiesMongoDBObject();
+//			
+//			if(systemProperties.getLinksetNeedUpdate()==null){
+//				systemProperties.setLinksetNeedUpdate(true);
+//				systemProperties.updateObject(true);
+//			}
+//			
+//
+//			if (systemProperties.getLinksetNeedUpdate()==true) {
+//				systemProperties.setLinksetNeedUpdate(false);
+//				systemProperties.updateObject(true);
+//				MakeLinksets m = new MakeLinksets();
+//				m.updateLinksets();
+//			}
+//
+//			try {
+//				Thread.sleep(30000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 }

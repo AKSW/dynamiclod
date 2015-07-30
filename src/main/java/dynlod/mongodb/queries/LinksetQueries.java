@@ -130,9 +130,9 @@ public class LinksetQueries {
 
 			ArrayList<BasicDBObject> a = new ArrayList<BasicDBObject>();
 			a.add(new BasicDBObject(
-					LinksetMongoDBObject.OBJECTS_DATASET_TARGET, dataset));
+					LinksetMongoDBObject.DATASET_SOURCE, dataset));
 			a.add(new BasicDBObject(
-					LinksetMongoDBObject.SUBJECTS_DATASET_TARGET, dataset));
+					LinksetMongoDBObject.DATASET_TARGET, dataset));
 
 			BasicDBObject or = new BasicDBObject(new BasicDBObject("$and", a));
 
@@ -158,7 +158,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET, new BasicDBObject("$regex", url+".*"));  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -190,7 +190,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET, new BasicDBObject("$regex", url+".*"));  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -223,7 +223,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.SUBJECTS_DATASET_TARGET,  new BasicDBObject("$regex", url+".*"));  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DATASET_TARGET,  new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -254,7 +254,7 @@ public class LinksetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DATASET_TARGET, new BasicDBObject("$regex", url+".*"));  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DATASET_SOURCE, new BasicDBObject("$regex", url+".*"));  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -284,9 +284,9 @@ public class LinksetQueries {
 		DBCollection collection = DataIDDB.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject query = new BasicDBObject(
-				LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET,
+				LinksetMongoDBObject.DISTRIBUTION_TARGET,
 				downloladURLSubject);
-		query.append(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET,
+		query.append(LinksetMongoDBObject.DISTRIBUTION_SOURCE,
 				downloadURLObject);
 
 		DBCursor d = collection.find(query);
@@ -303,9 +303,9 @@ public class LinksetQueries {
 		DBCollection collection = DataIDDB.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject clause1 = new BasicDBObject(
-				LinksetMongoDBObject.SUBJECTS_DATASET_TARGET,
+				LinksetMongoDBObject.DATASET_TARGET,
 				new BasicDBObject("$regex", datasetURL+".*"));
-		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DATASET_TARGET,
+		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.DATASET_SOURCE,
 				new BasicDBObject("$regex", datasetURL+".*"));
 		
 		BasicDBList or = new BasicDBList();
@@ -328,9 +328,9 @@ public class LinksetQueries {
 		DBCollection collection = DataIDDB.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject clause1 = new BasicDBObject(
-				LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET,
+				LinksetMongoDBObject.DISTRIBUTION_TARGET,
 				new BasicDBObject("$regex", distributionURL+".*"));
-		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET,
+		BasicDBObject clause2 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE,
 				 new BasicDBObject("$regex", distributionURL+".*"));
 		
 		BasicDBList and = new BasicDBList();

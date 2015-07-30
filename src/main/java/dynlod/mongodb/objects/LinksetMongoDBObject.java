@@ -11,25 +11,25 @@ public class LinksetMongoDBObject extends DataIDDB {
 	public static final String COLLECTION_NAME = "Linkset";
 
 	// class properties
-	public static final String SUBJECTS_DISTRIBUTION_TARGET = "subjectsDistributionTarget";
+	public static final String DISTRIBUTION_TARGET = "distributionTarget";
 
-	public static final String OBJECTS_DISTRIBUTION_TARGET = "objectsDistributionTarget";
+	public static final String DISTRIBUTION_SOURCE = "distributionSource";
 
-	public static final String SUBJECTS_DATASET_TARGET = "subjectsDatasetTarget";
+	public static final String DATASET_TARGET = "datasetTarget";
 
-	public static final String OBJECTS_DATASET_TARGET = "objectsDatasetTarget";
+	public static final String DATASET_SOURCE = "datasetSource";
 
 	public static final String AVAILABILITY = "availability";
 
 	public static final String LINKS = "links";
 
-	private String subjectsDistributionTarget;
+	private String distributionTarget;
 
-	private String objectsDistributionTarget;
+	private String distributionSource;
 
-	private String subjectsDatasetTarget;
+	private String datasetTarget;
 
-	private String objectsDatasetTarget;
+	private String datasetSource;
 
 	private int availability = 0;
 
@@ -45,18 +45,18 @@ public class LinksetMongoDBObject extends DataIDDB {
 		// save object case it doens't exists
 		try {
 			// updating subjectsTarget on mongodb
-			mongoDBObject.put(SUBJECTS_DISTRIBUTION_TARGET,
-					subjectsDistributionTarget);
+			mongoDBObject.put(DISTRIBUTION_TARGET,
+					distributionTarget);
 
 			// updating objectsTarget on mongodb
-			mongoDBObject.put(OBJECTS_DISTRIBUTION_TARGET,
-					objectsDistributionTarget);
+			mongoDBObject.put(DISTRIBUTION_SOURCE,
+					distributionSource);
 
 			// updating subjectsTarget on mongodb
-			mongoDBObject.put(SUBJECTS_DATASET_TARGET, subjectsDatasetTarget);
+			mongoDBObject.put(DATASET_TARGET, datasetTarget);
 
 			// updating objectsTarget on mongodb
-			mongoDBObject.put(OBJECTS_DATASET_TARGET, objectsDatasetTarget);
+			mongoDBObject.put(DATASET_SOURCE, datasetSource);
 
 			// updating links on mongodb
 			mongoDBObject.put(LINKS, links);
@@ -87,15 +87,15 @@ public class LinksetMongoDBObject extends DataIDDB {
 
 		if (obj != null) {
 
-			subjectsDistributionTarget = (String) obj
-					.get(SUBJECTS_DISTRIBUTION_TARGET);
+			distributionTarget = (String) obj
+					.get(DISTRIBUTION_TARGET);
 
-			objectsDistributionTarget = (String) obj
-					.get(OBJECTS_DISTRIBUTION_TARGET);
+			distributionSource = (String) obj
+					.get(DISTRIBUTION_SOURCE);
 
-			objectsDatasetTarget = (String) obj.get(OBJECTS_DATASET_TARGET);
+			datasetSource = (String) obj.get(DATASET_SOURCE);
 
-			subjectsDatasetTarget = (String) obj.get(SUBJECTS_DATASET_TARGET);
+			datasetTarget = (String) obj.get(DATASET_TARGET);
 
 			availability = Integer.valueOf(obj.get(AVAILABILITY).toString());
 
@@ -106,36 +106,36 @@ public class LinksetMongoDBObject extends DataIDDB {
 		return false;
 	}
 
-	public String getSubjectsDistributionTarget() {
-		return subjectsDistributionTarget;
+	public String getDistributionTarget() {
+		return distributionTarget;
 	}
 
-	public void setSubjectsDistributionTarget(String subjectsDistributionTarget) {
-		this.subjectsDistributionTarget = subjectsDistributionTarget;
+	public void setDistributionTarget(String subjectsDistributionTarget) {
+		this.distributionTarget = subjectsDistributionTarget;
 	}
 
-	public String getObjectsDistributionTarget() {
-		return objectsDistributionTarget;
+	public String getDistributionSource() {
+		return distributionSource;
 	}
 
-	public void setObjectsDistributionTarget(String objectsDistributionTarget) {
-		this.objectsDistributionTarget = objectsDistributionTarget;
+	public void setDistributionSource(String objectsDistributionTarget) {
+		this.distributionSource = objectsDistributionTarget;
 	}
 
-	public String getSubjectsDatasetTarget() {
-		return subjectsDatasetTarget;
+	public String getDatasetTarget() {
+		return datasetTarget;
 	}
 
-	public void setSubjectsDatasetTarget(String subjectsDatasetTarget) {
-		this.subjectsDatasetTarget = subjectsDatasetTarget;
+	public void setDatasetTarget(String subjectsDatasetTarget) {
+		this.datasetTarget = subjectsDatasetTarget;
 	}
 
-	public String getObjectsDatasetTarget() {
-		return objectsDatasetTarget;
+	public String getDatasetSource() {
+		return datasetSource;
 	}
 
-	public void setObjectsDatasetTarget(String objectsDatasetTarget) {
-		this.objectsDatasetTarget = objectsDatasetTarget;
+	public void setDatasetSource(String objectsDatasetTarget) {
+		this.datasetSource = objectsDatasetTarget;
 	}
 
 	public int getLinks() {

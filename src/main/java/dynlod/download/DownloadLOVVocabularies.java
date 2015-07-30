@@ -46,9 +46,9 @@ public class DownloadLOVVocabularies extends Download {
 		String str = "";
 		int n = 0;
 		BufferedInputStream b = new BufferedInputStream(inputStream);
-		splitThread = new SplitAndStoreThread(bufferQueue,
-				subjectQueue, null, getFileName(), false);
-		splitThread.start();
+		splitThread = new SplitAndStoreThread(
+				subjectQueue, null, getFileName(), false); 
+
 
 			while (-1 != (n = b.read(buffer))) {
 
@@ -74,8 +74,6 @@ public class DownloadLOVVocabularies extends Download {
 				
 			}
 			splitThread.setDoneReadingFile(true);
-			
-		splitThread.join();
 	
 	}
 

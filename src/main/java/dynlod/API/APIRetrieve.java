@@ -68,10 +68,10 @@ public class APIRetrieve extends API {
 		// add linksets to jena model
 		for (LinksetMongoDBObject linkset : in) {
 			DistributionMongoDBObject distributionSubject = new DistributionMongoDBObject(
-					linkset.getSubjectsDistributionTarget());
+					linkset.getDistributionTarget());
 
 			DistributionMongoDBObject distributionObject = new DistributionMongoDBObject(
-					linkset.getObjectsDistributionTarget());
+					linkset.getDistributionSource());
 
 			for (String d1 : distributionSubject.getDefaultDatasets()) {
 				for (String d2 : distributionObject.getDefaultDatasets()) {
@@ -82,10 +82,10 @@ public class APIRetrieve extends API {
 		// add linksets to jena model
 		for (LinksetMongoDBObject linkset : out) {
 			DistributionMongoDBObject distributionSubject = new DistributionMongoDBObject(
-					linkset.getSubjectsDistributionTarget());
+					linkset.getDistributionTarget());
 
 			DistributionMongoDBObject distributionObject = new DistributionMongoDBObject(
-					linkset.getObjectsDistributionTarget());
+					linkset.getDistributionSource());
 
 			for (String d1 : distributionSubject.getDefaultDatasets()) {
 				for (String d2 : distributionObject.getDefaultDatasets()) {

@@ -83,9 +83,9 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 			for (LinksetMongoDBObject linkset : linksets) {
 
 				Bubble target = new Bubble(new DistributionMongoDBObject(
-						linkset.getSubjectsDistributionTarget()));
+						linkset.getDistributionTarget()));
 				Bubble source = new Bubble(new DistributionMongoDBObject(
-						linkset.getObjectsDistributionTarget()));
+						linkset.getDistributionSource()));
 
 				Link link = new Link(source, target, linkset.getLinks());
 
@@ -175,8 +175,8 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 			
 
 			for (LinksetMongoDBObject linkset : in) {
-				DistributionMongoDBObject a = new DistributionMongoDBObject(linkset.getObjectsDistributionTarget());
-				DistributionMongoDBObject b = new DistributionMongoDBObject(linkset.getSubjectsDistributionTarget());
+				DistributionMongoDBObject a = new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject b = new DistributionMongoDBObject(linkset.getDistributionTarget());
 				
 				if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )
 				makeLink0(new Bubble(a, showDistribution,lastParentDataset),
@@ -184,8 +184,8 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 
 			}
 			for (LinksetMongoDBObject linkset : out) {
-				DistributionMongoDBObject a = new DistributionMongoDBObject(linkset.getObjectsDistributionTarget());
-				DistributionMongoDBObject b = new DistributionMongoDBObject(linkset.getSubjectsDistributionTarget());
+				DistributionMongoDBObject a = new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject b = new DistributionMongoDBObject(linkset.getDistributionTarget());
 				
 				if(!showOntologies){
 					if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )				

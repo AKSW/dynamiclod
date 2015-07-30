@@ -29,18 +29,19 @@ import org.openrdf.rio.turtle.TurtleParser;
 
 import dynlod.DynlodGeneralProperties;
 import dynlod.threads.GetDomainsFromTriplesThread;
-import dynlod.threads.SplitAndStoreThread2;
+import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
 
-public class DownloadAndSaveDistribution2 extends Download {
+public class StreamAndCompareDistribution extends Download {
 
 	final static Logger logger = Logger
-			.getLogger(DownloadAndSaveDistribution2.class);
+			.getLogger(StreamAndCompareDistribution.class);
 
 	// Paths
 	public String hashFileName = null;
 	public String objectFilePath;
+	public String uri;
 
 	public double contentLengthAfterDownloaded = 0;
 	public Integer subjectLines = 0;
@@ -65,10 +66,11 @@ public class DownloadAndSaveDistribution2 extends Download {
 	boolean doneSplittingString = false;
 	boolean doneAuthorityObject = false;
 
-	public DownloadAndSaveDistribution2(String accessURL, String RDFFormat)
+	public StreamAndCompareDistribution(String accessURL, String RDFFormat, String uri)
 			throws MalformedURLException {
 		this.url = new URL(accessURL);
 		this.RDFFormat = RDFFormat;
+		this.uri = uri;
 	}
 
 	public void downloadDistribution() throws Exception {
@@ -90,7 +92,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 
 		if (RDFFormat == null || RDFFormat.equals(""))
 			RDFFormat = getExtension();
-		DownloadDistribution();
+		StreamDistribution();
 
 		// setExtension(Formats.getEquivalentFormat(getExtension()));
 
@@ -106,21 +108,22 @@ public class DownloadAndSaveDistribution2 extends Download {
 		inputStream.close();
 	}
 
-	private void DownloadDistribution() throws Exception {
+	private void StreamDistribution() throws Exception {
 
 		// SplitAndStoreThread splitThread = new SplitAndStoreThread(
 		// bufferQueue, subjectQueue, objectQueue, getFileName());
 
-		SplitAndStoreThread2 splitThread = new SplitAndStoreThread2(
+		SplitAndStoreThread splitThread = new SplitAndStoreThread(
 				subjectQueue, objectQueue, FileUtils.stringToHash(url
 						.toString()));
 
 		GetDomainsFromTriplesThread getDomainFromObjectsThread = new GetDomainsFromTriplesThread(
-				objectQueue, countObjectDomainsHashMap);
+				objectQueue, countObjectDomainsHashMap, uri);
 		getDomainFromObjectsThread.start();
 
 		GetDomainsFromTriplesThread getDomainFromSubjectsThread = new GetDomainsFromTriplesThread(
-				subjectQueue, countSubjectDomainsHashMap);
+				subjectQueue, countSubjectDomainsHashMap, uri);
+		getDomainFromSubjectsThread.isSubject = true;
 		getDomainFromSubjectsThread.start();
 
 		try {
@@ -156,7 +159,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 			config.set(BasicParserSettings.VERIFY_RELATIVE_URIS, false);
 			rdfParser.setParserConfig(config);
 
-			// check whether file is tar type
+			// check whether file is tar/zip type
 			if (getExtension().equals("zip")) {
 				InputStream data = new BufferedInputStream(inputStream);
 				logger.info("File extension is zip, creating ZipInputStream and checking compressed files...");
@@ -249,7 +252,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 		getDomainFromSubjectsThread.join();
 
 		splitThread.closeQueues();
-
+				
 		Iterator it = countObjectDomainsHashMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
@@ -259,7 +262,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 							(Integer) pair.getValue());
 				}
 			}
-			it.remove(); // avoids a ConcurrentModificationException
+			it.remove(); 
 		}
 
 		it = countSubjectDomainsHashMap.entrySet().iterator();
@@ -271,7 +274,7 @@ public class DownloadAndSaveDistribution2 extends Download {
 							(Integer) pair.getValue());
 				}
 			}
-			it.remove(); // avoids a ConcurrentModificationException
+			it.remove(); 
 		}
 	}
 

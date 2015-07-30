@@ -17,13 +17,13 @@ public class DistributionMongoDBObject extends DataIDDB {
 	// Distributions status on the system
 	public static final String STATUS_WAITING_TO_CREATE_LINKSETS = "WAITING_TO_CREATE_LINKSETS";
 	
-	public static final String STATUS_DOWNLOADING = "DOWNLOADING";
+	public static final String STATUS_STREAMING = "STREAMING";
 
-	public static final String STATUS_DOWNLOADED = "DOWNLOADED";
+	public static final String STATUS_STREAMED = "STREAMED";
 
 	public static final String STATUS_SEPARATING_SUBJECTS_AND_OBJECTS = "SEPARATING_SUBJECTS_AND_OBJECTS";
 
-	public static final String STATUS_WAITING_TO_DOWNLOAD = "WAITING_TO_DOWNLOAD";
+	public static final String STATUS_WAITING_TO_STREAM = "WAITING_TO_STREAM";
 	
 	public static final String STATUS_CREATING_BLOOM_FILTER = "CREATING_BLOOM_FILTER";
 	
@@ -46,13 +46,17 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	public static final String SUBJECT_FILTER_PATH = "subjectFilterPath";
 
+	public static final String OBJECT_FILTER_PATH = "objectFilterPath";
+
 	public static final String OBJECT_PATH = "objectPath";
 
-	public static final String NUMBER_OF_TRIPLES_LOADED_INTO_FILTER = "numberOfTriplesLoadedIntoFilter";
+	public static final String NUMBER_OF_SUBJECT_TRIPLES = "numberOfSubjectTriples";
 
 	public static final String NUMBER_OF_OBJECTS_TRIPLES = "numberOfObjectTriples";
 
-	public static final String TIME_TO_CREATE_FILTER = "timeToCreateFilter";
+	public static final String TIME_TO_CREATE_SUBJECT_FILTER = "timeToCreateSubjectFilter";
+	
+	public static final String TIME_TO_CREATE_OBJECT_FILTER = "timeToCreateObjectFilter";
 	
 	public static final String STATUS = "status";
 	
@@ -91,13 +95,17 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	private String subjectFilterPath;
 
+	private String objectFilterPath;
+
 	private String objectPath;
 
-	private String numberOfTriplesLoadedIntoFilter;
+	private String numberOfSubjectTriples;
 
 	private String numberOfObjectTriples;
 
-	private String timeToCreateFilter;
+	private String timeToCreateObjectFilter;
+	
+	private String timeToCreateSubjectFilter;
 
 	private String title;
 
@@ -130,13 +138,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 		loadObject();
 	}
 
-	public String getTimeToCreateFilter() {
-		return timeToCreateFilter;
-	}
-
-	public void setTimeToCreateFilter(String timeToCreateFilter) {
-		this.timeToCreateFilter = timeToCreateFilter;
-	}
 
 	public void addDefaultDataset(String defaultDataset) {
 		if (!defaultDatasets.contains(defaultDataset))
@@ -159,11 +160,13 @@ public class DistributionMongoDBObject extends DataIDDB {
 			mongoDBObject.put(TRIPLES, triples);
 			mongoDBObject.put(TOP_DATASET, topDataset);
 			mongoDBObject.put(SUBJECT_FILTER_PATH, subjectFilterPath);
+			mongoDBObject.put(OBJECT_FILTER_PATH, objectFilterPath);
 			mongoDBObject.put(OBJECT_PATH, objectPath);
-			mongoDBObject.put(NUMBER_OF_TRIPLES_LOADED_INTO_FILTER,
-					numberOfTriplesLoadedIntoFilter);
+			mongoDBObject.put(NUMBER_OF_SUBJECT_TRIPLES,
+					numberOfSubjectTriples);
 			mongoDBObject.put(NUMBER_OF_OBJECTS_TRIPLES, numberOfObjectTriples);
-			mongoDBObject.put(TIME_TO_CREATE_FILTER, timeToCreateFilter);
+			mongoDBObject.put(TIME_TO_CREATE_OBJECT_FILTER, timeToCreateObjectFilter);
+			mongoDBObject.put(TIME_TO_CREATE_SUBJECT_FILTER, timeToCreateSubjectFilter);
 			mongoDBObject.put(TITLE, title);
 			mongoDBObject.put(FORMAT, format);	
 			mongoDBObject.put(STATUS, status);	
@@ -203,17 +206,19 @@ public class DistributionMongoDBObject extends DataIDDB {
 			httpByteSize = (String) obj.get(HTTP_BYTE_SIZE);
 			topDataset = (String) obj.get(TOP_DATASET);
 			subjectFilterPath = (String) obj.get(SUBJECT_FILTER_PATH);
+			objectFilterPath = (String) obj.get(OBJECT_FILTER_PATH);
 			objectPath = (String) obj.get(OBJECT_PATH);
 			title = (String) obj.get(TITLE);
 			httpFormat = (String) obj.get(HTTP_FORMAT);
 			httpLastModified = (String) obj.get(HTTP_LAST_MODIFIED);
 			format = (String) obj.get(FORMAT);
 			status = (String) obj.get(STATUS);
-			timeToCreateFilter = (String) obj.get(TIME_TO_CREATE_FILTER);
+			timeToCreateObjectFilter = (String) obj.get(TIME_TO_CREATE_OBJECT_FILTER);
+			timeToCreateSubjectFilter = (String) obj.get(TIME_TO_CREATE_SUBJECT_FILTER);
 //			((Number) mapObj.get("autostart")).intValue();
 			triples = ((Number) obj.get(TRIPLES)).intValue() ;
-			numberOfTriplesLoadedIntoFilter = (String) obj
-					.get(NUMBER_OF_TRIPLES_LOADED_INTO_FILTER);
+			numberOfSubjectTriples = (String) obj
+					.get(NUMBER_OF_SUBJECT_TRIPLES);
 			numberOfObjectTriples = (String) obj.get(NUMBER_OF_OBJECTS_TRIPLES);
 			resourceUri = (String) obj.get(RESOURCE_URI);
 			successfullyDownloaded = (Boolean) obj.get(SUCCESSFULLY_DOWNLOADED);
@@ -286,14 +291,17 @@ public class DistributionMongoDBObject extends DataIDDB {
 		this.objectPath = objectPath;
 	}
 
-	public String getNumberOfTriplesLoadedIntoFilter() {
-		return numberOfTriplesLoadedIntoFilter;
+
+
+	public String getNumberOfSubjectTriples() {
+		return numberOfSubjectTriples;
 	}
 
-	public void setNumberOfTriplesLoadedIntoFilter(
-			String numberOfTriplesLoadedIntoFilter) {
-		this.numberOfTriplesLoadedIntoFilter = numberOfTriplesLoadedIntoFilter;
+
+	public void setNumberOfSubjectTriples(String numberOfSubjectTriples) {
+		this.numberOfSubjectTriples = numberOfSubjectTriples;
 	}
+
 
 	public String getNumberOfObjectTriples() {
 		return numberOfObjectTriples;
@@ -397,6 +405,34 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	public void setResourceUri(String resourceUri) {
 		this.resourceUri = resourceUri;
+	}
+
+	public String getObjectFilterPath() {
+		return objectFilterPath;
+	}
+
+	public void setObjectFilterPath(String objectFilterPath) {
+		this.objectFilterPath = objectFilterPath;
+	}
+
+
+	public String getTimeToCreateObjectFilter() {
+		return timeToCreateObjectFilter;
+	}
+
+
+	public void setTimeToCreateObjectFilter(String timeToCreateObjectFilter) {
+		this.timeToCreateObjectFilter = timeToCreateObjectFilter;
+	}
+
+
+	public String getTimeToCreateSubjectFilter() {
+		return timeToCreateSubjectFilter;
+	}
+
+
+	public void setTimeToCreateSubjectFilter(String timeToCreateSubjectFilter) {
+		this.timeToCreateSubjectFilter = timeToCreateSubjectFilter;
 	}
 	
 

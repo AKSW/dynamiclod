@@ -74,6 +74,7 @@ public class FileUtils {
 			System.out.println("original:" + original);
 			System.out.println("digested(hex):" + sb.toString());
 			return sb.toString();
+//			return str.replace("/", "");
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

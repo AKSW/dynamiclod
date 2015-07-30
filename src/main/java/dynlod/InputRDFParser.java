@@ -99,7 +99,7 @@ public class InputRDFParser {
 			Statement dataset = stmtDatasets.next();
 
 			String datasetURI = dataset.getSubject().toString();
-			logger.info("Found datasetset: " + datasetURI);
+			logger.info("Found dataset: " + datasetURI);
 
 			// setting TOP dataset
 			if (topDataset == null) {
@@ -332,7 +332,7 @@ public class InputRDFParser {
 		}
 		if (distributionMongoDBObj.getStatus() == null) {
 			distributionMongoDBObj
-					.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_DOWNLOAD);
+					.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 		}
 		distributionMongoDBObj.updateObject(true);
 		distributionsLinks.add(distributionMongoDBObj);

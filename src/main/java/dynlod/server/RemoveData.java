@@ -83,7 +83,7 @@ public class RemoveData extends HttpServlet {
 	private void removeLinksets(String distributionURI) {
 		ArrayList<String> linksets = Queries.getMongoDBObject(
 				LinksetMongoDBObject.COLLECTION_NAME,
-				LinksetMongoDBObject.OBJECTS_DISTRIBUTION_TARGET,
+				LinksetMongoDBObject.DISTRIBUTION_SOURCE,
 				distributionURI);
 		for (String linkset : linksets) {
 			LinksetMongoDBObject dom = new LinksetMongoDBObject(linkset);
@@ -92,7 +92,7 @@ public class RemoveData extends HttpServlet {
 
 		linksets = Queries.getMongoDBObject(
 				LinksetMongoDBObject.COLLECTION_NAME,
-				LinksetMongoDBObject.SUBJECTS_DISTRIBUTION_TARGET,
+				LinksetMongoDBObject.DISTRIBUTION_TARGET,
 				distributionURI);
 		for (String linkset : linksets) {
 			LinksetMongoDBObject dom = new LinksetMongoDBObject(linkset);

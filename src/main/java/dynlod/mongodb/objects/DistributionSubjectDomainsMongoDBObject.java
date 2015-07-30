@@ -31,13 +31,22 @@ public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
 
 		public boolean updateObject(boolean checkBeforeInsert) throws DataIDException {
 
+			BasicDBObject mongoDBObject2 = new BasicDBObject();
+			
 			// save object case it doens't exists
 			try {
 				// updating subjectsTarget on mongodb
 				mongoDBObject.put(DISTRIBUTION_URI, distributionURI);
+				mongoDBObject2.put(DISTRIBUTION_URI, distributionURI);
 
 				// updating objectsTarget on mongodb
 				mongoDBObject.put(SUBJECT_DOMAIN, subjectDomain);
+				mongoDBObject2.put(SUBJECT_DOMAIN, subjectDomain);
+				
+				DBCursor d = objectCollection.find(mongoDBObject2);
+				if (d.hasNext())
+					return false;
+				
 				insert(checkBeforeInsert);
 			} catch (Exception e2) {
 				// e2.printStackTrace();

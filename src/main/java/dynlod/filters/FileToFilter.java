@@ -16,31 +16,31 @@ public class FileToFilter {
 	final static Logger logger = Logger.getLogger(FileToFilter.class);
 
 	// list of linksets
-	List<String> links = new ArrayList<String>();
-	public List<String> linksUniq = new ArrayList<String>();
-	public int subjectsLoadedIntoFilter = 0;
+	public int elementsLoadedIntoFilter;
 
-	public void loadFileToFilter(GoogleBloomFilter filter, String fileName) {
+	public void loadFileToFilter(GoogleBloomFilter filter, String file) {
 
 		BufferedReader br = null;
+		elementsLoadedIntoFilter = 0;
 		
-		logger.info("Loading file to bloom filter: "+ 
-						DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+fileName);
+		logger.info("Loading file to bloom filter: "+file);
 		
 		try {
 			String sCurrentLine;
-			br = new BufferedReader(new FileReader(DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH+
-					fileName));
-			String oi = null;
+			String sLastLine = "";
+			br = new BufferedReader(new FileReader(file));
+
 			while ((sCurrentLine = br.readLine()) != null) {
-				sCurrentLine = sCurrentLine.replace("<", "");
-				sCurrentLine = sCurrentLine.replace(">", "");
-				filter.add(sCurrentLine);
-				subjectsLoadedIntoFilter++;
-				oi = sCurrentLine;
+				if(!sLastLine.equals(sCurrentLine)){
+					sCurrentLine = sCurrentLine.replace("<", "");
+					sCurrentLine = sCurrentLine.replace(">", "");
+					filter.add(sCurrentLine);
+					elementsLoadedIntoFilter++;
+				}
+				sLastLine = sCurrentLine;
 			}
 			
-			logger.info("Bloom filter loaded "+subjectsLoadedIntoFilter + " lines.");
+			logger.info("Bloom filter loaded "+elementsLoadedIntoFilter + " elements.");
 			
 			
 		} catch (Exception e) {

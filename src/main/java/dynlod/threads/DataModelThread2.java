@@ -1,12 +1,13 @@
 package dynlod.threads;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import dynlod.filters.GoogleBloomFilter;
 
 
-public class DataModelThread {
+public class DataModelThread2 {
 	
 	public int setSize = 6;
 	
@@ -18,8 +19,14 @@ public class DataModelThread {
 	public HashMap<Integer, String> listURLToTest = new HashMap<Integer, String>();
 	
 	
+	
+	public ArrayList<String> domains = new ArrayList<String>();
+	
+	
+	
+	
 	public String distributionObjectPath;
-	public String filterPath;
+	public String subjectFilterPath;
 
 	public String objectDistributionURI;
 	public String subjectDistributionURI;
@@ -35,8 +42,8 @@ public class DataModelThread {
 	public GoogleBloomFilter filter = new GoogleBloomFilter();
 
 	
-	public DataModelThread() {
-
+	public DataModelThread2() {
+		
 	}
 
 }
