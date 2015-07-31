@@ -56,11 +56,11 @@ public class MakeLinksets {
 						+ " distributions analyzed.");
 				systemProperties.updateObject(true);
 
-				if (distribution
-						.getStatus()
-						.equals(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS)
-						|| distribution.getStatus().equals(
-								DistributionMongoDBObject.STATUS_DONE))
+//				if (distribution
+//						.getStatus()
+//						.equals(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS)
+//						|| distribution.getStatus().equals(
+//								DistributionMongoDBObject.STATUS_DONE))
 
 					try {
 						// creating list of threads to process filters
