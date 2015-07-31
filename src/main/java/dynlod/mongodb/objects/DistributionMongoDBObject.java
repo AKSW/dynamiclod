@@ -15,8 +15,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	
 	// Distributions status on the system
-	public static final String STATUS_WAITING_TO_CREATE_LINKSETS = "WAITING_TO_CREATE_LINKSETS";
-	
+
 	public static final String STATUS_STREAMING = "STREAMING";
 
 	public static final String STATUS_STREAMED = "STREAMED";

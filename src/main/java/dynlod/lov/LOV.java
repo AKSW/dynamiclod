@@ -265,7 +265,8 @@ public class LOV extends Download {
 		distribution.setNumberOfObjectTriples(String.valueOf(objects.size()));
 		distribution.setNumberOfSubjectTriples(String.valueOf(subjects.size()));
 		distribution.setSuccessfullyDownloaded(true);
-		distribution.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
+//		distribution.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
+		distribution.setStatus(DistributionMongoDBObject.STATUS_DONE);
 		distribution.setSubjectFilterPath(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH
 				+ FileUtils.stringToHash(nameSpace));
 		distribution.setObjectFilterPath(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH

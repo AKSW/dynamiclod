@@ -4,12 +4,16 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 
+import org.apache.log4j.Logger;
+
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.queries.Queries;
 import dynlod.utils.FileUtils;
 
 // start service properly case service was killed in the middle of streaming
 public class StartService extends HttpServlet {
+	
+	final static Logger logger = Logger.getLogger(StartService.class);
 
 	public StartService() {
 
@@ -29,8 +33,7 @@ public class StartService extends HttpServlet {
 						DistributionMongoDBObject.COLLECTION_NAME,
 						DistributionMongoDBObject.STATUS,
 						DistributionMongoDBObject.STATUS_STREAMING);
-				System.out
-						.println("re-download distributions with \"Downloading\" status");
+				logger.debug("re-download distributions with \"" +DistributionMongoDBObject.STATUS_STREAMING+"\" status");
 
 				for (String s : q) {
 					DistributionMongoDBObject dist = new DistributionMongoDBObject(
@@ -48,8 +51,7 @@ public class StartService extends HttpServlet {
 						DistributionMongoDBObject.COLLECTION_NAME,
 						DistributionMongoDBObject.STATUS,
 						DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
-				System.out
-						.println("download distributions with \"STATUS_WAITING_TO_DOWNLOAD\" status");
+				logger.debug("download distributions with \"" +DistributionMongoDBObject.STATUS_WAITING_TO_STREAM+"\" status");
 
 				for (String s : q) {
 					DistributionMongoDBObject dist = new DistributionMongoDBObject(

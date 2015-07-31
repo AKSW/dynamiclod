@@ -16,7 +16,7 @@
 	
     <servlet>
 		<servlet-name>StartService</servlet-name>
-		<servlet-class>dynlod.linksets.StartService</servlet-class>
+		<servlet-class>dynlod.StartService</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 	

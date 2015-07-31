@@ -197,11 +197,11 @@ public class Manager {
 					distributionMongoDBObj.updateObject(true);
 					// bean.updateDistributionList = true;
 
-					logger.info("Done saving mongodb distribution object.");
+					logger.info("Done streaming mongodb distribution object.");
 
 					// uptate status of distribution
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
+							.setStatus(DistributionMongoDBObject.STATUS_DONE);
 					distributionMongoDBObj.updateObject(true);
 
 					logger.info("Distribution saved! ");
@@ -222,8 +222,6 @@ public class Manager {
 		SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
 		systemProperties.setLinksetNeedUpdate(true);
 		systemProperties.updateObject(true);
-
-		logger.info("Linksets will update soon.");
 
 	}
 
@@ -289,7 +287,7 @@ public class Manager {
 	}
 
 	private void checkLOV() {
-		// check if LOV was already downloaded
+		// check if LOV have already been downloaded
 		SystemPropertiesMongoDBObject g = new SystemPropertiesMongoDBObject();
 		if (g.getDownloadedLOV() == null || !g.getDownloadedLOV()) {
 			logger.info("LOV vocabularies still not lodaded! Loading now...");
