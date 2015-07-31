@@ -2,6 +2,8 @@ package dynlod.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -11,11 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import dynlod.API.APIDataset;
 import dynlod.API.APIFactory;
+import dynlod.API.APIOption;
 import dynlod.API.APIRetrieve;
 import dynlod.API.APIStatus;
-import dynlod.API.APITasks;
-import dynlod.linksets.MakeLinksets;
-import dynlod.mongodb.objects.APIStatusMongoDBObject;
+import dynlod.API.ServiceAPIOptions;
 
 public class ServiceAPI extends HttpServlet {
 
@@ -43,20 +44,40 @@ public class ServiceAPI extends HttpServlet {
 		try {
 			out = response.getWriter();
 
+			ServiceAPIOptions options = new ServiceAPIOptions();
+
 			Map<String, String[]> parameters = request.getParameterMap();
 
-			if (parameters.containsKey("makeLinksets")) {
-				String[] makeLinkset = parameters.get("makeLinksets");
-				if (makeLinkset[0].toString().equals("true")) {
-					MakeLinksets m = new MakeLinksets();
-					m.updateLinksets();
+			// check whether there is at least one valid parameter
+			boolean hasOption = false;
+			Iterator<APIOption> it = options
+					.iterator();
+			while (it.hasNext()) {
+				if (parameters.containsKey(it.next().getOption()))
+					hasOption = true;
+			}
+
+			if (!hasOption) {
+				it =  options.iterator();
+				out.write("We couldn't find any valid parameter.\n\n\n");
+				
+				out.write("Parameter \t\t Description\n\n");
+				
+				while (it.hasNext()) {
+					APIOption o = it.next();
+					out.write(o.getOption() + "\t\t" + o.getDescription()+"\n");
 				}
 			}
-			if (parameters.containsKey("addDataset")) {
-				if (parameters.containsKey("rdfFormat")) {
-					String format = (parameters.get("rdfFormat")[0].toString());
+			
+			
 
-					for (String datasetURI : parameters.get("addDataset")) {
+			if (parameters.containsKey(options.ADD_DATASET)) {
+				if (parameters.containsKey(options.RDF_FORMAT)) {
+					String format = (parameters.get(options.ADD_DATASET)[0]
+							.toString());
+
+					for (String datasetURI : parameters
+							.get(options.ADD_DATASET)) {
 
 						APIDataset apiDataset = APIFactory.createDataset(
 								datasetURI, format);
@@ -69,9 +90,9 @@ public class ServiceAPI extends HttpServlet {
 					out.write("You need specify rdfFormat: \"ttl\", \"rdfxml\" or \"nt\".");
 			}
 
-			if (parameters.containsKey("datasetStatus")) {
+			if (parameters.containsKey(options.DATASET_STATUS)) {
 
-				for (String datasetURI : parameters.get("datasetStatus")) {
+				for (String datasetURI : parameters.get(options.DATASET_STATUS)) {
 
 					APIStatus apiStatus = APIFactory
 							.createStatusDataset(datasetURI);
@@ -89,9 +110,10 @@ public class ServiceAPI extends HttpServlet {
 				}
 			}
 
-			if (parameters.containsKey("retrieveDataset")) {
+			if (parameters.containsKey(options.RETRIEVE_DATASET)) {
 
-				for (String datasetURI : parameters.get("retrieveDataset")) {
+				for (String datasetURI : parameters
+						.get(options.RETRIEVE_DATASET)) {
 					APIRetrieve apiRetrieve = APIFactory
 							.retrieveDataset(datasetURI);
 					apiRetrieve.outModel.write(out, "TURTLE");
