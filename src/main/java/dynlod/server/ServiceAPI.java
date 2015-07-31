@@ -3,7 +3,6 @@ package dynlod.server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -17,6 +16,9 @@ import dynlod.API.APIOption;
 import dynlod.API.APIRetrieve;
 import dynlod.API.APIStatus;
 import dynlod.API.ServiceAPIOptions;
+import dynlod.exceptions.DynamicLODAPINoLinksFoundException;
+import dynlod.exceptions.DynamicLODAPINoParametersFoundExceiption;
+import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 
 public class ServiceAPI extends HttpServlet {
 
@@ -37,43 +39,32 @@ public class ServiceAPI extends HttpServlet {
 	}
 
 	private void manageRequest(HttpServletRequest request,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws IOException {
 		staticRequest = request;
 
+		ServiceAPIOptions options = new ServiceAPIOptions();
 		PrintWriter out;
-		try {
-			out = response.getWriter();
 
-			ServiceAPIOptions options = new ServiceAPIOptions();
+		out = response.getWriter();
+		try {
 
 			Map<String, String[]> parameters = request.getParameterMap();
 
 			// check whether there is at least one valid parameter
 			boolean hasOption = false;
-			Iterator<APIOption> it = options
-					.iterator();
+			Iterator<APIOption> it = options.iterator();
 			while (it.hasNext()) {
 				if (parameters.containsKey(it.next().getOption()))
 					hasOption = true;
 			}
 
-			if (!hasOption) {
-				it =  options.iterator();
-				out.write("We couldn't find any valid parameter.\n\n\n");
-				
-				out.write("Parameter \t\t Description\n\n");
-				
-				while (it.hasNext()) {
-					APIOption o = it.next();
-					out.write(o.getOption() + "\t\t" + o.getDescription()+"\n");
-				}
-			}
-			
+			if (!hasOption) 
+				throw new DynamicLODAPINoParametersFoundExceiption();
 			
 
 			if (parameters.containsKey(options.ADD_DATASET)) {
 				if (parameters.containsKey(options.RDF_FORMAT)) {
-					String format = (parameters.get(options.ADD_DATASET)[0]
+					String format = (parameters.get(options.RDF_FORMAT)[0]
 							.toString());
 
 					for (String datasetURI : parameters
@@ -116,13 +107,30 @@ public class ServiceAPI extends HttpServlet {
 						.get(options.RETRIEVE_DATASET)) {
 					APIRetrieve apiRetrieve = APIFactory
 							.retrieveDataset(datasetURI);
-					apiRetrieve.outModel.write(out, "TURTLE");
+					apiRetrieve.outModel.write(out, "TURTLE"); 
 				}
 
 			}
 
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (DynamicLODAPINoParametersFoundExceiption e) {
+			Iterator<APIOption> it = options.iterator();
+			out.write("We couldn't find any valid parameter.\n\n\n");
+
+			out.write("Parameter \t\t Description\n\n");
+
+			while (it.hasNext()) {
+				APIOption o = it.next();
+				out.write(o.getOption() + "\t\t" + o.getDescription() + "\n");
+			}
+
+			out.write("\n\n\nFor full documentation please access: http://dynamiclod.dbpedia.org/wiki.html");
+		}
+		catch (DynamicLODNoDatasetFoundException e) {
+			out.write(e.getMessage());
+		}
+		catch (DynamicLODAPINoLinksFoundException e){
+			out.write(e.getMessage());
+			
 		}
 	}
 }

@@ -1,5 +1,8 @@
 package dynlod.API;
 
+import dynlod.exceptions.DynamicLODAPINoLinksFoundException;
+import dynlod.exceptions.DynamicLODAPINoParametersFoundExceiption;
+import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
 
 public class APIFactory {
@@ -25,9 +28,8 @@ public class APIFactory {
 		
 	}
 
-	public static APIRetrieve retrieveDataset(String datasetURI) {
+	public static APIRetrieve retrieveDataset(String datasetURI) throws DynamicLODNoDatasetFoundException, DynamicLODAPINoLinksFoundException {
 		return new APIRetrieve(datasetURI);
-
 	}
 
 }
