@@ -9,9 +9,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
-import dynlod.exceptions.DynamicLODAPINoLinksFoundException;
-import dynlod.exceptions.DynamicLODAPINoParametersFoundExceiption;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
+import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
+import dynlod.exceptions.api.DynamicLODAPINoParametersFoundExceiption;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;

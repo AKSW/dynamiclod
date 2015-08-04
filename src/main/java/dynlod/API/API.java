@@ -12,32 +12,34 @@ public abstract class API extends Thread{
 	
 	public abstract void run();
 	
-	public API() {
-		addMessage(new APIMessage("coreMsg",true, "API initialized."));
-		
-	}
-
-	public String getMessage() {
-		StringBuilder r = new StringBuilder();
-		for (APIMessage msg : message) {
-			r.append(msg.toString()+"\n");
-		}
-		return r.toString();
-	}
+	public APIMessage apimessage = new APIMessage();
 	
-	public String getMessageJSON() { 
-		JSONObject j = new JSONObject(); 
-		JSONArray ja = new JSONArray();
+	public API() {
+//		addMessage(new APIMessage("coreMsg",true, "API initialized."));
 		
-		for (APIMessage msg : message) {
-			ja.put(msg.toJSON());
-		}
-		j.put("messages",ja);
-		return j.toString(2);
 	}
 
-	public void addMessage(APIMessage message) {
-		this.message.add(message);
-	}
+//	public String getMessage() {
+//		StringBuilder r = new StringBuilder();
+//		for (APIMessage msg : message) {
+//			r.append(msg.toString()+"\n");
+//		}
+//		return r.toString();
+//	}
+//	
+//	public String getMessageJSON2() { 
+//		JSONObject j = new JSONObject(); 
+//		JSONArray ja = new JSONArray();
+//		
+//		for (APIMessage msg : message) {
+//			j.put("s",msg.toJSON());
+//		}
+//		j.put("messages",ja);
+//		return 
+//	}
+
+//	public void addMessage(APIMessage message) {
+//		this.message.add(message);
+//	}
 
 }

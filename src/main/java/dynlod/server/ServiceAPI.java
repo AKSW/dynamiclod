@@ -16,9 +16,9 @@ import dynlod.API.APIOption;
 import dynlod.API.APIRetrieve;
 import dynlod.API.APIStatus;
 import dynlod.API.ServiceAPIOptions;
-import dynlod.exceptions.DynamicLODAPINoLinksFoundException;
-import dynlod.exceptions.DynamicLODAPINoParametersFoundExceiption;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
+import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
+import dynlod.exceptions.api.DynamicLODAPINoParametersFoundExceiption;
 
 public class ServiceAPI extends HttpServlet {
 
@@ -72,7 +72,7 @@ public class ServiceAPI extends HttpServlet {
 
 						APIDataset apiDataset = APIFactory.createDataset(
 								datasetURI, format);
-						out.write(apiDataset.getMessageJSON().toString());
+						out.write(apiDataset.apimessage.toJSONString());
 						out.write("\n");
 
 					}
@@ -89,7 +89,7 @@ public class ServiceAPI extends HttpServlet {
 							.createStatusDataset(datasetURI);
 					try {
 						if (apiStatus != null) {
-							out.write(apiStatus.getMessageJSON());
+							out.write(apiStatus.apimessage.toJSONString());
 							out.write("\n");
 						} else {
 							out.write("Error: we couldn't find your dataset. ");

@@ -1,4 +1,4 @@
-package dynlod.exceptions;
+package dynlod.exceptions.api;
 
 public class DynamicLODAPINoParametersFoundExceiption extends Exception{
 	public DynamicLODAPINoParametersFoundExceiption() { super(); }

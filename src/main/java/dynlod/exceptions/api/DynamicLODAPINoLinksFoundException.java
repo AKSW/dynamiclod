@@ -1,4 +1,4 @@
-package dynlod.exceptions;
+package dynlod.exceptions.api;
 
 public class DynamicLODAPINoLinksFoundException extends Exception{
 	public DynamicLODAPINoLinksFoundException() { super(); }

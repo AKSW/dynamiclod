@@ -1,8 +1,8 @@
 package dynlod.API;
 
-import dynlod.exceptions.DynamicLODAPINoLinksFoundException;
-import dynlod.exceptions.DynamicLODAPINoParametersFoundExceiption;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
+import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
+import dynlod.exceptions.api.DynamicLODAPINoParametersFoundExceiption;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
 
 public class APIFactory {
