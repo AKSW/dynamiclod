@@ -58,27 +58,24 @@ public class ServiceAPI extends HttpServlet {
 					hasOption = true;
 			}
 
-			if (!hasOption) 
+			if (!hasOption)
 				throw new DynamicLODAPINoParametersFoundExceiption();
-			
 
 			if (parameters.containsKey(options.ADD_DATASET)) {
+				String format;
 				if (parameters.containsKey(options.RDF_FORMAT)) {
-					String format = (parameters.get(options.RDF_FORMAT)[0]
-							.toString());
-
-					for (String datasetURI : parameters
-							.get(options.ADD_DATASET)) {
-
-						APIDataset apiDataset = APIFactory.createDataset(
-								datasetURI, format);
-						out.write(apiDataset.apimessage.toJSONString());
-						out.write("\n");
-
-					}
-
+					format = (parameters.get(options.RDF_FORMAT)[0].toString());
 				} else
-					out.write("You need specify rdfFormat: \"ttl\", \"rdfxml\" or \"nt\".");
+					format = "rdfxml";
+
+				for (String datasetURI : parameters.get(options.ADD_DATASET)) {
+
+					APIDataset apiDataset = APIFactory.createDataset(
+							datasetURI, format);
+					out.write(apiDataset.apimessage.toJSONString());
+					out.write("\n");
+
+				}
 			}
 
 			if (parameters.containsKey(options.DATASET_STATUS)) {
@@ -107,7 +104,7 @@ public class ServiceAPI extends HttpServlet {
 						.get(options.RETRIEVE_DATASET)) {
 					APIRetrieve apiRetrieve = APIFactory
 							.retrieveDataset(datasetURI);
-					apiRetrieve.outModel.write(out, "TURTLE"); 
+					apiRetrieve.outModel.write(out, "TURTLE");
 				}
 
 			}
@@ -124,13 +121,11 @@ public class ServiceAPI extends HttpServlet {
 			}
 
 			out.write("\n\n\nFor full documentation please access: http://dynamiclod.dbpedia.org/wiki.html");
-		}
-		catch (DynamicLODNoDatasetFoundException e) {
+		} catch (DynamicLODNoDatasetFoundException e) {
 			out.write(e.getMessage());
-		}
-		catch (DynamicLODAPINoLinksFoundException e){
+		} catch (DynamicLODAPINoLinksFoundException e) {
 			out.write(e.getMessage());
-			
+
 		}
 	}
 }
