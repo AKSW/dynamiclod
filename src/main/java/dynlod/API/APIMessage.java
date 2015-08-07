@@ -26,8 +26,6 @@ public class APIMessage {
 	
 	public void addStatisticsMsg(JSONObject message){
 		msg.put("statistics", message); 
-		
-
 	}
 	
 	public void addDistributionMsg(JSONObject object){
