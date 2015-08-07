@@ -255,7 +255,6 @@ public class LOV extends Download {
 
 		distribution.setDownloadUrl(nameSpace);
 		distribution.setDefaultDatasets(parentDataset);
-		distribution.setParentDataset(nameSpace);
 		distribution.setTopDataset(nameSpace);
 		distribution.setTriples(subjects.size() + objects.size());
 		distribution.setTimeToCreateSubjectFilter(timer);

@@ -11,8 +11,6 @@ import org.json.JSONObject;
 public class APIMessage {
 	
 	JSONObject msg = new JSONObject();	
-
-	HashMap<String, String> extraMessages = new HashMap<String, String>();
 	
 	public void setCoreMsgSuccess(){
 		msg.put("coreMsg", "API successfully initialized.");
@@ -26,14 +24,19 @@ public class APIMessage {
 		msg.put("parserMsg", message);
 	}
 	
+	public void addStatisticsMsg(JSONObject message){
+		msg.put("statistics", message); 
+		
+
+	}
+	
 	public void addDistributionMsg(JSONObject object){
 		try{
-		
 			JSONArray a = (JSONArray) msg.get("distributions");
 			a.put(object);	
 		}
-		catch (JSONException j){ 
-			msg.put("distributions", object);
+		catch (Exception j){ 
+			msg.put("distributions", new JSONArray().put(object));
 		}
 	}
 	

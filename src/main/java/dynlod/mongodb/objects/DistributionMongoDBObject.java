@@ -37,9 +37,9 @@ public class DistributionMongoDBObject extends DataIDDB {
 	
 	
 	// collection properties
-	public static final String DOWNLOAD_URL = "DownloadUrl";
+	public static final String DOWNLOAD_URL = "downloadUrl";
 
-	public static final String PARENT_DATASETS = "parentDataset";
+	public static final String DEFAULT_DATASETS = "defaultDatasets";
 
 	public static final String TOP_DATASET = "topDataset";
 
@@ -87,8 +87,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 	private ArrayList<String> defaultDatasets = new ArrayList<String>();
 
 	private String downloadUrl;
-
-	private String parentDataset;
 
 	private String topDataset;
 
@@ -152,7 +150,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 		// save object case it doens't exists
 		try {
 			mongoDBObject.put(DOWNLOAD_URL, downloadUrl);
-			mongoDBObject.put(PARENT_DATASETS, defaultDatasets);
+			mongoDBObject.put(DEFAULT_DATASETS, defaultDatasets);
 			mongoDBObject.put(HTTP_BYTE_SIZE, httpByteSize);
 			mongoDBObject.put(HTTP_FORMAT, httpFormat);
 			mongoDBObject.put(HTTP_LAST_MODIFIED, httpLastModified);
@@ -231,7 +229,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 			
 			// loading default datasets to object
 			BasicDBList defaultDatasetList = (BasicDBList) obj
-					.get(PARENT_DATASETS);
+					.get(DEFAULT_DATASETS);
 			if (defaultDatasetList != null)
 				for (Object sd : defaultDatasetList) {
 					defaultDatasets.add((String) sd);
@@ -248,14 +246,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 
 	public void setDownloadUrl(String downloadUrl) {
 		this.downloadUrl = downloadUrl;
-	}
-
-	public String getParentDataset() {
-		return parentDataset;
-	}
-
-	public void setParentDataset(String parentDataset) {
-		this.parentDataset = parentDataset;
 	}
 
 	public String getHttpByteSize() {

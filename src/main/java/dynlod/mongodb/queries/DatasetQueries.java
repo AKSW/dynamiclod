@@ -38,7 +38,7 @@ public class DatasetQueries {
 		}
 	}
 	
-	// return number of datasets
+	// return number of datasets (vocabularies and not)
 	public static int getNumberOfDatasets() {
 		int numberOfDatasets = 0;
 		try {
@@ -79,6 +79,28 @@ public class DatasetQueries {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DatasetMongoDBObject.COLLECTION_NAME);
 			BasicDBObject query = new BasicDBObject(DatasetMongoDBObject.IS_VOCABULARY, false);
+//			query.append("$where", "this.distributions_uris.length > 0");
+			DBCursor instances = collection.find(query);
+
+			for (DBObject instance : instances) {
+				list.add(new DatasetMongoDBObject(instance.get(DataIDDB.URI)
+						.toString()));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	// return all datasets
+	public static ArrayList<DatasetMongoDBObject> getDatasetsVocab() {
+
+		ArrayList<DatasetMongoDBObject> list = new ArrayList<DatasetMongoDBObject>();
+		try {
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					DatasetMongoDBObject.COLLECTION_NAME);
+			BasicDBObject query = new BasicDBObject(DatasetMongoDBObject.IS_VOCABULARY, true);
 //			query.append("$where", "this.distributions_uris.length > 0");
 			DBCursor instances = collection.find(query);
 

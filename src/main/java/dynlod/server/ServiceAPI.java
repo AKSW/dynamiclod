@@ -14,6 +14,7 @@ import dynlod.API.APIDataset;
 import dynlod.API.APIFactory;
 import dynlod.API.APIOption;
 import dynlod.API.APIRetrieve;
+import dynlod.API.APIStatistics;
 import dynlod.API.APIStatus;
 import dynlod.API.ServiceAPIOptions;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
@@ -99,14 +100,15 @@ public class ServiceAPI extends HttpServlet {
 			}
 
 			if (parameters.containsKey(options.RETRIEVE_DATASET)) {
-
 				for (String datasetURI : parameters
 						.get(options.RETRIEVE_DATASET)) {
 					APIRetrieve apiRetrieve = APIFactory
 							.retrieveDataset(datasetURI);
 					apiRetrieve.outModel.write(out, "TURTLE");
 				}
-
+			}
+			if (parameters.containsKey(options.SERVER_STATISTICS)) {
+				out.write(new APIStatistics().getStatistics().toJSONString()); 
 			}
 
 		} catch (DynamicLODAPINoParametersFoundExceiption e) {
