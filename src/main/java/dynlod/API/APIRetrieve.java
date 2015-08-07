@@ -113,8 +113,8 @@ public class APIRetrieve extends API {
 
 		}
 		
-		if(!linksetsFound)
-			throw new DynamicLODAPINoLinksFoundException ("Your dataset still doesn't not contains links with our stored datasets.");
+//		if(!linksetsFound)
+//			throw new DynamicLODAPINoLinksFoundException ("Your dataset still doesn't not contains links with our stored datasets.");
 
 	}
 
@@ -203,7 +203,6 @@ public class APIRetrieve extends API {
 
 		for (String dist : d.getDistributionsURIs()) {
 			retrieveByDistribution(dist);
-			datasetOrDistribuionFound = datasetOrDistribuionFound;
 			datasetOrDistribuionFound = true;
 		}
 

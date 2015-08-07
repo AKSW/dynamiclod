@@ -66,8 +66,11 @@ public class ServiceAPI extends HttpServlet {
 				String format;
 				if (parameters.containsKey(options.RDF_FORMAT)) {
 					format = (parameters.get(options.RDF_FORMAT)[0].toString());
-				} else
+					System.out.println("FORMAT"+format);
+				} else{
 					format = "rdfxml";
+					System.out.println("PORRA");
+				}
 
 				for (String datasetURI : parameters.get(options.ADD_DATASET)) {
 
