@@ -22,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
+import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
@@ -79,7 +80,7 @@ public class InputRDFParser {
 		return datasetsStmt;
 	}
 
-	public List<DistributionMongoDBObject> parseDistributions() throws DynamicLODNoDatasetFoundException, DynamicLODGeneralException{
+	public List<DistributionMongoDBObject> parseDistributions() throws DynamicLODNoDatasetFoundException, DynamicLODFormatNotAcceptedException, DynamicLODGeneralException{
 		// select dataset
 		StmtIterator datasetsStmt = getFirstStmt();
 
@@ -95,7 +96,7 @@ public class InputRDFParser {
 
 	// iterating over the subsets (recursive method)
 	private void iterateSubsetsNew(StmtIterator stmtDatasets,
-			String parentDataset, String topDataset) throws DynamicLODGeneralException {
+			String parentDataset, String topDataset) throws DynamicLODGeneralException, DynamicLODFormatNotAcceptedException {
 
 		// iterate over subsets
 		while (stmtDatasets.hasNext()) {

@@ -6,6 +6,7 @@ import org.apache.jena.riot.RiotException;
 
 import dynlod.InputRDFParser;
 import dynlod.Manager;
+import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
@@ -25,37 +26,41 @@ public class APIDataset extends API {
 		InputRDFParser inputRDFParser = new InputRDFParser();
 		try {
 			apiMessage.setCoreMsgSuccess();
-			
+
 			inputRDFParser.readModel(datasetURI, format);
 			inputRDFParser.parseDistributions();
-			
+
 			if (inputRDFParser.distributionsLinks.size() > 0) {
-				apiMessage.setParserMsg(inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!");
+				apiMessage.setParserMsg(inputRDFParser.distributionsLinks
+						.size()
+						+ " distributions found. We are processsing them!");
 				Manager m = new Manager(inputRDFParser.distributionsLinks);
-			}
-			else{
-				apiMessage.setParserMsg("No datasets found."); 
-				
-				APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
+			} else {
+				apiMessage.setParserMsg("No datasets found.");
+
+				APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(
+						datasetURI);
 				apiStatus.setMessage("We didn't find any distributions!");
-				
+
 			}
-		}catch(DynamicLODNoDatasetFoundException e){
+		} catch (DynamicLODNoDatasetFoundException e) {
 			apiMessage.setParserMsg(e.getMessage(), true);
 			e.printStackTrace();
-			
+
 		} catch (RiotException e) {
 			apiMessage.setParserMsg("Bad format file. ", true);
 			e.printStackTrace();
-		}
-		catch (DynamicLODGeneralException e){
+		} catch (DynamicLODFormatNotAcceptedException e) {
+			// apiMessage.setParserMsg(e.getMessage(), true);
+			e.printStackTrace();
+		} catch (DynamicLODGeneralException e) {
 			apiMessage.setParserMsg(e.getMessage(), true);
-		}
-		catch (IOException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			apiMessage.setParserMsg(e.getMessage(), true);
 			e.printStackTrace();
 		}
-		
+
 		APITasks.tasks.remove(datasetURI);
 
 	}

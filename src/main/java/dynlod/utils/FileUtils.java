@@ -3,10 +3,9 @@ package dynlod.utils;
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 import dynlod.DynlodGeneralProperties;
-import dynlod.exceptions.DynamicLODGeneralException;
+import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 
 public class FileUtils {
 
@@ -40,7 +39,7 @@ public class FileUtils {
 
 	// TODO make this method more precise
 	public static boolean acceptedFormats(String fileName)
-			throws DynamicLODGeneralException {
+			throws DynamicLODFormatNotAcceptedException {
 
 		if (fileName.contains(".ttl"))
 			return true;
@@ -55,7 +54,7 @@ public class FileUtils {
 		else if (fileName.contains(".tgz"))
 			return true;
 		else {
-			throw new DynamicLODGeneralException("File format not accepted: " + fileName);
+			throw new DynamicLODFormatNotAcceptedException("File format not accepted: " + fileName);
 		}
 	}
 
