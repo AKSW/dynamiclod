@@ -2,11 +2,14 @@ package dynlod;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jena.riot.RiotException;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -19,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
+import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
@@ -75,7 +79,7 @@ public class InputRDFParser {
 		return datasetsStmt;
 	}
 
-	public List<DistributionMongoDBObject> parseDistributions() throws DynamicLODNoDatasetFoundException{
+	public List<DistributionMongoDBObject> parseDistributions() throws DynamicLODNoDatasetFoundException, DynamicLODGeneralException{
 		// select dataset
 		StmtIterator datasetsStmt = getFirstStmt();
 
@@ -91,7 +95,7 @@ public class InputRDFParser {
 
 	// iterating over the subsets (recursive method)
 	private void iterateSubsetsNew(StmtIterator stmtDatasets,
-			String parentDataset, String topDataset) {
+			String parentDataset, String topDataset) throws DynamicLODGeneralException {
 
 		// iterate over subsets
 		while (stmtDatasets.hasNext()) {
@@ -254,7 +258,7 @@ public class InputRDFParser {
 						// store downloadURL statement
 						Statement downloadURLStmt = stmtDownloadURL.next();
 
-						try {
+//						try {
 							if (FileUtils.acceptedFormats(downloadURLStmt
 									.getObject().toString())) {
 
@@ -264,11 +268,11 @@ public class InputRDFParser {
 										topDataset);
 
 							}
-						} catch (Exception ex) {
-							ex.printStackTrace();
-							apiStatus.setHasError(true);
-							apiStatus.setMessage(ex.getMessage());
-						}
+//						} catch (DynamicLODGeneralException ex) {
+//							ex.printStackTrace();
+//							apiStatus.setHasError(true);
+//							apiStatus.setMessage(ex.getMessage());
+//						}
 					}
 				}
 			}
@@ -359,7 +363,7 @@ public class InputRDFParser {
 	}
 
 	// read dataID file and return the dataset uri
-	public String readModel(String URL, String format) throws Exception {
+	public String readModel(String URL, String format) throws MalformedURLException, IOException, DynamicLODNoDatasetFoundException, RiotException  {
 		apiStatus = new APIStatusMongoDBObject(URL);
 		access_url = URL;
 		String someDatasetURI = null;

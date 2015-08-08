@@ -66,19 +66,24 @@ public class ServiceAPI extends HttpServlet {
 				String format;
 				if (parameters.containsKey(options.RDF_FORMAT)) {
 					format = (parameters.get(options.RDF_FORMAT)[0].toString());
-					System.out.println("FORMAT"+format);
 				} else{
 					format = "rdfxml";
-					System.out.println("PORRA");
 				}
 
 				for (String datasetURI : parameters.get(options.ADD_DATASET)) {
 
 					APIDataset apiDataset = APIFactory.createDataset(
 							datasetURI, format);
-					out.write(apiDataset.apimessage.toJSONString());
+					
+					while (!apiDataset.apiMessage.hasParserMsg()){
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					out.write(apiDataset.apiMessage.toJSONString());
 					out.write("\n");
-
 				}
 			}
 
@@ -90,7 +95,7 @@ public class ServiceAPI extends HttpServlet {
 							.createStatusDataset(datasetURI);
 					try {
 						if (apiStatus != null) {
-							out.write(apiStatus.apimessage.toJSONString());
+							out.write(apiStatus.apiMessage.toJSONString());
 							out.write("\n");
 						} else {
 							out.write("Error: we couldn't find your dataset. ");

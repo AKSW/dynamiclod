@@ -13,7 +13,7 @@ public class APIFactory {
 			APIDataset instace = new APIDataset(datasetURI, format);
 			APITasks.tasks.put(datasetURI, instace);
 			instace.start();
-			instace.apimessage.setCoreMsgSuccess();
+			instace.apiMessage.setCoreMsgSuccess();			
 			return instace;
 			
 		} else

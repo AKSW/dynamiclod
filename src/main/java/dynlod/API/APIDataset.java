@@ -1,10 +1,14 @@
 package dynlod.API;
 
+import java.io.IOException;
+
+import org.apache.jena.riot.RiotException;
+
 import dynlod.InputRDFParser;
 import dynlod.Manager;
-import dynlod.linksets.MakeLinksets;
+import dynlod.exceptions.DynamicLODGeneralException;
+import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
-import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
 
 public class APIDataset extends API {
 
@@ -20,32 +24,35 @@ public class APIDataset extends API {
 
 		InputRDFParser inputRDFParser = new InputRDFParser();
 		try {
-			apimessage.setCoreMsgSuccess();
+			apiMessage.setCoreMsgSuccess();
 			
 			inputRDFParser.readModel(datasetURI, format);
 			inputRDFParser.parseDistributions();
 			
 			if (inputRDFParser.distributionsLinks.size() > 0) {
-//				addMessage(new APIMessage("parserMsg",true, inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!"));
-				apimessage.setParserMsg(inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!");
+				apiMessage.setParserMsg(inputRDFParser.distributionsLinks.size() + " distributions found. We are processsing them!");
 				Manager m = new Manager(inputRDFParser.distributionsLinks);
-				System.out.println(inputRDFParser.distributionsLinks.size());
-//				addMessage(new APIMessage(true, "Done!"));
-				
 			}
 			else{
-//				addMessage(new APIMessage("parserMsg",false, "We found an error reading your RDF data."));
-				apimessage.setParserMsg("We found an error reading your RDF data."); 
+				apiMessage.setParserMsg("No datasets found."); 
 				
 				APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
 				apiStatus.setMessage("We didn't find any distributions!");
 				
 			}
-
-		} catch (Exception e) {
-//			addMessage(new APIMessage("parserMsg",false, e.getMessage()));
-			apimessage.setParserMsg(e.getMessage());
+		}catch(DynamicLODNoDatasetFoundException e){
+			apiMessage.setParserMsg(e.getMessage(), true);
+			e.printStackTrace();
 			
+		} catch (RiotException e) {
+			apiMessage.setParserMsg("Bad format file. ", true);
+			e.printStackTrace();
+		}
+		catch (DynamicLODGeneralException e){
+			apiMessage.setParserMsg(e.getMessage(), true);
+		}
+		catch (IOException e) {
+			apiMessage.setParserMsg(e.getMessage(), true);
 			e.printStackTrace();
 		}
 		

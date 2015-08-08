@@ -230,9 +230,12 @@ public class Manager {
 		checkLOV();
 		try {
 			streamAndCreateFilters();
-		} catch (Exception e) {
+		}
+	
+		catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	public Manager(String URL) {

@@ -20,8 +20,23 @@ public class APIMessage {
 		msg.put("coreMsg", "API not initialized. "+ error);
 	}
 	
+	public void setParserMsg(String message, boolean error){
+		JSONObject tmpMsg = new JSONObject();
+		tmpMsg.put("message", message);
+		tmpMsg.put("error", error);
+		msg.put("parserMsg", tmpMsg);
+	}
+	
+	public boolean hasParserMsg(){
+		if(msg.has("parserMsg"))
+			return true;
+		else return false;
+	}
+	
 	public void setParserMsg(String message){
-		msg.put("parserMsg", message);
+		JSONObject tmpMsg = new JSONObject();
+		tmpMsg.put("message", message);
+		msg.put("parserMsg", tmpMsg);
 	}
 	
 	public void addStatisticsMsg(JSONObject message){

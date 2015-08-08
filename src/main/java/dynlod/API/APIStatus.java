@@ -27,8 +27,8 @@ public class APIStatus extends API {
 		apiStatus = new APIStatusMongoDBObject(url);
 		distributions=DistributionQueries.getDistributionsByTopDatasetAccessURL(url);
 		
-		apimessage.setCoreMsgSuccess();
-		apimessage.setParserMsg("Dataset status:  " + apiStatus.getMessage());
+		apiMessage.setCoreMsgSuccess();
+		apiMessage.setParserMsg("Dataset status:  " + apiStatus.getMessage());
 	
 		for (DistributionMongoDBObject distribution : distributions) {
 			
@@ -64,7 +64,7 @@ public class APIStatus extends API {
 			datasetMessage.put("outdegreeDatasetCount", outdegrees.size());
 			datasetMessage.put("outdegreeLinksCount", outdegreeCount);			
 			
-			apimessage.addDistributionMsg(datasetMessage);
+			apiMessage.addDistributionMsg(datasetMessage);
 		}
 		
 	}
