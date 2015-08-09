@@ -27,6 +27,7 @@ public class APIDataset extends API {
 		try {
 			apiMessage.setCoreMsgSuccess();
 
+			// read and parse description file
 			inputRDFParser.readModel(datasetURI, format);
 			inputRDFParser.parseDistributions();
 
@@ -34,6 +35,8 @@ public class APIDataset extends API {
 				apiMessage.setParserMsg(inputRDFParser.distributionsLinks
 						.size()
 						+ " distributions found. We are processsing them!");
+				
+				// stream distributions
 				Manager m = new Manager(inputRDFParser.distributionsLinks);
 			} else {
 				apiMessage.setParserMsg("No datasets found.");
@@ -51,7 +54,8 @@ public class APIDataset extends API {
 			apiMessage.setParserMsg("Bad format file. ", true);
 			e.printStackTrace();
 		} catch (DynamicLODFormatNotAcceptedException e) {
-			// apiMessage.setParserMsg(e.getMessage(), true);
+//			 apiMessage.setParserMsg(e.getMessage(), true);
+			 apiMessage.setParserMsg("", true);
 			e.printStackTrace();
 		} catch (DynamicLODGeneralException e) {
 			apiMessage.setParserMsg(e.getMessage(), true);

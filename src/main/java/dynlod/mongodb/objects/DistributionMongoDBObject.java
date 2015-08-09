@@ -59,9 +59,9 @@ public class DistributionMongoDBObject extends DataIDDB {
 	
 	public static final String STATUS = "status";
 	
-	public static final String SUCCESSFULLY_DOWNLOADED = "successfully_downloaded";
+	public static final String SUCCESSFULLY_DOWNLOADED = "successfullyDownloaded";
 	
-	public static final String LAST_ERROR_MSG = "lastErrorMsg";
+	public static final String LAST_MSG = "lastMsg";
 
 	public static final String LAST_TIME_LINKSET = "lastTimeLinkset";
 
@@ -120,7 +120,8 @@ public class DistributionMongoDBObject extends DataIDDB {
 	
 	private boolean isVocabulary = false;
 	
-	private String lastErrorMsg = "";
+	private String lastMsg = "";
+//	private String lastErrorMsg = "";
 	
 	private String status;
 	
@@ -170,7 +171,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 			mongoDBObject.put(RESOURCE_URI, resourceUri);
 			mongoDBObject.put(SUCCESSFULLY_DOWNLOADED, successfullyDownloaded);
 			mongoDBObject.put(IS_VOCABULARY, isVocabulary);
-			mongoDBObject.put(LAST_ERROR_MSG, lastErrorMsg);
+			mongoDBObject.put(LAST_MSG, lastMsg);
 			mongoDBObject.put(LAST_TIME_LINKSET, lastTimeLinkset);
 			
 			
@@ -220,7 +221,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 			resourceUri = (String) obj.get(RESOURCE_URI);
 			successfullyDownloaded = (Boolean) obj.get(SUCCESSFULLY_DOWNLOADED);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
-			lastErrorMsg = (String) obj.get(LAST_ERROR_MSG);
+			lastMsg = (String) obj.get(LAST_MSG);
 			lastTimeLinkset = (String) obj.get(LAST_TIME_LINKSET);
 			
 			dynLodID = (Integer) obj.get(DYN_LOD_ID);
@@ -356,13 +357,17 @@ public class DistributionMongoDBObject extends DataIDDB {
 		this.successfullyDownloaded = successfullyDownloaded;
 	}
 
-	public String getLastErrorMsg() {
-		return lastErrorMsg;
+
+
+	public String getLastMsg() {
+		return lastMsg;
 	}
 
-	public void setLastErrorMsg(String lastErrorMsg) {
-		this.lastErrorMsg = lastErrorMsg;
+
+	public void setLastMsg(String lastMsg) {
+		this.lastMsg = lastMsg;
 	}
+
 
 	public String getLastTimeLinkset() {
 		return lastTimeLinkset;

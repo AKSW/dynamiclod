@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+@Deprecated
 public class RunCommand {
 	
 	final static Logger logger = Logger.getLogger(RunCommand.class);
@@ -20,7 +21,7 @@ public class RunCommand {
 		String[] cmd = { "/bin/sh", "-c", c };
 
 		logger.debug("<b>Running rapper command:</b> <i>" + c + "</i>");
-		System.out.println("Running rapper command: " + c);
+		logger.debug("Running rapper command: " + c);
 
 		Runtime rt = Runtime.getRuntime();
 		Process proc = rt.exec(cmd);

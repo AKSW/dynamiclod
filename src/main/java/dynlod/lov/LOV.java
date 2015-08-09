@@ -88,7 +88,6 @@ public class LOV extends Download {
 			tmpModel = ModelFactory.createModelForGraph(tmpGraph);
 		
 			if(tmpNode.getURI().equals("http://lov.okfn.org/dataset/lov")){
-				System.out.println("");
 				break;
 			}
 		
@@ -115,11 +114,6 @@ public class LOV extends Download {
 
 			Resource r = ResourceFactory
 					.createResource(node.getURI());
-			
-			System.out.println(node.getURI());
-			System.out.println(tmpNode.getURI());
-
-			// System.out.println(node.getNameSpace()+" "+i++);
 
 			// new dataset at mongodb
 			DatasetMongoDBObject d = new DatasetMongoDBObject(

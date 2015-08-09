@@ -259,7 +259,7 @@ public class InputRDFParser {
 						// store downloadURL statement
 						Statement downloadURLStmt = stmtDownloadURL.next();
 
-//						try {
+						try {
 							if (FileUtils.acceptedFormats(downloadURLStmt
 									.getObject().toString())) {
 
@@ -269,11 +269,9 @@ public class InputRDFParser {
 										topDataset);
 
 							}
-//						} catch (DynamicLODGeneralException ex) {
-//							ex.printStackTrace();
-//							apiStatus.setHasError(true);
-//							apiStatus.setMessage(ex.getMessage());
-//						}
+						} catch (DynamicLODFormatNotAcceptedException ex) {
+							ex.printStackTrace();
+						}
 					}
 				}
 			}

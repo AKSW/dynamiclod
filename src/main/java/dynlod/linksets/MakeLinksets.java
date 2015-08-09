@@ -35,9 +35,6 @@ public class MakeLinksets {
 		SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
 
 		try {
-
-			systemProperties.setLinksetTimeStarted(new Date());
-			systemProperties.setLinksetTimeFinished(null);
 			systemProperties.updateObject(true);
 
 			logger.info("Updating linksets...");
@@ -51,9 +48,6 @@ public class MakeLinksets {
 			for (DistributionMongoDBObject distribution : distributions) {
 				distributionsAnalyzed++;
 
-				systemProperties.setLinksetStatus(distributionsAnalyzed
-						+ " of " + totalDistributions
-						+ " distributions analyzed.");
 				systemProperties.updateObject(true);
 
 //				if (distribution
@@ -136,9 +130,9 @@ public class MakeLinksets {
 										+ e.getMessage());
 								StringWriter errors = new StringWriter();
 								e.printStackTrace(new PrintWriter(errors));
-								System.out.println(errors.toString());
-								System.out.println("distribution: "+distribution.getUri());
-								System.out.println("distribution to compare: "+distributionToCompare.getUri());
+								logger.error(errors.toString());
+								logger.error("distribution: "+distribution.getUri());
+								logger.error("distribution to compare: "+distributionToCompare.getUri());
 						
 							}
 
@@ -245,13 +239,9 @@ public class MakeLinksets {
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			systemProperties.setLinksetTimeFinished(new Date());
-			systemProperties.setLinksetStatus(e.getMessage());
 			systemProperties.updateObject(true);
 
 		}
-		systemProperties.setLinksetTimeFinished(new Date());
-		systemProperties.setLinksetStatus("Done");
 		systemProperties.updateObject(true);
 
 		logger.info("Time to update linksets: " + t.stopTimer() + "s");
@@ -266,7 +256,7 @@ public class MakeLinksets {
 			String mongoDBURL = dataThread.objectDistributionURI + "-2-"
 					+ dataThread.subjectDistributionURI;
 
-			System.out.println(dataThread.subjectDistributionURI);
+			logger.debug(dataThread.subjectDistributionURI);
 			new ResourceAvailability(dataThread.listURLToTest, mongoDBURL, c,
 					concurrentConn);
 

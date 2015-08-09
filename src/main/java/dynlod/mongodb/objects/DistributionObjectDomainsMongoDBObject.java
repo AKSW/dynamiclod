@@ -1,7 +1,5 @@
 package dynlod.mongodb.objects;
 
-import org.bson.types.ObjectId;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;

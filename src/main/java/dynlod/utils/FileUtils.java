@@ -4,11 +4,16 @@ import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.log4j.Logger;
+
 import dynlod.DynlodGeneralProperties;
+import dynlod.Manager;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 
 public class FileUtils {
-
+	
+	final static Logger logger = Logger.getLogger(FileUtils.class);
+	
 	public static void checkIfFolderExists() {
 
 		// check if folders needed exists
@@ -70,12 +75,10 @@ public class FileUtils {
 				sb.append(String.format("%02x", b & 0xff));
 			}
 
-			System.out.println("original:" + original);
-			System.out.println("digested(hex):" + sb.toString());
+			logger.debug("Creating hash name for:" + original);
+			logger.debug("digested(hex):" + sb.toString());
 			return sb.toString();
-//			return str.replace("/", "");
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import dynlod.DynlodGeneralProperties;
 import dynlod.utils.Formats;
 
+@Deprecated
 public class PrepareFiles {
 	
 	final static Logger logger = Logger.getLogger(PrepareFiles.class);

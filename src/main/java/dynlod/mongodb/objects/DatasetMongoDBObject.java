@@ -18,21 +18,21 @@ public class DatasetMongoDBObject extends DataIDDB {
 
 	public static final String TITLE = "title";
 	
-	public static final String PARENT_DATASETS = "parent_datasets";
+	public static final String PARENT_DATASETS = "parentDatasets";
 
-	public static final String SUBSET_URIS = "subset_uris";
+	public static final String SUBSET_URIS = "subsetUris";
 
-	public static final String DISTRIBUTIONS_URIS = "distributions_uris";
+	public static final String DISTRIBUTIONS_URIS = "distributionsUris";
 
-	public static final String DATAID_FILENAME = "dataid_file_name";
+	public static final String DESCRIPTION_FILENAME = "descriptionFileName";
 	
-	public static final String OBJECT_FILENAME = "object_file_name";
+	public static final String OBJECT_FILENAME = "objectFileName";
 	
-	public static final String SUBJECT_FILTER_FILENAME = "subject_file_name";
+	public static final String SUBJECT_FILTER_FILENAME = "subjectFileName";
 	
-	public static final String IS_VOCABULARY = "is_vocabulary";
+	public static final String IS_VOCABULARY = "isVocabulary";
 	
-	public static final String ACCESS_URL = "access_url";
+	public static final String ACCESS_URL = "accessUrl";
 	
 	public static final String DYN_LOD_ID = "dynLodID";
 	
@@ -84,7 +84,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 	
 			mongoDBObject.put(TITLE, title);
 
-			mongoDBObject.put(DATAID_FILENAME, dataIdFileName);
+			mongoDBObject.put(DESCRIPTION_FILENAME, dataIdFileName);
 
 			mongoDBObject.put(LABEL, label);
 			
@@ -121,7 +121,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 			label = (String) obj.get(LABEL);
 			uri = (String) obj.get(URI);
 			title = (String) obj.get(TITLE);
-			dataIdFileName = (String) obj.get(DATAID_FILENAME);
+			dataIdFileName = (String) obj.get(DESCRIPTION_FILENAME);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
 			access_url = (String) obj.get(ACCESS_URL);
 			dynLodID = (Integer) obj.get(DYN_LOD_ID);

@@ -3,7 +3,6 @@ package dynlod;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Properties;
 
 public class DynlodGeneralProperties {
@@ -15,14 +14,11 @@ public class DynlodGeneralProperties {
 		Properties prop = new Properties();
 		InputStream inputStream = null;
 		try {
-			String result = "";
 			String propFileName = "resources/config.properties";
 
 			inputStream = new FileInputStream(propFileName);
 
 			prop.load(inputStream);
-
-			Date time = new Date(System.currentTimeMillis());
 
 			// get the property value and print it out
 			BASE_PATH = prop.getProperty("BASE_PATH");
@@ -69,7 +65,6 @@ public class DynlodGeneralProperties {
 			try {
 				inputStream.close();
 			} catch (Exception e2) {
-				System.out.println("Error closing input stream of .properties file.");
 				e2.printStackTrace();
 			}
 		}

@@ -37,8 +37,6 @@ public class MakeLinksets2 {
 
 		try {
 
-			systemProperties.setLinksetTimeStarted(new Date());
-			systemProperties.setLinksetTimeFinished(null);
 			systemProperties.updateObject(true);
 
 			logger.info("Updating linksets...");
@@ -49,8 +47,6 @@ public class MakeLinksets2 {
 			int distributionsAnalyzed = 0;
 			int totalDistributions = distributions.size();
 
-			systemProperties.setLinksetStatus(distributionsAnalyzed + " of "
-					+ totalDistributions + " distributions analyzed.");
 			systemProperties.updateObject(true);
 
 			try {
@@ -228,14 +224,8 @@ public class MakeLinksets2 {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-
-			systemProperties.setLinksetTimeFinished(new Date());
-			systemProperties.setLinksetStatus(e.getMessage());
 			systemProperties.updateObject(true);
-
 		}
-		systemProperties.setLinksetTimeFinished(new Date());
-		systemProperties.setLinksetStatus("Done");
 		systemProperties.updateObject(true);
 
 		logger.info("Time to update linksets: " + t.stopTimer() + "s");
@@ -250,7 +240,7 @@ public class MakeLinksets2 {
 			String mongoDBURL = dataThread.objectDistributionURI + "-2-"
 					+ dataThread.subjectDistributionURI;
 
-			System.out.println(dataThread.subjectDistributionURI);
+			logger.debug(dataThread.subjectDistributionURI);
 			new ResourceAvailability(dataThread.listURLToTest, mongoDBURL, c,
 					concurrentConn);
 

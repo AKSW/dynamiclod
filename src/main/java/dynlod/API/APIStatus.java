@@ -28,14 +28,14 @@ public class APIStatus extends API {
 		distributions=DistributionQueries.getDistributionsByTopDatasetAccessURL(url);
 		
 		apiMessage.setCoreMsgSuccess();
-		apiMessage.setParserMsg("Dataset status:  " + apiStatus.getMessage());
+//		apiMessage.setParserMsg("Dataset status:  " + apiStatus.getMessage());
 	
 		for (DistributionMongoDBObject distribution : distributions) {
 			
 			JSONObject datasetMessage = new JSONObject();
 			
 			if(distribution.getStatus().equals(DistributionMongoDBObject.STATUS_ERROR)){
-				datasetMessage.put(DistributionMongoDBObject.LAST_ERROR_MSG, distribution.getLastErrorMsg());
+				datasetMessage.put(DistributionMongoDBObject.LAST_MSG, distribution.getLastMsg());
 			}
 			datasetMessage.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
 			datasetMessage.put(DistributionMongoDBObject.RESOURCE_URI, distribution.getResourceUri()); 
@@ -43,6 +43,9 @@ public class APIStatus extends API {
 			datasetMessage.put(DistributionMongoDBObject.STATUS, distribution.getStatus());
 			datasetMessage.put(DistributionMongoDBObject.TITLE, distribution.getTitle());
 			datasetMessage.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
+			datasetMessage.put(DistributionMongoDBObject.LAST_MSG, distribution.getLastMsg());
+			datasetMessage.put(DistributionMongoDBObject.TRIPLES, distribution.getTriples());
+			
 			
 			// indegrees
 			ArrayList<LinksetMongoDBObject> indegrees = LinksetQueries.getLinksetsInDegreeByDistribution(distribution.getDownloadUrl());

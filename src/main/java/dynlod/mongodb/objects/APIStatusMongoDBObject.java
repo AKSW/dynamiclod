@@ -1,9 +1,5 @@
 package dynlod.mongodb.objects;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;

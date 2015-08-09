@@ -126,7 +126,7 @@ public class Download {
 		if (getExtension().equals("gz") || getExtension().equals("tgz")) {
 			logger.info("File extension is " + getExtension()
 					+ ", creating GzipCompressorInputStream...");
-			System.out.println(new FileNameFromURL().getFileName(
+			logger.debug(new FileNameFromURL().getFileName(
 					url.toString(), httpDisposition));
 			httpConn = (HttpURLConnection) url.openConnection();
 			inputStream = new GzipCompressorInputStream(

@@ -58,13 +58,15 @@ public class Manager {
 
 			// check is distribution need to be streamed
 			boolean needDownload = checkDistributionStatus(distributionMongoDBObj);
-			needDownload = true;
+//			needDownload = true;
 
 			logger.info("Distribution n. " + counter + ": "
 					+ distributionMongoDBObj.getUri());
 
 			if (!needDownload) {
-				logger.info("Distribution is already in the last version. No needs to download again. ");
+				logger.info("Distribution is already in the last version. No needs to stream again. ");
+				distributionMongoDBObj.setLastMsg("Distribution is already in the last version. No needs to stream again.");
+				distributionMongoDBObj.updateObject(true);
 			}
 
 			// if distribution have not already been handled
@@ -210,7 +212,7 @@ public class Manager {
 					// uptate status of distribution
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_ERROR);
-					distributionMongoDBObj.setLastErrorMsg(e.getMessage());
+					distributionMongoDBObj.setLastMsg(e.getMessage());
 
 					e.printStackTrace();
 					distributionMongoDBObj.setSuccessfullyDownloaded(false);
@@ -219,10 +221,6 @@ public class Manager {
 
 		}
 		logger.info("We are done reading your distributions.");
-		SystemPropertiesMongoDBObject systemProperties = new SystemPropertiesMongoDBObject();
-		systemProperties.setLinksetNeedUpdate(true);
-		systemProperties.updateObject(true);
-
 	}
 
 	public Manager(List<DistributionMongoDBObject> distributionsLinks) {
