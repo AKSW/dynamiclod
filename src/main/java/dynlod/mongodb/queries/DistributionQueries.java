@@ -209,7 +209,8 @@ public class DistributionQueries {
 		
 		DBCollection collection = DataIDDB.getInstance().getCollection(
 				DatasetMongoDBObject.COLLECTION_NAME);
-		DBCursor inst = collection.find(new BasicDBObject(DatasetMongoDBObject.ACCESS_URL,new BasicDBObject("$regex",topDataset+".*")));
+		DBCursor inst = collection.find(
+				new BasicDBObject(DatasetMongoDBObject.ACCESS_URL,new BasicDBObject("$regex",topDataset+".*")));
 		while(inst.hasNext()){
 			datasetList.add((String) inst.next().get(DataIDDB.URI));
 		}
@@ -217,7 +218,7 @@ public class DistributionQueries {
 		try {
 			collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.TOP_DATASET,
+			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.DEFAULT_DATASETS,
 					new BasicDBObject("$in",datasetList)));
 
 			for (DBObject instance : instances) {
