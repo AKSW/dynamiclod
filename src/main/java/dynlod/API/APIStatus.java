@@ -1,8 +1,8 @@
 package dynlod.API;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
@@ -16,6 +16,8 @@ public class APIStatus extends API {
 	APIStatusMongoDBObject apiStatus = null;
 	
 	ArrayList<DistributionMongoDBObject> distributions;
+	
+	final static Logger logger = Logger.getLogger(APIStatus.class);
 
 	@Override
 	public void run() {
@@ -65,7 +67,9 @@ public class APIStatus extends API {
 			}
 			
 			datasetMessage.put("outdegreeDatasetCount", outdegrees.size());
-			datasetMessage.put("outdegreeLinksCount", outdegreeCount);			
+			datasetMessage.put("outdegreeLinksCount", outdegreeCount);	
+			
+			logger.debug("APIStatus message: "+ datasetMessage.toString(4));
 			
 			apiMessage.addDistributionMsg(datasetMessage);
 		}
