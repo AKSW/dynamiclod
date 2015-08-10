@@ -3,9 +3,11 @@ package dynlod.API;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import dynlod.mongodb.objects.APIStatusMongoDBObject;
+import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DistributionQueries;
@@ -57,22 +59,69 @@ public class APIStatus extends API {
 			// indegrees
 			ArrayList<LinksetMongoDBObject> indegrees = LinksetQueries.getLinksetsInDegreeByDistribution(distribution.getDownloadUrl());
 			int indegreeCount = 0;
-			for(LinksetMongoDBObject m : indegrees){
-				indegreeCount = indegreeCount + m.getLinks();
+			JSONArray inegreeArray = new JSONArray();
+			
+			for(LinksetMongoDBObject linkset : indegrees){
+				JSONObject indegreeTmpObj = new JSONObject();
+				
+				// check whether is vocabulary
+				DatasetMongoDBObject dataset = new DatasetMongoDBObject(linkset.getDatasetSource()); 
+				if(dataset.getIsVocabulary()){
+					indegreeTmpObj.put("isVocabulary", true);
+				}
+				else {
+					dataset = new DatasetMongoDBObject(linkset.getDatasetTarget()); 
+					if(dataset.getIsVocabulary()){
+						indegreeTmpObj.put("isVocabulary", true);
+					}
+				}
+				
+				indegreeTmpObj.put("links",linkset.getLinks());
+				indegreeTmpObj.put("sourceDataset",linkset.getDatasetSource());
+				indegreeTmpObj.put("targetDataset",linkset.getDatasetTarget());
+				indegreeTmpObj.put("sourceDistribution",linkset.getDistributionSource());
+				indegreeTmpObj.put("targetDistribution",linkset.getDistributionTarget());
+				
+				inegreeArray.put(indegreeTmpObj); 
 			}
 			
-			datasetMessage.put("indegreeDatasetCount", indegrees.size());
+			datasetMessage.put("indegree", inegreeArray);
+			
+//			datasetMessage.put("indegreeDatasetCount", indegrees.size());
 			datasetMessage.put("indegreeLinksCount", indegreeCount);
 			
 			// outdegrees
 			ArrayList<LinksetMongoDBObject> outdegrees = LinksetQueries.getLinksetsOutDegreeByDistribution(distribution.getDownloadUrl());
 			int outdegreeCount = 0;
-			for(LinksetMongoDBObject m : outdegrees){
-				outdegreeCount = outdegreeCount + m.getLinks();
+			JSONArray outdegreeArray = new JSONArray();
+			for(LinksetMongoDBObject linkset : outdegrees){
+				JSONObject outdegreeTmpObj = new JSONObject();
+				
+				// check whether is vocabulary
+				DatasetMongoDBObject dataset = new DatasetMongoDBObject(linkset.getDatasetSource()); 
+				if(dataset.getIsVocabulary()){
+					outdegreeTmpObj.put("isVocabulary", true);
+				}
+				else {
+					dataset = new DatasetMongoDBObject(linkset.getDatasetTarget()); 
+					if(dataset.getIsVocabulary()){
+						outdegreeTmpObj.put("isVocabulary", true);
+					}
+				}
+				
+				outdegreeTmpObj.put("links",linkset.getLinks());
+				outdegreeTmpObj.put("sourceDataset",linkset.getDatasetSource());
+				outdegreeTmpObj.put("targetDataset",linkset.getDatasetTarget());
+				outdegreeTmpObj.put("sourceDistribution",linkset.getDistributionSource());
+				outdegreeTmpObj.put("targetDistribution",linkset.getDistributionTarget());
+				
+				outdegreeArray.put(outdegreeTmpObj); 
 			}
 			
-			datasetMessage.put("outdegreeDatasetCount", outdegrees.size());
-			datasetMessage.put("outdegreeLinksCount", outdegreeCount);	
+			datasetMessage.put("outdegree", outdegreeArray);
+			
+//			datasetMessage.put("outdegreeDatasetCount", outdegrees.size());
+//			datasetMessage.put("outdegreeLinksCount", outdegreeCount);	
 			
 			logger.debug("APIStatus message: "+ datasetMessage.toString(4));
 			

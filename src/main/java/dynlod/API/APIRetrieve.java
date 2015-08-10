@@ -2,7 +2,7 @@ package dynlod.API;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -11,7 +11,6 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
-import dynlod.exceptions.api.DynamicLODAPINoParametersFoundExceiption;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
@@ -23,6 +22,8 @@ import dynlod.ontology.RDFProperties;
 public class APIRetrieve extends API {
 
 	public Model outModel = null;
+	
+	final static Logger logger = Logger.getLogger(APIRetrieve.class);
 
 	@Override
 	public void run() {
@@ -44,10 +45,20 @@ public class APIRetrieve extends API {
 
 	public APIRetrieve(String URI) throws DynamicLODNoDatasetFoundException,
 			DynamicLODAPINoLinksFoundException {
-
+		
 		outModelInit();
-		DatasetMongoDBObject d = new DatasetMongoDBObject(URI, true);
-		getDatasetChildren(d);
+		
+		// try to find by distribution
+		DistributionMongoDBObject dist = new DistributionMongoDBObject(URI);
+		
+		if(dist.getDefaultDatasets().size()>0){
+			retrieveByDistribution(dist.getUri());
+			logger.debug("APIRetrieve found a distribution to retrieve RDF: "+ dist.getUri());
+		}
+		else{
+			DatasetMongoDBObject d = new DatasetMongoDBObject(URI, true);
+			getDatasetChildren(d);
+		}
 		printModel();
 
 	}
@@ -159,7 +170,7 @@ public class APIRetrieve extends API {
 
 		if (!datasetSource.getIsVocabulary()
 				&& !datasetTarget.getIsVocabulary()) {
-			// add linksets
+//			 add linksets
 			String linksetURI = target + "_" + source;
 			Resource r = outModel.createResource(linksetURI);
 			Resource wasDerivedFrom = outModel
