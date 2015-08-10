@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import dynlod.mongodb.objects.DistributionMongoDBObject;
@@ -22,6 +23,7 @@ public class StartService extends HttpServlet {
 			public void run() {
 
 				try {
+					BasicConfigurator.configure();
 
 					if (DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH == null) {
 						new DynlodGeneralProperties().loadProperties();
