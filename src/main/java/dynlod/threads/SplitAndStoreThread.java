@@ -121,7 +121,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 				// get subject and save to file
 					subject.write(new String(stSubject + "\n").getBytes());
-					while (subjectQueue.size() > 1000) {
+					while (subjectQueue.size() > 10000) {
 						Thread.sleep(1);
 					}
 					if (isChain)
@@ -139,7 +139,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 						// add object to object queue
 						// (the queue is read by other
 						// thread)
-						while (objectQueue.size() > 1000) {
+						while (objectQueue.size() > 10000) {
 							Thread.sleep(1);
 						}
 						if (isChain)

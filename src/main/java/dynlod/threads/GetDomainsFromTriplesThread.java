@@ -37,7 +37,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 
 	int numberOfReadedTriples = 0;
 
-	int saveDomainsEach = 5000;
+	int saveDomainsEach = 15000;
 
 	public GetDomainsFromTriplesThread(
 			ConcurrentLinkedQueue<String> resourceQueue,

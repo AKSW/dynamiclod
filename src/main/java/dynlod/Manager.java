@@ -73,7 +73,7 @@ public class Manager {
 			if (needDownload)
 				try {
 
-					// uptate status of distribution to downloading
+					// uptate status of distribution to streaming
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_STREAMING);
 					distributionMongoDBObj.updateObject(true);
@@ -84,7 +84,7 @@ public class Manager {
 							distributionMongoDBObj.getFormat(),
 							distributionMongoDBObj.getUri());
 
-					logger.info("Downloading distribution.");
+					logger.info("Streaming distribution.");
 
 					downloadedFile.downloadDistribution();
 
@@ -93,7 +93,7 @@ public class Manager {
 							.setStatus(DistributionMongoDBObject.STATUS_STREAMED);
 					distributionMongoDBObj.updateObject(true);
 
-					logger.info("Distribution downloaded. ");
+					logger.info("Distribution streamed. ");
 
 					// uptate status of distribution
 					distributionMongoDBObj

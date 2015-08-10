@@ -49,9 +49,9 @@ public class StartService extends HttpServlet {
 						d.add(dist);
 					}
 
-					new Manager(d);
+//					new Manager(d);
 
-					// download distributions with "STATUS_WAITING_TO_DOWNLOAD"
+					// download distributions with "STATUS_WAITING_TO_STREAM"
 					// status
 					q = Queries.getMongoDBObject(
 							DistributionMongoDBObject.COLLECTION_NAME,

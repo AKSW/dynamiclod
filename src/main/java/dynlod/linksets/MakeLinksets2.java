@@ -44,9 +44,6 @@ public class MakeLinksets2 {
 			ArrayList<DistributionMongoDBObject> distributions = DistributionQueries
 					.getDistributions();
 
-			int distributionsAnalyzed = 0;
-			int totalDistributions = distributions.size();
-
 			systemProperties.updateObject(true);
 
 			try {
@@ -65,7 +62,7 @@ public class MakeLinksets2 {
 					logger.debug("We will compare dataset subjects " + distribution.getUri()
 							+ " with " + disributionsToCompare.size() + " BF.");
 				else
-					logger.debug("We will compare dataset subjects " + distribution.getUri()
+					logger.debug("We will compare dataset objects " + distribution.getUri()
 						+ " with " + disributionsToCompare.size() + " BF.");
 
 				for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
@@ -213,9 +210,6 @@ public class MakeLinksets2 {
 				// save linksets into mongodb
 				saveLinksets(listOfDataThreads, c);
 
-				// uptate status of distribution
-				distribution.setStatus(DistributionMongoDBObject.STATUS_DONE);
-				distribution.updateObject(true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
