@@ -30,6 +30,7 @@ public class APIFactory {
 		logger.debug("API Factory Create Status Dataset started");
 		APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
 		if(apiStatus.getMessage()!=null){
+			logger.debug("APIStatus instance created");
 			return new APIStatus(datasetURI);
 		}
 		else return null;
