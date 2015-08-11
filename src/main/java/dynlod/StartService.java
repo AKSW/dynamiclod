@@ -40,13 +40,13 @@ public class StartService extends HttpServlet {
 					// creating indexes
 					DBObject indexOptions = new BasicDBObject();
 					indexOptions.put(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
-					indexOptions.put(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+					indexOptions.put(DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN, 1);
 					DataIDDB.getInstance().getCollection(DistributionObjectDomainsMongoDBObject.COLLECTION_NAME).createIndex(indexOptions );
 					
 					// creating indexes
 					indexOptions = new BasicDBObject();
 					indexOptions.put(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
-					indexOptions.put(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+					indexOptions.put(DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN, 1);
 					DataIDDB.getInstance().getCollection(DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME).createIndex(indexOptions );
 					
 

@@ -1,15 +1,16 @@
 package dynlod.threads;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JobThread implements Runnable {
 	int size;
-	String[] lines;
+	ArrayList<String> lines;
 	DataModelThread dataThread = null;
 	public ConcurrentHashMap<String, Integer> c;
 
-	public JobThread(DataModelThread dataThread, String[] lines, int size, ConcurrentHashMap<String, Integer> c) {
+	public JobThread(DataModelThread dataThread, ArrayList<String> lines, int size, ConcurrentHashMap<String, Integer> c) {
 		this.c=c;
 		this.size = size;
 		this.lines = lines;
@@ -19,10 +20,10 @@ public class JobThread implements Runnable {
 
 	public void run() {
 		try {
-			for (int i = 0; i < size; i++) {
+			for (String val: lines) {
 
-				if (dataThread.filter.compare(lines[i])) {
-					dataThread.links++;
+				if (dataThread.filter.compare(val)) {
+					dataThread.links.addAndGet(1);
 					dataThread.availabilityCounter++;
 					
 					dataThread.weightCount++;

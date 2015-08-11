@@ -2,6 +2,7 @@ package dynlod.threads;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import dynlod.filters.GoogleBloomFilter;
 
@@ -27,7 +28,7 @@ public class DataModelThread {
 	public String objectDatasetURI;
 	public String subjectDatasetURI;
 
-	public int links = 0;
+	public AtomicInteger links = new AtomicInteger(0);
 	public int ontologyLinks = 0; 
 	
 	public int availabilityCounter = 0 ;

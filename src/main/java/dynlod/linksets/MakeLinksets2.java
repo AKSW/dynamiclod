@@ -2,10 +2,10 @@ package dynlod.linksets;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -15,20 +15,42 @@ import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
 import dynlod.mongodb.queries.DistributionQueries;
-import dynlod.mongodb.queries.LinksetQueries;
 import dynlod.threads.DataModelThread;
-import dynlod.threads.GetDomainsFromTriplesThread;
 import dynlod.threads.JobThread;
-import dynlod.threads.ResourceAvailability;
 import dynlod.utils.Timer;
 
-public class MakeLinksets2 {
+public class MakeLinksets2 extends Thread {
 
 	final static Logger logger = Logger.getLogger(MakeLinksets2.class);
+	
+	DistributionMongoDBObject distribution;
+	ConcurrentHashMap<String, DataModelThread> listOfDataThreads;
+	ArrayList<String> resourecesToBeProcessedQueue;
+	boolean isSubject;
+	ConcurrentHashMap<String, Integer> countHashMap;
+	ArrayList<DistributionMongoDBObject> disributionsToCompare;
+	ConcurrentHashMap<String, Integer> listLoadedFQDN;
+	
+	public MakeLinksets2(DistributionMongoDBObject distribution,
+			ConcurrentHashMap<String, DataModelThread> listOfDataThreads,
+			ArrayList<String> resourecesToBeProcessedQueue,
+			boolean isSubject,
+			ConcurrentHashMap<String, Integer> countHashMap,
+			ConcurrentHashMap<String, Integer> listLoadedFQDN) {
+		this.distribution = distribution;
+		this.listOfDataThreads = listOfDataThreads;
+		this.resourecesToBeProcessedQueue = resourecesToBeProcessedQueue;
+		this.isSubject = isSubject;
+		this.countHashMap = countHashMap;
+		this.listLoadedFQDN = listLoadedFQDN; 
+	}
 
-	public void updateLinksets(DistributionMongoDBObject distribution,
-			HashMap<String, DataModelThread> listOfDataThreads,
-			ConcurrentLinkedQueue<String> buffer2, boolean isSubject) {
+//	public void run(DistributionMongoDBObject distribution,
+//			HashMap<String, DataModelThread> listOfDataThreads,
+//			ConcurrentLinkedQueue<String> resourecesToBeProcessedQueue,
+//			boolean isSubject,
+//			ConcurrentHashMap<String, Integer> countHashMap) {
+	public void run(){
 
 		Timer t = new Timer();
 		t.startTimer();
@@ -40,24 +62,56 @@ public class MakeLinksets2 {
 			systemProperties.updateObject(true);
 
 			logger.info("Updating linksets...");
-
-			ArrayList<DistributionMongoDBObject> distributions = DistributionQueries
-					.getDistributions();
+//
+//			ArrayList<DistributionMongoDBObject> distributions = DistributionQueries
+//					.getDistributions();
 
 			systemProperties.updateObject(true);
 
 			try {
-				ArrayList<DistributionMongoDBObject> disributionsToCompare = null;
+				
 				// find which filters should be opened for this
 				// distribution
-				if (!isSubject)
+				
+				ArrayList<String> FQDNToSearch = new ArrayList<String>();
+				
+				Iterator it = countHashMap.entrySet().iterator();
+
+				while (it.hasNext()) {
+					Map.Entry pair = (Map.Entry) it.next();
+					String d = (String) pair.getKey();
+					int count = (Integer) pair.getValue();
+					// distributionMongoDBObj.addAuthorityObjects(d);
+
+//					if (count > 50) {
+					if(!listLoadedFQDN.containsKey(d)){
+						FQDNToSearch.add(d);
+						listLoadedFQDN.put(d, 0);
+					}
+//					}
+				}
+				
+				
+				
+				if (!isSubject){
+//					disributionsToCompare = DistributionQueries
+//					.getDistributionsByOutdegree((String) distribution
+//							.getDownloadUrl());
 					disributionsToCompare = DistributionQueries
-							.getDistributionsByOutdegree((String) distribution
-									.getDownloadUrl());
+					.getDistributionsByOutdegree(FQDNToSearch);
+					
+					
+					
+					
+				}
 				else
-					disributionsToCompare = DistributionQueries
-							.getDistributionsByIndegree((String) distribution
-									.getDownloadUrl());
+//					disributionsToCompare = DistributionQueries
+//					.getDistributionsByIndegree((String) distribution
+//							.getDownloadUrl());
+				disributionsToCompare = DistributionQueries
+						.getDistributionsByIndegree(FQDNToSearch);
+				
+				
 				if(isSubject)
 					logger.debug("We will compare dataset subjects " + distribution.getUri()
 							+ " with " + disributionsToCompare.size() + " BF.");
@@ -72,9 +126,9 @@ public class MakeLinksets2 {
 
 							// check if distributions had already been
 							// compared
-							if (!LinksetQueries.isOnLinksetList(
-									distribution.getDownloadUrl(),
-									distributionToCompare.getDownloadUrl()))
+//							if (!LinksetQueries.isOnLinksetList(
+//									distribution.getDownloadUrl(),
+//									distributionToCompare.getDownloadUrl()))
 								//
 								if (!distributionToCompare.getUri().equals(
 										distribution.getUri())) {
@@ -135,7 +189,7 @@ public class MakeLinksets2 {
 
 				// loading objects and creating a buffer to send to
 				// threads
-				int bufferSize = 500000;
+				int bufferSize = resourecesToBeProcessedQueue.size();
 
 				String[] buffer = new String[bufferSize];
 
@@ -149,21 +203,23 @@ public class MakeLinksets2 {
 							+ listOfDataThreads.size()
 							+ " different bloom filters.");
 
-					while (buffer2.size() > 0) {
-						buffer[bufferIndex] = buffer2.remove();
+//					for (String val : resourecesToBeProcessedQueue) {
+						
+//							String val = resourecesToBeProcessedQueue.get(resourecesToBeProcessedQueue.size() - 1); 
+//							resourecesToBeProcessedQueue.remove(val);
 
 						bufferIndex++;
 						int threadIndex = 0;
 
 						// if buffer is full, start the threads!
-						if (bufferIndex % bufferSize == 0) {
+//						if (bufferIndex % bufferSize == 0) {
 							Thread[] threads = new Thread[listOfDataThreads
 									.size()];
 							for (DataModelThread dataThread2 : listOfDataThreads
 									.values()) {
 								threads[threadIndex] = new Thread(
 										new JobThread(dataThread2,
-												buffer.clone(), bufferSize, c));
+												(ArrayList<String>) resourecesToBeProcessedQueue.clone(), bufferSize, c));
 								threads[threadIndex]
 										.setName("MakeLinkSetWorker-"
 												+ threadIndex);
@@ -178,26 +234,26 @@ public class MakeLinksets2 {
 
 							bufferIndex = 0;
 
-						}
-					}
+//						}
+//					}
 
-					int threadIndex = 0;
-					// using the rest of the buffer
-					Thread[] threads = new Thread[listOfDataThreads.size()];
-					for (DataModelThread dataThread2 : listOfDataThreads
-							.values()) {
-						threads[threadIndex] = new Thread(new JobThread(
-								dataThread2, buffer.clone(), bufferIndex, c));
-						threads[threadIndex].start();
-						threadIndex++;
-					}
+//					 threadIndex = 0;
+//					// using the rest of the buffer
+//					Thread[] threads = new Thread[listOfDataThreads.size()];
+//					for (DataModelThread dataThread2 : listOfDataThreads
+//							.values()) {
+//						threads[threadIndex] = new Thread(new JobThread(
+//								dataThread2, buffer.clone(), bufferIndex, c));
+//						threads[threadIndex].start();
+//						threadIndex++;
+//					}
 
 					// wait all threads finish and then start load
 					// buffer again
-					for (int d = 0; d < threads.length; d++)
-						threads[d].join();
-
-					bufferIndex = 0;
+//					for (int d = 0; d < threads.length; d++)
+//						threads[d].join();
+//
+//					bufferIndex = 0;
 
 				} else {
 
@@ -214,7 +270,7 @@ public class MakeLinksets2 {
 				e.printStackTrace();
 			}
 //			distribution.setLastTimeLinkset(String.valueOf(new Date()));
-//			distribution.updateObject(false);
+			distribution.updateObject(false);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -225,7 +281,7 @@ public class MakeLinksets2 {
 		logger.info("Time to update linksets: " + t.stopTimer() + "s");
 	}
 
-	public void saveLinksets(HashMap<String, DataModelThread> dataThreads,
+	public void saveLinksets(ConcurrentHashMap<String, DataModelThread> dataThreads,
 			ConcurrentHashMap<String, Integer> c) {
 
 		AtomicInteger concurrentConn = new AtomicInteger(0);
@@ -234,9 +290,9 @@ public class MakeLinksets2 {
 			String mongoDBURL = dataThread.objectDistributionURI + "-2-"
 					+ dataThread.subjectDistributionURI;
 
-			logger.debug(dataThread.subjectDistributionURI);
-			new ResourceAvailability(dataThread.listURLToTest, mongoDBURL, c,
-					concurrentConn);
+//			logger.debug(dataThread.subjectDistributionURI);
+//			new ResourceAvailability(dataThread.listURLToTest, mongoDBURL, c,
+//					concurrentConn);
 
 			LinksetMongoDBObject l = new LinksetMongoDBObject(mongoDBURL);
 
@@ -245,7 +301,7 @@ public class MakeLinksets2 {
 			// if(dataThread.urlStatus.size()>0)
 			// l.setAvailability( (int)
 			// ((positive/dataThread.urlStatus.size())*100));
-			l.setLinks(dataThread.links);
+			l.setLinks(dataThread.links.get());
 			l.setDistributionSource(dataThread.objectDistributionURI);
 			l.setDistributionTarget(dataThread.subjectDistributionURI);
 			l.setDatasetSource(dataThread.objectDatasetURI);

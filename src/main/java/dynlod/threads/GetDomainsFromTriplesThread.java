@@ -1,8 +1,6 @@
 package dynlod.threads;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,15 +30,18 @@ public class GetDomainsFromTriplesThread extends Thread {
 	private boolean doneSplittingString;
 
 	private ConcurrentLinkedQueue<String> resourceQueue = null;
-	private ConcurrentLinkedQueue<String> resourecesToBeProcessedQueue = new ConcurrentLinkedQueue<String>();
+	private ArrayList<String> resourecesToBeProcessedQueue = new  ArrayList<String>();
 	DistributionMongoDBObject distribution;
-	HashMap<String, DataModelThread> listOfDataThreads = new HashMap<String, DataModelThread>(); 
+	ConcurrentHashMap<String, DataModelThread> listOfDataThreads = new ConcurrentHashMap<String, DataModelThread>(); 
+	public ConcurrentHashMap<String, Integer> listLoadedFQDN = new ConcurrentHashMap<String, Integer>();
+	
+
 
 	private ConcurrentHashMap<String, Integer> countHashMap = null;
 
 	int numberOfReadedTriples = 0;
 
-	int saveDomainsEach = 25000;
+	int saveDomainsEach = 20000;
 
 	public GetDomainsFromTriplesThread(
 			ConcurrentLinkedQueue<String> resourceQueue,
@@ -98,8 +99,12 @@ public class GetDomainsFromTriplesThread extends Thread {
 					}
 					if (numberOfReadedTriples%saveDomainsEach==0){
 //						saveDomains();
-						new MakeLinksets2().updateLinksets(distribution, listOfDataThreads, 
-								resourecesToBeProcessedQueue, isSubject);
+//						new MakeLinksets2().start(distribution, listOfDataThreads, 
+//								resourecesToBeProcessedQueue, isSubject, countHashMap);
+						MakeLinksets2 m = new MakeLinksets2(distribution, listOfDataThreads, 
+								(ArrayList<String>) resourecesToBeProcessedQueue.clone(), isSubject, countHashMap, listLoadedFQDN);
+						resourecesToBeProcessedQueue = new ArrayList<String>();
+						m.start();
 					}
 
 				} catch (NoSuchElementException e) {
@@ -108,8 +113,18 @@ public class GetDomainsFromTriplesThread extends Thread {
 				}
 			}
 		}
-		new MakeLinksets2().updateLinksets(distribution, listOfDataThreads, 
-				resourecesToBeProcessedQueue, isSubject);
+		
+		
+		ConcurrentLinkedQueue<String> clone = new ConcurrentLinkedQueue<String>();
+		MakeLinksets2 m = new MakeLinksets2(distribution, listOfDataThreads, 
+				(ArrayList<String>) resourecesToBeProcessedQueue.clone(), isSubject, countHashMap, listLoadedFQDN);
+		m.start();
+		try {
+			m.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		saveDomains();
 		
 		logger.debug("Ending GetDomainsFromTriplesThread class.");

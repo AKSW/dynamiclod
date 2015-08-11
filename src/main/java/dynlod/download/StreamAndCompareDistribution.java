@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +29,7 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.openrdf.rio.turtle.TurtleParser;
 
 import dynlod.DynlodGeneralProperties;
+import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.threads.GetDomainsFromTriplesThread;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;

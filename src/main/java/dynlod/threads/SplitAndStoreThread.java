@@ -26,7 +26,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 	public boolean isChain = true;
 
-	private String tmpLastSubject = "";
+	private int bufferSize = 300000;
 
 	FileOutputStream subject = null;
 
@@ -121,7 +121,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 				// get subject and save to file
 					subject.write(new String(stSubject + "\n").getBytes());
-					while (subjectQueue.size() > 5000) {
+					while (subjectQueue.size() > bufferSize) {
 						Thread.sleep(1);
 					}
 					if (isChain)
@@ -139,7 +139,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 						// add object to object queue
 						// (the queue is read by other
 						// thread)
-						while (objectQueue.size() > 5000) {
+						while (objectQueue.size() > bufferSize) {
 							Thread.sleep(1);
 						}
 						if (isChain)

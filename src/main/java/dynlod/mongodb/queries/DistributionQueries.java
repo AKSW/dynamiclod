@@ -92,6 +92,138 @@ public class DistributionQueries {
 		return list;
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	public static ArrayList<DistributionMongoDBObject> getDistributionsByOutdegree(
+			ArrayList<String> vals) {
+		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+		try {
+
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
+
+//			// get all objects domain of a distribution
+//			BasicDBObject query = new BasicDBObject(
+//					DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI,
+//					distributionAccessURL);
+//
+//			BasicDBObject fields = new BasicDBObject(
+//					DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN, 1);
+//			fields.append("_id", 0);
+//			DBCursor cursor = collection.find(query, fields);
+			DBCursor cursor = null;
+
+//			ArrayList<String> vals = new ArrayList<String>();
+//			while (cursor.hasNext()) {
+//				vals.add((String) cursor.next().get(
+//						DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN));
+//			}
+
+			BasicDBObject fields2 = new BasicDBObject(
+					DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+			fields2.append("_id", 0);
+
+			// find distributions with contains subjects equal of objects (vals)
+			BasicDBObject query2 = new BasicDBObject(
+					DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN,
+					new BasicDBObject("$in", vals));
+
+			collection = DataIDDB.getInstance().getCollection(
+					DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
+
+			cursor = collection.find(query2, fields2);
+
+			while (cursor.hasNext()) {
+				DistributionMongoDBObject obj = new DistributionMongoDBObject(
+						cursor.next()
+								.get(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI)
+								.toString());
+
+					list.add(obj);
+				
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public static ArrayList<DistributionMongoDBObject> getDistributionsByIndegree(
+			ArrayList<String> vals) {
+		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+		try {
+
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
+
+//			// get all subject domain from distribution got as parameter
+//			BasicDBObject query = new BasicDBObject(
+//					DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI,
+//					distributionAccessURL);
+//
+//			BasicDBObject fields = new BasicDBObject(
+//					DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN, 1);
+//			fields.append("_id", 0);
+//			DBCursor cursor = collection.find(query, fields);
+			DBCursor cursor = null;
+
+//			while (cursor.hasNext()) {
+//				vals.add((String) cursor.next().get(
+//						DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN));
+//			}
+
+			BasicDBObject fields2 = new BasicDBObject(
+					DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+			fields2.append("_id", 0);
+
+			// find distributions with subjects
+			BasicDBObject query2 = new BasicDBObject(
+					DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN,
+					new BasicDBObject("$in", vals));
+
+			collection = DataIDDB.getInstance().getCollection(
+					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
+
+			cursor = collection.find(query2, fields2);
+
+			while (cursor.hasNext()) {
+				DistributionMongoDBObject obj = new DistributionMongoDBObject(
+						cursor.next()
+								.get(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI)
+								.toString());
+
+					list.add(obj);
+				
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
 	public static ArrayList<DistributionMongoDBObject> getDistributionsByIndegree(
 			String distributionAccessURL) {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
