@@ -69,7 +69,7 @@ public class StartService extends HttpServlet {
 						d.add(dist);
 					}
 
-//					new Manager(d);
+//					new
 
 					// download distributions with "STATUS_WAITING_TO_STREAM"
 					// status
@@ -84,6 +84,26 @@ public class StartService extends HttpServlet {
 					for (String s : q) {
 						DistributionMongoDBObject dist = new DistributionMongoDBObject(
 								s);
+						dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+						dist.updateObject(true);
+						d.add(dist);
+					}
+					
+					// download distributions with "ERROR"
+					// status
+					q = Queries.getMongoDBObject(
+							DistributionMongoDBObject.COLLECTION_NAME,
+							DistributionMongoDBObject.STATUS,
+							DistributionMongoDBObject.STATUS_ERROR);
+					logger.debug("download distributions with \""
+							+ DistributionMongoDBObject.STATUS_WAITING_TO_STREAM
+							+ "\" status");
+
+					for (String s : q) {
+						DistributionMongoDBObject dist = new DistributionMongoDBObject(
+								s);
+						dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+						dist.updateObject(true);
 						d.add(dist);
 					}
 
