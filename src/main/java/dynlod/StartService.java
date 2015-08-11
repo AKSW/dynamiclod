@@ -7,7 +7,13 @@ import javax.servlet.http.HttpServlet;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
+import dynlod.mongodb.DataIDDB;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
+import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dynlod.mongodb.queries.Queries;
 import dynlod.utils.FileUtils;
 
@@ -29,6 +35,20 @@ public class StartService extends HttpServlet {
 						new DynlodGeneralProperties().loadProperties();
 					}
 					FileUtils.checkIfFolderExists();
+					
+					
+					// creating indexes
+					DBObject indexOptions = new BasicDBObject();
+					indexOptions.put(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+					indexOptions.put(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+					DataIDDB.getInstance().getCollection(DistributionObjectDomainsMongoDBObject.COLLECTION_NAME).createIndex(indexOptions );
+					
+					// creating indexes
+					indexOptions = new BasicDBObject();
+					indexOptions.put(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+					indexOptions.put(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
+					DataIDDB.getInstance().getCollection(DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME).createIndex(indexOptions );
+					
 
 					ArrayList<DistributionMongoDBObject> d = new ArrayList<DistributionMongoDBObject>();
 

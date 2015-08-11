@@ -88,7 +88,7 @@ public class APIStatus extends API {
 			datasetMessage.put("indegree", inegreeArray);
 			
 //			datasetMessage.put("indegreeDatasetCount", indegrees.size());
-			datasetMessage.put("indegreeLinksCount", indegreeCount);
+//			datasetMessage.put("indegreeLinksCount", indegreeCount);
 			
 			// outdegrees
 			ArrayList<LinksetMongoDBObject> outdegrees = LinksetQueries.getLinksetsOutDegreeByDistribution(distribution.getDownloadUrl());

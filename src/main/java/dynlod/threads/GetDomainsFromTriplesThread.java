@@ -37,7 +37,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 
 	int numberOfReadedTriples = 0;
 
-	int saveDomainsEach = 15000;
+	int saveDomainsEach = 25000;
 
 	public GetDomainsFromTriplesThread(
 			ConcurrentLinkedQueue<String> resourceQueue,
@@ -94,7 +94,9 @@ public class GetDomainsFromTriplesThread extends Thread {
 
 					}
 					if (numberOfReadedTriples%saveDomainsEach==0){
-						saveDomains();
+//						saveDomains();
+						new MakeLinksets2().updateLinksets(distribution, listOfDataThreads, 
+								resourecesToBeProcessedQueue, isSubject);
 					}
 
 				} catch (NoSuchElementException e) {
@@ -103,7 +105,10 @@ public class GetDomainsFromTriplesThread extends Thread {
 				}
 			}
 		}
+		new MakeLinksets2().updateLinksets(distribution, listOfDataThreads, 
+				resourecesToBeProcessedQueue, isSubject);
 		saveDomains();
+		
 		logger.debug("Ending GetDomainsFromTriplesThread class.");
 	}
 
@@ -153,9 +158,6 @@ public class GetDomainsFromTriplesThread extends Thread {
 
 			}
 		}
-
-		new MakeLinksets2().updateLinksets(distribution, listOfDataThreads, 
-				resourecesToBeProcessedQueue, isSubject);
 		
 		return true;
 	}
