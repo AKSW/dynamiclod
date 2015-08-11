@@ -183,6 +183,7 @@ public class StreamAndCompareDistribution extends Download {
 									url.toString());
 						} catch (RDFParseException e) {
 							e.printStackTrace();
+							throw new Exception(e.getMessage());
 						}
 					}
 
@@ -213,6 +214,7 @@ public class StreamAndCompareDistribution extends Download {
 									url.toString());
 						} catch (RDFParseException e) {
 							e.printStackTrace();
+							throw new Exception(e.getMessage());
 						}
 					}
 
@@ -227,6 +229,8 @@ public class StreamAndCompareDistribution extends Download {
 					rdfParser.parse(inputStream, url.toString());
 				} catch (RDFParseException e) {
 					e.printStackTrace();
+					throw new Exception(e.getMessage());
+					
 				}
 			}
 

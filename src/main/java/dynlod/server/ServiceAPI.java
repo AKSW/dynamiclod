@@ -126,6 +126,12 @@ public class ServiceAPI extends HttpServlet {
 			}
 			if (parameters.containsKey(options.SERVER_STATISTICS)) {
 				out.write(new APIStatistics().getStatistics().toJSONString()); 
+			}			
+			if (parameters.containsKey(options.LIST_DISTRIBUTIONS)) {
+				out.write(new APIStatistics().getDistributions(
+						Integer.parseInt(parameters.get(options.LIST_SKIP)[0]),
+						Integer.parseInt(parameters.get(options.LIST_LIMIT)[0])
+						).toJSONString()); 
 			}
 
 		} catch (DynamicLODAPINoParametersFoundExceiption e) {

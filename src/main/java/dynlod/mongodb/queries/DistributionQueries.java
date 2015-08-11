@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBList;
@@ -311,7 +312,7 @@ public class DistributionQueries {
 	}
 
 	// return all distributions
-	public static ArrayList<DistributionMongoDBObject> getDistributions() {
+	public static ArrayList<DistributionMongoDBObject> getDistributions(boolean b) {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 
@@ -330,6 +331,31 @@ public class DistributionQueries {
 		}
 		return list;
 	}
+	
+	
+	// return all distributions
+//	@Test
+	public static ArrayList<DistributionMongoDBObject> getDistributions(int skip, int limit) {
+
+		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+
+		try {
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					DistributionMongoDBObject.COLLECTION_NAME);
+			
+			DBCursor instances = collection.find().skip(skip).limit(limit);
+
+			for (DBObject instance : instances) {
+				list.add(new DistributionMongoDBObject(instance.get(
+						DataIDDB.URI).toString()));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
 	
 	// return all distributions
 	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetAccessURL(String topDataset) {

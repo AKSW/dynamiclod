@@ -31,7 +31,7 @@ public class GoogleBloomFilter implements DataIDFilterInterface {
 	public String fullFilePath;
 
 	public GoogleBloomFilter(int insertions, double fpp) {
-		if(fpp == 0)
+		if(fpp >1)
 			fpp = 0.000000001;
 		create(insertions, fpp);
 	}

@@ -23,7 +23,7 @@ public class Download {
 	public double httpContentLength;
 	public String httpLastModified = "0";
 
-	protected static final int BUFFER_SIZE = 16384;
+	protected static final int BUFFER_SIZE = 1024*256;
 	public URL url = null;
 
 	protected InputStream inputStream = null;

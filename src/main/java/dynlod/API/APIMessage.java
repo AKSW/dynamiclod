@@ -45,6 +45,10 @@ public class APIMessage {
 		msg.put("statistics", message); 
 	}
 	
+	public void addListMsg(JSONObject message){
+		msg.put("distributionList", message); 
+	}
+	
 	public void addDistributionMsg(JSONObject object){
 		try{
 			JSONArray a = (JSONArray) msg.get("distributions");

@@ -15,7 +15,7 @@ public class DatasetQueries {
 	
 	static long triples = 0; 
 	
-	public static long getNumberOfTriples(String dataset){
+	public static long getNumberOfTripless(String dataset){
 		triples=0;
 		getNumberOfTriples(new DatasetMongoDBObject(dataset));
 		return triples;
