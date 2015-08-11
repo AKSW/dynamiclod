@@ -63,7 +63,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 	
 	public static final String LAST_MSG = "lastMsg";
 
-	public static final String LAST_TIME_LINKSET = "lastTimeLinkset";
 
 	public static final String TITLE = "title";
 
@@ -80,6 +79,8 @@ public class DistributionMongoDBObject extends DataIDDB {
 	public static final String IS_VOCABULARY = "isVocabulary";
 	
 	public static final String RESOURCE_URI = "resourceUri";
+	
+	public static final String LAST_TIME_STREAMED = "lastTimeStreamed";
 	
 	private int dynLodID = 0;
 
@@ -124,10 +125,10 @@ public class DistributionMongoDBObject extends DataIDDB {
 //	private String lastErrorMsg = "";
 	
 	private String status;
-	
-	private String lastTimeLinkset;
-	
+		
 	private String resourceUri;
+	
+	private String lastTimeStreamed;
 	
 	
 
@@ -157,6 +158,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 			mongoDBObject.put(HTTP_LAST_MODIFIED, httpLastModified);
 			mongoDBObject.put(TRIPLES, triples);
 			mongoDBObject.put(TOP_DATASET, topDataset);
+			mongoDBObject.put(LAST_TIME_STREAMED, lastTimeStreamed);
 			mongoDBObject.put(SUBJECT_FILTER_PATH, subjectFilterPath);
 			mongoDBObject.put(OBJECT_FILTER_PATH, objectFilterPath);
 			mongoDBObject.put(OBJECT_PATH, objectPath);
@@ -172,7 +174,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 			mongoDBObject.put(SUCCESSFULLY_DOWNLOADED, successfullyDownloaded);
 			mongoDBObject.put(IS_VOCABULARY, isVocabulary);
 			mongoDBObject.put(LAST_MSG, lastMsg);
-			mongoDBObject.put(LAST_TIME_LINKSET, lastTimeLinkset);
 			
 			
 			if(dynLodID == 0)
@@ -210,6 +211,7 @@ public class DistributionMongoDBObject extends DataIDDB {
 			httpFormat = (String) obj.get(HTTP_FORMAT);
 			httpLastModified = (String) obj.get(HTTP_LAST_MODIFIED);
 			format = (String) obj.get(FORMAT);
+			lastTimeStreamed = (String) obj.get(LAST_TIME_STREAMED);
 			status = (String) obj.get(STATUS);
 			timeToCreateObjectFilter = (String) obj.get(TIME_TO_CREATE_OBJECT_FILTER);
 			timeToCreateSubjectFilter = (String) obj.get(TIME_TO_CREATE_SUBJECT_FILTER);
@@ -222,7 +224,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 			successfullyDownloaded = (Boolean) obj.get(SUCCESSFULLY_DOWNLOADED);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
 			lastMsg = (String) obj.get(LAST_MSG);
-			lastTimeLinkset = (String) obj.get(LAST_TIME_LINKSET);
 			
 			dynLodID = (Integer) obj.get(DYN_LOD_ID);
 			if(dynLodID == 0)
@@ -368,15 +369,6 @@ public class DistributionMongoDBObject extends DataIDDB {
 		this.lastMsg = lastMsg;
 	}
 
-
-	public String getLastTimeLinkset() {
-		return lastTimeLinkset;
-	}
-
-	public void setLastTimeLinkset(String lastTimeLinkset) {
-		this.lastTimeLinkset = lastTimeLinkset;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -428,6 +420,18 @@ public class DistributionMongoDBObject extends DataIDDB {
 	public void setTimeToCreateSubjectFilter(String timeToCreateSubjectFilter) {
 		this.timeToCreateSubjectFilter = timeToCreateSubjectFilter;
 	}
+
+
+	public String getLastTimeStreamed() {
+		return lastTimeStreamed;
+	}
+
+
+	public void setLastTimeStreamed(String lastTimeStreamed) {
+		this.lastTimeStreamed = lastTimeStreamed;
+	}
+	
+	
 	
 
 }

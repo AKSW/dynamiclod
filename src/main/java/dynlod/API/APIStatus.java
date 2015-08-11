@@ -54,6 +54,7 @@ public class APIStatus extends API {
 			datasetMessage.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
 			datasetMessage.put(DistributionMongoDBObject.LAST_MSG, distribution.getLastMsg());
 			datasetMessage.put(DistributionMongoDBObject.TRIPLES, distribution.getTriples());
+			datasetMessage.put(DistributionMongoDBObject.LAST_TIME_STREAMED, distribution.getLastTimeStreamed());
 			
 			
 			// indegrees

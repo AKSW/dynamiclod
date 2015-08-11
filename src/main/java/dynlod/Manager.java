@@ -1,6 +1,9 @@
 package dynlod;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,14 +61,15 @@ public class Manager {
 
 			// check is distribution need to be streamed
 			boolean needDownload = checkDistributionStatus(distributionMongoDBObj);
-//			needDownload = true;
+			// needDownload = true;
 
 			logger.info("Distribution n. " + counter + ": "
 					+ distributionMongoDBObj.getUri());
 
 			if (!needDownload) {
 				logger.info("Distribution is already in the last version. No needs to stream again. ");
-				distributionMongoDBObj.setLastMsg("Distribution is already in the last version. No needs to stream again.");
+				distributionMongoDBObj
+						.setLastMsg("Distribution is already in the last version. No needs to stream again.");
 				distributionMongoDBObj.updateObject(true);
 			}
 
@@ -204,6 +208,14 @@ public class Manager {
 					// uptate status of distribution
 					distributionMongoDBObj
 							.setStatus(DistributionMongoDBObject.STATUS_DONE);
+					DateFormat dateFormat = new SimpleDateFormat(
+							"HH:mm:ss dd/MM/yyyy");
+					// get current date time with Date()
+					Date date = new Date();
+
+					distributionMongoDBObj.setLastTimeStreamed(dateFormat
+							.format(date).toString());
+
 					distributionMongoDBObj.updateObject(true);
 
 					logger.info("Distribution saved! ");
@@ -229,11 +241,11 @@ public class Manager {
 		try {
 			streamAndCreateFilters();
 		}
-	
+
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public Manager(String URL) {
@@ -283,7 +295,7 @@ public class Manager {
 			e5.printStackTrace();
 			logger.error(e5.getMessage());
 		}
-		
+
 		logger.info("END");
 	}
 

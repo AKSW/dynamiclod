@@ -7,7 +7,10 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.jena.riot.Lang;
@@ -266,6 +269,15 @@ public class LOV extends Download {
 				+ FileUtils.stringToHash(nameSpace));
 		distribution.setObjectPath(DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
 				+ FileUtils.stringToHash(nameSpace));
+		
+		DateFormat dateFormat = new SimpleDateFormat(
+				"HH:mm:ss dd/MM/yyyy");
+		// get current date time with Date()
+		Date date = new Date();
+
+		distribution.setLastTimeStreamed(dateFormat
+				.format(date).toString());
+
 
 		distribution.updateObject(true);
 

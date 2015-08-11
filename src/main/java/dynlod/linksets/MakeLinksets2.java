@@ -213,8 +213,8 @@ public class MakeLinksets2 {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			distribution.setLastTimeLinkset(String.valueOf(new Date()));
-			distribution.updateObject(false);
+//			distribution.setLastTimeLinkset(String.valueOf(new Date()));
+//			distribution.updateObject(false);
 
 		} catch (Exception e) {
 			e.printStackTrace();
