@@ -61,7 +61,7 @@ public class MakeLinksets2 extends Thread {
 
 			systemProperties.updateObject(true);
 
-			logger.info("Updating linksets...");
+//			logger.info("Updating linksets...");
 //
 //			ArrayList<DistributionMongoDBObject> distributions = DistributionQueries
 //					.getDistributions();
@@ -112,12 +112,12 @@ public class MakeLinksets2 extends Thread {
 						.getDistributionsByIndegree(FQDNToSearch);
 				
 				
-				if(isSubject)
-					logger.debug("We will compare dataset subjects " + distribution.getUri()
-							+ " with " + disributionsToCompare.size() + " BF.");
-				else
-					logger.debug("We will compare dataset objects " + distribution.getUri()
-						+ " with " + disributionsToCompare.size() + " BF.");
+//				if(isSubject)
+//					logger.debug("We will compare dataset subjects " + distribution.getUri()
+//							+ " with " + disributionsToCompare.size() + " BF.");
+//				else
+//					logger.debug("We will compare dataset objects " + distribution.getUri()
+//						+ " with " + disributionsToCompare.size() + " BF.");
 
 				for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
 					if (!listOfDataThreads.containsKey(distributionToCompare
@@ -197,11 +197,11 @@ public class MakeLinksets2 extends Thread {
 				ConcurrentHashMap<String, Integer> c = new ConcurrentHashMap<String, Integer>();
 
 				if (listOfDataThreads.size() > 0) {
-					logger.info("Creating liksets for distribution: "
-							+ distribution.getDownloadUrl()
-							+ " . We are comparing with "
-							+ listOfDataThreads.size()
-							+ " different bloom filters.");
+//					logger.info("Creating liksets for distribution: "
+//							+ distribution.getDownloadUrl()
+//							+ " . We are comparing with "
+//							+ listOfDataThreads.size()
+//							+ " different bloom filters.");
 
 //					for (String val : resourecesToBeProcessedQueue) {
 						
@@ -278,7 +278,7 @@ public class MakeLinksets2 extends Thread {
 		}
 		systemProperties.updateObject(true);
 
-		logger.info("Time to update linksets: " + t.stopTimer() + "s");
+//		logger.info("Time to update linksets: " + t.stopTimer() + "s");
 	}
 
 	public void saveLinksets(ConcurrentHashMap<String, DataModelThread> dataThreads,
