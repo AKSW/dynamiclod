@@ -120,7 +120,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 							.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
 
 				// get subject and save to file
-					subject.write(new String(stSubject + "\n").getBytes());
+//					subject.write(new String(stSubject + "\n").getBytes());
 					while (subjectQueue.size() > bufferSize) {
 						Thread.sleep(1);
 					}
@@ -134,7 +134,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 				// to queue and save to file
 				if (object != null)
 					if (!stObject.startsWith("\"")) {
-						object.write(new String(stObject + "\n").getBytes());
+//						object.write(new String(stObject + "\n").getBytes());
 
 						// add object to object queue
 						// (the queue is read by other

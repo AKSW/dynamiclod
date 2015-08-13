@@ -90,7 +90,7 @@ public class Manager {
 
 					logger.info("Streaming distribution.");
 
-					downloadedFile.downloadDistribution();
+					downloadedFile.streamDistribution();
 
 					// uptate status of distribution
 					distributionMongoDBObj

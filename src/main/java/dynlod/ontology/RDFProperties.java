@@ -38,7 +38,9 @@ public class RDFProperties {
 	public static final Property description = property(NS.DCT_URI, "description");
 	public static final Resource linkset = resource(NS.VOID_URI, "Linkset");
 	public static final Property triples = property(NS.VOID_URI, "triples");
+	public static final Property rdfValue = property(NS.RDF_URI, "value");
 
+	
 	public static final Property subset= property(NS.VOID_URI, "subset");	 	
 	public static final Property wasDerivedFrom= property(NS.PROV_URI, "wasGeneratedBy");	 	
 	public static final Property format = property(NS.DCT_URI, "format");

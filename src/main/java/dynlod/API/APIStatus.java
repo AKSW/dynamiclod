@@ -124,7 +124,7 @@ public class APIStatus extends API {
 //			datasetMessage.put("outdegreeDatasetCount", outdegrees.size());
 //			datasetMessage.put("outdegreeLinksCount", outdegreeCount);	
 			
-			logger.debug("APIStatus message: "+ datasetMessage.toString(4));
+//			logger.debug("APIStatus message: "+ datasetMessage.toString(4));
 			
 			apiMessage.addDistributionMsg(datasetMessage);
 		}

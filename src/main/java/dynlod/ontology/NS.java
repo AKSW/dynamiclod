@@ -19,5 +19,5 @@ public class NS {
 	public static final String DCT_URI = "http://purl.org/dc/terms/";
 	public static final String XSD_URI = "http://www.w3.org/2001/XMLSchema#";
 	public static final String FOAF_URI = "http://xmlns.com/foaf/0.1/";	
-
+	public static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";	
 }

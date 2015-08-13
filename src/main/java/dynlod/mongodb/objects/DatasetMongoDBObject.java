@@ -44,7 +44,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 
 	private String title;
 
-	private String dataIdFileName;
+	private String descriptionFileName;
 
 	private String access_url;
 
@@ -84,7 +84,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 	
 			mongoDBObject.put(TITLE, title);
 
-			mongoDBObject.put(DESCRIPTION_FILENAME, dataIdFileName);
+			mongoDBObject.put(DESCRIPTION_FILENAME, descriptionFileName);
 
 			mongoDBObject.put(LABEL, label);
 			
@@ -121,7 +121,7 @@ public class DatasetMongoDBObject extends DataIDDB {
 			label = (String) obj.get(LABEL);
 			uri = (String) obj.get(URI);
 			title = (String) obj.get(TITLE);
-			dataIdFileName = (String) obj.get(DESCRIPTION_FILENAME);
+			descriptionFileName = (String) obj.get(DESCRIPTION_FILENAME);
 			isVocabulary = (Boolean) obj.get(IS_VOCABULARY);
 			access_url = (String) obj.get(ACCESS_URL);
 			dynLodID = (Integer) obj.get(DYN_LOD_ID);
@@ -193,12 +193,12 @@ public class DatasetMongoDBObject extends DataIDDB {
 		this.title = title;
 	}
 
-	public String getDataIdFileName() {
-		return dataIdFileName;
+	public String getDescriptionFileName() {
+		return descriptionFileName;
 	}
 
-	public void setDataIdFileName(String dataIdFileName) {
-		this.dataIdFileName = dataIdFileName;
+	public void setDescriptionFileName(String descriptionFileName) {
+		this.descriptionFileName = descriptionFileName;
 	}
 	
 	public Boolean getIsVocabulary() {

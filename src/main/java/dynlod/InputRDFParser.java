@@ -21,6 +21,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
@@ -80,7 +81,9 @@ public class InputRDFParser {
 		return datasetsStmt;
 	}
 
-	public List<DistributionMongoDBObject> parseDistributions() throws DynamicLODNoDatasetFoundException, DynamicLODFormatNotAcceptedException, DynamicLODGeneralException{
+	public List<DistributionMongoDBObject> parseDistributions()
+			throws DynamicLODNoDatasetFoundException,
+			DynamicLODFormatNotAcceptedException, DynamicLODGeneralException {
 		// select dataset
 		StmtIterator datasetsStmt = getFirstStmt();
 
@@ -90,13 +93,14 @@ public class InputRDFParser {
 			throw new DynamicLODNoDatasetFoundException(
 					"We could not parse any datasets.");
 
-
 		return distributionsLinks;
 	}
 
 	// iterating over the subsets (recursive method)
 	private void iterateSubsetsNew(StmtIterator stmtDatasets,
-			String parentDataset, String topDataset) throws DynamicLODGeneralException, DynamicLODFormatNotAcceptedException {
+			String parentDataset, String topDataset)
+			throws DynamicLODGeneralException,
+			DynamicLODFormatNotAcceptedException {
 
 		// iterate over subsets
 		while (stmtDatasets.hasNext()) {
@@ -118,8 +122,8 @@ public class InputRDFParser {
 			datasetMongoDBObj.addParentDatasetURI(parentDataset);
 			datasetMongoDBObj.setAccess_url(access_url);
 
-			// add DataID file path
-			datasetMongoDBObj.setDataIdFileName(fileURLHash);
+			// add description file path
+			datasetMongoDBObj.setDescriptionFileName(fileURLHash);
 
 			// case there is title property
 			if (dataset.getSubject().getProperty(RDFProperties.title) != null) {
@@ -182,6 +186,8 @@ public class InputRDFParser {
 			for (Property distributionProperty : RDFProperties.distribution) {
 				stmtDistribution = inModel.listStatements(dataset.getSubject()
 						.asResource(), distributionProperty, (RDFNode) null);
+
+				// special treatment for VOID file
 				if (stmtDistribution.hasNext()
 						&& distributionProperty.equals(ResourceFactory
 								.createProperty(NS.VOID_URI, "dataDump"))) {
@@ -196,49 +202,53 @@ public class InputRDFParser {
 			// case there's an distribution take the fist that has
 			// downloadURL
 			boolean downloadURLFound = false;
-			while (stmtDistribution.hasNext() && downloadURLFound == false) {
+			while (stmtDistribution.hasNext()) {
 				// store distribution
 				Statement distributionStmt = stmtDistribution.next();
 
 				// give priority for nt files (case it's a dataid file)
 				if (isDataid) {
-					if (!stmtDistribution.hasNext()
-							|| distributionStmt.getObject().toString()
-									.contains(".nt")) {
-						// find downloadURL property
-						StmtIterator stmtDownloadURL = null;
+					if (downloadURLFound == false)
+						if (!stmtDistribution.hasNext()
+								|| distributionStmt.getObject().toString()
+										.contains(".nt")) {
+							// find downloadURL property
+							StmtIterator stmtDownloadURL = null;
 
-						for (Property downloadProperty : RDFProperties.downloadURL) {
-							stmtDownloadURL = inModel.listStatements(
-									distributionStmt.getObject().asResource(),
-									downloadProperty, (RDFNode) null);
-							if (stmtDownloadURL.hasNext())
-								break;
-						}
-
-						// case there is an downloadURL property
-						while (stmtDownloadURL.hasNext()) {
-							// store downloadURL statement
-							Statement downloadURLStmt = stmtDownloadURL.next();
-
-							try {
-								if (FileUtils.acceptedFormats(downloadURLStmt
-										.getObject().toString())) {
-
-									downloadURLFound = true;
-									addDistribution(downloadURLStmt,
-											distributionStmt,
-											datasetMongoDBObj, topDataset);
-
-								}
-							} catch (Exception ex) {
-								ex.printStackTrace();
-								apiStatus.setHasError(true);
-								apiStatus.setMessage(ex.getMessage());
+							for (Property downloadProperty : RDFProperties.downloadURL) {
+								stmtDownloadURL = inModel.listStatements(
+										distributionStmt.getObject()
+												.asResource(),
+										downloadProperty, (RDFNode) null);
+								if (stmtDownloadURL.hasNext())
+									break;
 							}
+
+							// case there is an downloadURL property
+							while (stmtDownloadURL.hasNext()) {
+								// store downloadURL statement
+								Statement downloadURLStmt = stmtDownloadURL
+										.next();
+
+								try {
+									if (FileUtils
+											.acceptedFormats(downloadURLStmt
+													.getObject().toString())) {
+
+										downloadURLFound = true;
+										addDistribution(downloadURLStmt,
+												distributionStmt,
+												datasetMongoDBObj, topDataset);
+
+									}
+								} catch (Exception ex) {
+									ex.printStackTrace();
+									apiStatus.setHasError(true);
+									apiStatus.setMessage(ex.getMessage());
+								}
+							}
+							break;
 						}
-						break;
-					}
 				}
 
 				else {
@@ -329,11 +339,41 @@ public class InputRDFParser {
 		}
 		if (stmtDistribution.getObject().asResource()
 				.getProperty(RDFProperties.format) != null) {
-			distributionMongoDBObj.setFormat(Formats
-					.getEquivalentFormat(stmtDistribution.getObject()
-							.asResource().getProperty(RDFProperties.format)
-							.getObject().toString()));
+
+			// try to get format like CKAN's provides:
+			// dct:format [
+			// a dct:IMT ;
+			// rdf:value "application/rdf+xml" ;
+			// rdfs:label "application/rdf+xml"
+			// ] ;
+			// a dcat:Distribution ;
+			// dcat:accessURL
+			// <http://download.geonames.org/all-geonames-rdf.zip>
+
+			try {
+				if (stmtDistribution.getObject().asResource()
+						.getProperty(RDFProperties.format).getObject()
+						.asResource().getProperty(RDFProperties.rdfValue)
+						.getObject() != null) {
+					distributionMongoDBObj.setFormat(Formats
+							.getEquivalentFormat(stmtDistribution.getObject()
+									.asResource()
+									.getProperty(RDFProperties.format)
+									.getObject().asResource()
+									.getProperty(RDFProperties.rdfValue)
+									.getObject().toString()));
+				}
+			} catch (Exception e) {
+
+				// else
+				distributionMongoDBObj.setFormat(Formats
+						.getEquivalentFormat(stmtDistribution.getObject()
+								.asResource().getProperty(RDFProperties.format)
+								.getObject().toString()));
+			}
+
 		}
+
 		if (distributionMongoDBObj.getStatus() == null) {
 			distributionMongoDBObj
 					.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
@@ -349,9 +389,9 @@ public class InputRDFParser {
 		}
 
 	}
-	
-	private ResIterator findDataset(){
-		ResIterator hasSomeDataset = null; 
+
+	private ResIterator findDataset() {
+		ResIterator hasSomeDataset = null;
 		for (Resource datasetResource : RDFProperties.Dataset) {
 			hasSomeDataset = inModel.listResourcesWithProperty(
 					RDFProperties.type, datasetResource);
@@ -362,7 +402,9 @@ public class InputRDFParser {
 	}
 
 	// read dataID file and return the dataset uri
-	public String readModel(String URL, String format) throws MalformedURLException, IOException, DynamicLODNoDatasetFoundException, RiotException  {
+	public String readModel(String URL, String format)
+			throws MalformedURLException, IOException,
+			DynamicLODNoDatasetFoundException, RiotException {
 		apiStatus = new APIStatusMongoDBObject(URL);
 		access_url = URL;
 		String someDatasetURI = null;
@@ -380,18 +422,21 @@ public class InputRDFParser {
 		if (hasSomeDataset.hasNext()) {
 			someDatasetURI = hasSomeDataset.next().getURI().toString();
 			logger.info("Jena model created. ");
-			logger.info("Looks that this is a valid VoID/DCAT/DataID file! " + someDatasetURI);
-			apiStatus.setMessage("Looks that this is a valid VoID/DCAT/DataID file! "
+			logger.info("Looks that this is a valid VoID/DCAT/DataID file! "
+					+ someDatasetURI);
+			apiStatus
+					.setMessage("Looks that this is a valid VoID/DCAT/DataID file! "
 							+ someDatasetURI);
 
 			fileURLHash = FileUtils.stringToHash(URL);
 			inModel.write(new FileOutputStream(new File(
 					DynlodGeneralProperties.FILE_URL_PATH + fileURLHash)));
-		}
-		else {
-			apiStatus.setMessage("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
+		} else {
+			apiStatus
+					.setMessage("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
 			apiStatus.setHasError(true);
-			throw new DynamicLODNoDatasetFoundException("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
+			throw new DynamicLODNoDatasetFoundException(
+					"It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
 		}
 
 		return someDatasetURI;
