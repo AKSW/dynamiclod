@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +24,7 @@ import org.openrdf.rio.helpers.RDFParserBase;
 public class NTriplesDynLODParser extends RDFParserBase{
 
 //	RDFHandlerBase handlerClass;
-	Queue<String> bufferQueue = new LinkedBlockingQueue<String>();
+	Queue<String> bufferQueue = new ConcurrentLinkedQueue<String>();
 	boolean doneReading = false;
 	
 	public void stream(InputStream inStream){
