@@ -43,7 +43,7 @@ public class NTriplesDynLODParser extends RDFParserBase{
 		                	while ((nRead = new BufferedInputStream(inputStream).read(data, 0, data.length)) != -1) {
 //		                	  out.write(data, 0, nRead)
 		                		bufferQueue.add(new String(data, StandardCharsets.UTF_8));
-		                		if(bufferQueue.size()>2000)
+		                		if(bufferQueue.size()>200)
 		                			Thread.sleep(1);
 		                	}
 		                	doneReading = true;
