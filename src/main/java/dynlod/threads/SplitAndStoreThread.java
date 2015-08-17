@@ -135,11 +135,16 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 				// get object (make sure that its a resource and not a literal), add
 				// to queue and save to file
 				if (!stObject.startsWith("\"")) {
-					objectFile.write(stObject+"\n");
+					String object;
+					if(stObject.startsWith("<"))
+					object = stObject.substring(1, stObject.length() -1);
+					else 
+						object = stObject;
+					objectFile.write(object+"\n");
 
 					// add object to object queue (the queue is read by another thread)
 					if (isChain)
-						objectQueue.add(stObject);
+						objectQueue.add(object);
 					objectLines++;
 				}
 				totalTriples++;

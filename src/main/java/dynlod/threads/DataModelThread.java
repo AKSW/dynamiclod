@@ -45,7 +45,6 @@ public class DataModelThread {
 	// public int availabilityCounter = 0 ;
 
 	// path for the filter
-	public String filterPath;
 
 	public String distributionURI;
 	public String datasetURI;
@@ -63,29 +62,27 @@ public class DataModelThread {
 
 	public DataModelThread(
 			DistributionMongoDBObject distribution,
-			DistributionMongoDBObject distributionToCompare, boolean sourceColumnIsSubject) {
+			DistributionMongoDBObject distributionToCompare, boolean isSubject) {
 
 		
 //		DataModelThread dataThread = new DataModelThread();
-		this.sourceColumnIsSubject = sourceColumnIsSubject;
+		this.sourceColumnIsSubject = isSubject;
 //		dataThread.describedFQDN = describedFQDN;
 
 		if (!distributionToCompare.getUri().equals(distribution.getUri())) {
 			// save dataThread object
-			GoogleBloomFilter filter = new GoogleBloomFilter();
 
 			try {
-				if (!sourceColumnIsSubject)
-					filter.loadFilter(distributionToCompare
-							.getSubjectFilterPath());
-				else
-					filter.loadFilter(distributionToCompare
+				if (isSubject)
+					this.filter.loadFilter(distributionToCompare
 							.getObjectFilterPath());
+				else
+					this.filter.loadFilter(distributionToCompare
+							.getSubjectFilterPath());
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			this.filter = filter;
 
 			
 			this.targetDistributionURI = distributionToCompare

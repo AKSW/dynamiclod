@@ -42,7 +42,8 @@ public class NTriplesDynLODParser extends RDFParserBase{
 		                	int sleeping = 0;
 
 		                	while ((nRead = new BufferedInputStream(inputStream).read(data, 0, data.length)) != -1) {
-		                		bufferQueue.add(new String(data, StandardCharsets.UTF_8));
+//		                		bufferQueue.add(new String(data, StandardCharsets.UTF_8));
+		                		bufferQueue.add(new String(data,0,nRead, StandardCharsets.UTF_8));
 		                		while(bufferQueue.size()>450){
 		                			Thread.sleep(1);
 		                		sleeping++; 
@@ -122,9 +123,12 @@ public class NTriplesDynLODParser extends RDFParserBase{
 //									Pattern pattern = Pattern
 //											.compile("^(<[^>]+>)\\s+(<[^>]+>)\\s(.*)(\\s\\.)");
 
+//									Pattern pattern = Pattern
+//											.compile("^<([^>]+)>\\s+<([^>]+)>\\s<(.*)>(\\s\\.)");
+
 									Pattern pattern = Pattern
-											.compile("^<([^>]+)>\\s+<([^>]+)>\\s<(.*)>(\\s\\.)");
-									
+											.compile("^<([^>]+)>\\s+<([^>]+)>\\s(.*)(\\s\\.)");
+
 
 									Matcher matcher = pattern.matcher(triple);
 									
@@ -136,7 +140,7 @@ public class NTriplesDynLODParser extends RDFParserBase{
 											
 									subjectStmt = matcher.group(1);
 									propertyStmt = matcher.group(2);
-									objectStmt = matcher.group(3);
+									objectStmt = matcher.group(3);									
 
 									splitAndStore.saveStatement(subjectStmt, propertyStmt, objectStmt);
 

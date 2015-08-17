@@ -81,8 +81,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 									if (dataThread.datasetURI != null) {
 										listOfDataThreads.put(
 												distributionToCompare.getUri(),
-												dataThread);
-										
+												dataThread);										
 									}
 								}
 							} catch (Exception e) {
@@ -90,7 +89,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 										+ e.getMessage());
 								e.printStackTrace();
 							}
-//						System.out.println("Added "+distributionToCompare.getUri());
+						
 					}
 
 					for (DistributionFQDN dFqdn : fqdnPerDistribution.values()) {
@@ -101,8 +100,9 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 									boolean keepTrying = true;
 									while(keepTrying){
 										try{
-											if(!dFqdn.distribution.equals(distribution.getUri()))
+											if(!dFqdn.distribution.equals(distribution.getUri())){
 												listOfDataThreads.get(dFqdn.distribution).active = true;
+											}
 											keepTrying = false;
 										}
 										catch (Exception e){
@@ -125,6 +125,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 										try{
 											if(!dFqdn.distribution.equals(distribution.getUri()))
 												listOfDataThreads.get(dFqdn.distribution).active = true;
+											
 											keepTrying = false;
 										}
 										catch (Exception e){
@@ -161,7 +162,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 														.clone()));
 								threads[threadIndex]
 										.setName("MakeLinkSetWorker-"
-												+ threadIndex);
+												+ threadIndex + dataThread2.targetDistributionURI);
 								threads[threadIndex].start();
 								threadIndex++;
 							}
@@ -195,10 +196,21 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 
 						// System.out.println(" Links working: "+positive + "
 						l.setLinks(dataThread.links.get());
+						
+						if(isSubject){
+							l.setDistributionSource(dataThread.targetDistributionURI);
+							l.setDistributionTarget(dataThread.distributionURI);
+							l.setDatasetSource(dataThread.targetDatasetURI);
+							l.setDatasetTarget(dataThread.datasetURI);
+							
+						}
+						else{
+						
 						l.setDistributionSource(dataThread.distributionURI);
 						l.setDistributionTarget(dataThread.targetDistributionURI);
 						l.setDatasetSource(dataThread.datasetURI);
 						l.setDatasetTarget(dataThread.targetDatasetURI);
+						}
 						l.updateObject(true);
 					}
 

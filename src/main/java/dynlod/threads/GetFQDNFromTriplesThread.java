@@ -49,7 +49,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 
 	int numberOfReadedTriples = 0;
 
-	int saveDomainsEach = 50000;
+	int saveDomainsEach = 25000;
 
 	public GetFQDNFromTriplesThread(
 			ConcurrentLinkedQueue<String> resourceQueue,
