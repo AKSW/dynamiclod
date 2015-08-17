@@ -86,10 +86,10 @@ public class GetFQDNFromTriplesThread extends Thread {
 					obj = resourceQueue.remove();
 					resourcesToBeProcessedQueue.add(obj);
 
-					if (obj.startsWith("<"))
-						obj = obj.substring(1, obj.length() - 1);
-					else
-						obj = obj.substring(0, obj.length() - 1);
+//					if (obj.startsWith("<"))
+//						obj = obj.substring(1, obj.length() - 1);
+//					else
+//						obj = obj.substring(0, obj.length() - 1);
 
 					String[] ar = obj.split("/");
 					if (ar.length > 3)

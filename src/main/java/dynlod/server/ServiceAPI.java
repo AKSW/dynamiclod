@@ -77,7 +77,7 @@ public class ServiceAPI extends HttpServlet {
 
 				for (String datasetURI : parameters.get(options.ADD_DATASET)) {
 					
-					logger.debug("API ADD_DATASET: "+datasetURI+ format);
+//					logger.debug("API ADD_DATASET: "+datasetURI+ format);
 
 					APIDataset apiDataset = APIFactory.createDataset(
 							datasetURI, format);
@@ -98,7 +98,7 @@ public class ServiceAPI extends HttpServlet {
 
 				for (String datasetURI : parameters.get(options.DATASET_STATUS)) {
 					
-					logger.debug("API DATASET_STATUS: "+datasetURI);
+//					logger.debug("API DATASET_STATUS: "+datasetURI);
 
 					APIStatus apiStatus = APIFactory
 							.createStatusDataset(datasetURI);

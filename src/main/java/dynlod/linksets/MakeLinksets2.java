@@ -64,6 +64,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 						disributionsToCompare = new DistributionQueries()
 								.getDistributionsByIndegree(fqdnToSearch,
 										fqdnPerDistribution);
+					
 
 					for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
 						if (!listOfDataThreads
@@ -100,15 +101,16 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 									boolean keepTrying = true;
 									while(keepTrying){
 										try{
-											listOfDataThreads.get(dFqdn.distribution).active = true;
+											if(!dFqdn.distribution.equals(distribution.getUri()))
+												listOfDataThreads.get(dFqdn.distribution).active = true;
 											keepTrying = false;
 										}
 										catch (Exception e){
+//											e.printStackTrace();
 											try {
 												Thread.sleep(1);
 											} catch (InterruptedException e1) {
 												// TODO Auto-generated catch block
-												e1.printStackTrace();
 											}
 										}
 									}
@@ -121,19 +123,19 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 									boolean keepTrying = true;
 									while(keepTrying){
 										try{
-											listOfDataThreads.get(dFqdn.distribution).active = true;
+											if(!dFqdn.distribution.equals(distribution.getUri()))
+												listOfDataThreads.get(dFqdn.distribution).active = true;
 											keepTrying = false;
 										}
 										catch (Exception e){
+//											e.printStackTrace();											
 											try {
 												Thread.sleep(1);
 											} catch (InterruptedException e1) {
 												// TODO Auto-generated catch block
-												e1.printStackTrace();
 											}
 										}
 									}
-									
 								}
 							}
 						}

@@ -125,10 +125,10 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 					
 					// get subject and save to file
 					subjectFile.write(stSubject+"\n");
-					if (isChain)
-						subjectQueue.add(stSubject);
 					subjectLines++;
 					lastSubject = stSubject;
+					if (isChain)
+						subjectQueue.add(stSubject);
 					
 				}
 

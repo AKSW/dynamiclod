@@ -29,7 +29,7 @@ public class APIStatus extends API {
 
 	public APIStatus(String url) {
 		
-		logger.debug("APIStatus initialized. ");
+//		logger.debug("APIStatus initialized. ");
 		
 		apiStatus = new APIStatusMongoDBObject(url);
 		distributions=DistributionQueries.getDistributionsByTopDatasetAccessURL(url);
@@ -37,7 +37,7 @@ public class APIStatus extends API {
 		apiMessage.setCoreMsgSuccess();
 //		apiMessage.setParserMsg("Dataset status:  " + apiStatus.getMessage());
 		
-		logger.debug("APIStatus number of distributions found: "+distributions.size());
+//		logger.debug("APIStatus number of distributions found: "+distributions.size());
 	
 		for (DistributionMongoDBObject distribution : distributions) {
 			

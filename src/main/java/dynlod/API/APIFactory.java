@@ -12,7 +12,7 @@ public class APIFactory {
 
 	public static APIDataset createDataset(String datasetURI, String format) {
 		
-		logger.debug("API Factory Create Dataset started");
+//		logger.debug("API Factory Create Dataset started");
 		
 		if (!APITasks.tasks.containsKey(datasetURI)) {
 			APIDataset instace = new APIDataset(datasetURI, format);
@@ -27,10 +27,10 @@ public class APIFactory {
 	
 	public static APIStatus createStatusDataset(String datasetURI) {
 		
-		logger.debug("API Factory Create Status Dataset started");
+//		logger.debug("API Factory Create Status Dataset started");
 		APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
 		if(apiStatus.getMessage()!=null){
-			logger.debug("APIStatus instance created");
+//			logger.debug("APIStatus instance created");
 			return new APIStatus(datasetURI);
 		}
 		else return null;
