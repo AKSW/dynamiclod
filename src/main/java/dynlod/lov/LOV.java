@@ -285,7 +285,7 @@ public class LOV extends Download {
 		DistributionSubjectDomainsMongoDBObject ds = new DistributionSubjectDomainsMongoDBObject(
 				id.get().toString());
 		ds.setDistributionURI(nameSpace);
-		ds.setSubjectDomain(obj);
+		ds.setSubjectFQDN(obj);
 		ds.updateObject(true);
 	}
 

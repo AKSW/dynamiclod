@@ -3,9 +3,10 @@ package dynlod.mongodb.queries;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBList;
@@ -14,6 +15,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
+import dynlod.linksets.DistributionFQDN;
 import dynlod.mongodb.DataIDDB;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
@@ -22,7 +24,7 @@ import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 
 public class DistributionQueries {
-	
+
 	final static Logger logger = Logger.getLogger(DistributionQueries.class);
 
 	// return number of distributions
@@ -37,7 +39,6 @@ public class DistributionQueries {
 		}
 		return numberOfDistributions;
 	}
-	
 
 	public static ArrayList<DistributionMongoDBObject> getDistributionsByOutdegree(
 			String distributionAccessURL) {
@@ -53,14 +54,14 @@ public class DistributionQueries {
 					distributionAccessURL);
 
 			BasicDBObject fields = new BasicDBObject(
-					DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN, 1);
+					DistributionObjectDomainsMongoDBObject.OBJECT_FQDN, 1);
 			fields.append("_id", 0);
 			DBCursor cursor = collection.find(query, fields);
 
 			ArrayList<String> vals = new ArrayList<String>();
 			while (cursor.hasNext()) {
 				vals.add((String) cursor.next().get(
-						DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN));
+						DistributionObjectDomainsMongoDBObject.OBJECT_FQDN));
 			}
 
 			BasicDBObject fields2 = new BasicDBObject(
@@ -69,7 +70,7 @@ public class DistributionQueries {
 
 			// find distributions with contains subjects equal of objects (vals)
 			BasicDBObject query2 = new BasicDBObject(
-					DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN,
+					DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN,
 					new BasicDBObject("$in", vals));
 
 			collection = DataIDDB.getInstance().getCollection(
@@ -83,8 +84,8 @@ public class DistributionQueries {
 								.get(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI)
 								.toString());
 
-					list.add(obj);
-				
+				list.add(obj);
+
 			}
 
 		} catch (Exception e) {
@@ -92,62 +93,38 @@ public class DistributionQueries {
 		}
 		return list;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public static ArrayList<DistributionMongoDBObject> getDistributionsByOutdegree(
-			ArrayList<String> vals) {
+
+	public ArrayList<DistributionMongoDBObject> getDistributionsByOutdegree(
+			ArrayList<String> fqdnToSearch,
+			ConcurrentHashMap<String, DistributionFQDN> fqdnPerDistribution) {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 		try {
 
+			// query all fqdn
+			BasicDBObject query = new BasicDBObject(
+					DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN,
+					new BasicDBObject("$in", fqdnToSearch));
+
 			DBCollection collection = DataIDDB.getInstance().getCollection(
-					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
-
-//			// get all objects domain of a distribution
-//			BasicDBObject query = new BasicDBObject(
-//					DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI,
-//					distributionAccessURL);
-//
-//			BasicDBObject fields = new BasicDBObject(
-//					DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN, 1);
-//			fields.append("_id", 0);
-//			DBCursor cursor = collection.find(query, fields);
-			DBCursor cursor = null;
-
-//			ArrayList<String> vals = new ArrayList<String>();
-//			while (cursor.hasNext()) {
-//				vals.add((String) cursor.next().get(
-//						DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN));
-//			}
-
-			BasicDBObject fields2 = new BasicDBObject(
-					DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
-			fields2.append("_id", 0);
-
-			// find distributions with contains subjects equal of objects (vals)
-			BasicDBObject query2 = new BasicDBObject(
-					DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN,
-					new BasicDBObject("$in", vals));
-
-			collection = DataIDDB.getInstance().getCollection(
 					DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
 
-			cursor = collection.find(query2, fields2);
-
+			DBCursor cursor = collection.find(query);
+			
+			// save a list with distribution and fqdn
 			while (cursor.hasNext()) {
-				DistributionMongoDBObject obj = new DistributionMongoDBObject(
-						cursor.next()
-								.get(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI)
+				DBObject o = cursor.next();
+				DistributionMongoDBObject distribution = new DistributionMongoDBObject(
+						o.get(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI)
 								.toString());
+				list.add(distribution);
 
-					list.add(obj);
-				
+
+				if (!fqdnPerDistribution.containsKey(distribution.getUri())) {
+					fqdnPerDistribution
+							.put(distribution.getUri(),
+									createDistributionFQDNObject(distribution
+											.getUri()));
+				}
 			}
 
 		} catch (Exception e) {
@@ -155,67 +132,87 @@ public class DistributionQueries {
 		}
 		return list;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public static ArrayList<DistributionMongoDBObject> getDistributionsByIndegree(
-			ArrayList<String> vals) {
+
+	public DistributionFQDN createDistributionFQDNObject(String distribution) {
+
+		DistributionFQDN distributionFQDNObject = new DistributionFQDN();
+
+		// query all objects fqdn for the distribution
+		BasicDBObject subjectQuery = new BasicDBObject(
+				DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI,
+				distribution);
+
+		DBCollection collection = DataIDDB.getInstance().getCollection(
+				DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
+
+		DBCursor cursor = collection.find(subjectQuery);
+
+		TreeSet<String> subjectsFQDN = new TreeSet<String>();
+
+		while (cursor.hasNext()) {
+			subjectsFQDN.add(cursor.next()
+					.get(DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN)
+					.toString());
+		}
+
+		// doing the same for objects fqdn
+		BasicDBObject objectQuery = new BasicDBObject(
+				DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI,
+				distribution);
+
+		collection = DataIDDB.getInstance().getCollection(
+				DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
+
+		cursor = collection.find(objectQuery);
+
+		TreeSet<String> objectsFQDN = new TreeSet<String>();
+
+		while (cursor.hasNext()) {
+			objectsFQDN.add(cursor.next()
+					.get(DistributionObjectDomainsMongoDBObject.OBJECT_FQDN)
+					.toString());
+		}
+
+		distributionFQDNObject.addObjectsFQDN(objectsFQDN);
+		distributionFQDNObject.addSubjectsFQDN(subjectsFQDN);
+		distributionFQDNObject.distributionMongoDBObject = new DistributionMongoDBObject(
+				distribution);
+		distributionFQDNObject.distribution = distribution;
+
+		return distributionFQDNObject;
+
+	}
+
+	public ArrayList<DistributionMongoDBObject> getDistributionsByIndegree(
+			ArrayList<String> fqdnToSearch, ConcurrentHashMap<String, DistributionFQDN> fqdnPerDistribution) {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 		try {
-
-			DBCollection collection = DataIDDB.getInstance().getCollection(
-					DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
-
-//			// get all subject domain from distribution got as parameter
-//			BasicDBObject query = new BasicDBObject(
-//					DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI,
-//					distributionAccessURL);
-//
-//			BasicDBObject fields = new BasicDBObject(
-//					DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN, 1);
-//			fields.append("_id", 0);
-//			DBCursor cursor = collection.find(query, fields);
-			DBCursor cursor = null;
-
-//			while (cursor.hasNext()) {
-//				vals.add((String) cursor.next().get(
-//						DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN));
-//			}
-
-			BasicDBObject fields2 = new BasicDBObject(
-					DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
-			fields2.append("_id", 0);
 
 			// find distributions with subjects
 			BasicDBObject query2 = new BasicDBObject(
-					DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN,
-					new BasicDBObject("$in", vals));
+					DistributionObjectDomainsMongoDBObject.OBJECT_FQDN,
+					new BasicDBObject("$in", fqdnToSearch));
 
-			collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
 
-			cursor = collection.find(query2, fields2);
+			DBCursor cursor = collection.find(query2);
 
 			while (cursor.hasNext()) {
-				DistributionMongoDBObject obj = new DistributionMongoDBObject(
+				DistributionMongoDBObject distribution = new DistributionMongoDBObject(
 						cursor.next()
 								.get(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI)
 								.toString());
 
-					list.add(obj);
-				
+				list.add(distribution);
+
+				if (!fqdnPerDistribution.containsKey(distribution.getUri())) {
+					fqdnPerDistribution
+							.put(distribution.getUri(),
+									createDistributionFQDNObject(distribution
+											.getUri()));
+				}
+
 			}
 
 		} catch (Exception e) {
@@ -223,8 +220,7 @@ public class DistributionQueries {
 		}
 		return list;
 	}
-	
-	
+
 	public static ArrayList<DistributionMongoDBObject> getDistributionsByIndegree(
 			String distributionAccessURL) {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
@@ -239,14 +235,14 @@ public class DistributionQueries {
 					distributionAccessURL);
 
 			BasicDBObject fields = new BasicDBObject(
-					DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN, 1);
+					DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN, 1);
 			fields.append("_id", 0);
 			DBCursor cursor = collection.find(query, fields);
 
 			ArrayList<String> vals = new ArrayList<String>();
 			while (cursor.hasNext()) {
 				vals.add((String) cursor.next().get(
-						DistributionSubjectDomainsMongoDBObject.SUBJECT_DOMAIN));
+						DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN));
 			}
 
 			BasicDBObject fields2 = new BasicDBObject(
@@ -255,7 +251,7 @@ public class DistributionQueries {
 
 			// find distributions with subjects
 			BasicDBObject query2 = new BasicDBObject(
-					DistributionObjectDomainsMongoDBObject.OBJECT_DOMAIN,
+					DistributionObjectDomainsMongoDBObject.OBJECT_FQDN,
 					new BasicDBObject("$in", vals));
 
 			collection = DataIDDB.getInstance().getCollection(
@@ -269,8 +265,8 @@ public class DistributionQueries {
 								.get(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI)
 								.toString());
 
-					list.add(obj);
-				
+				list.add(obj);
+
 			}
 
 		} catch (Exception e) {
@@ -312,7 +308,8 @@ public class DistributionQueries {
 	}
 
 	// return all distributions
-	public static ArrayList<DistributionMongoDBObject> getDistributions(boolean b) {
+	public static ArrayList<DistributionMongoDBObject> getDistributions(
+			boolean b) {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 
@@ -331,18 +328,18 @@ public class DistributionQueries {
 		}
 		return list;
 	}
-	
-	
+
 	// return all distributions
-//	@Test
-	public static ArrayList<DistributionMongoDBObject> getDistributions(int skip, int limit) {
+	// @Test
+	public static ArrayList<DistributionMongoDBObject> getDistributions(
+			int skip, int limit) {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 
 		try {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			
+
 			DBCursor instances = collection.find().skip(skip).limit(limit);
 
 			for (DBObject instance : instances) {
@@ -355,33 +352,34 @@ public class DistributionQueries {
 		}
 		return list;
 	}
-	
-	
+
 	// return all distributions
-	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetAccessURL(String topDataset) {
+	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetAccessURL(
+			String topDataset) {
 
 		ArrayList<DistributionMongoDBObject> distributionList = new ArrayList<DistributionMongoDBObject>();
-		
+
 		ArrayList<String> datasetList = new ArrayList<String>();
-		
-		
+
 		DBCollection collection = DataIDDB.getInstance().getCollection(
 				DatasetMongoDBObject.COLLECTION_NAME);
-		DBCursor inst = collection.find(
-				new BasicDBObject(DatasetMongoDBObject.ACCESS_URL,new BasicDBObject("$regex",topDataset+".*")));
-		while(inst.hasNext()){
+		DBCursor inst = collection.find(new BasicDBObject(
+				DatasetMongoDBObject.ACCESS_URL, new BasicDBObject("$regex",
+						topDataset + ".*")));
+		while (inst.hasNext()) {
 			datasetList.add((String) inst.next().get(DataIDDB.URI));
 		}
 
 		try {
 			collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.DEFAULT_DATASETS,
-					new BasicDBObject("$in",datasetList)));
+			DBCursor instances = collection.find(new BasicDBObject(
+					DistributionMongoDBObject.DEFAULT_DATASETS,
+					new BasicDBObject("$in", datasetList)));
 
 			for (DBObject instance : instances) {
-				distributionList.add(new DistributionMongoDBObject(instance.get(
-						DataIDDB.URI).toString()));
+				distributionList.add(new DistributionMongoDBObject(instance
+						.get(DataIDDB.URI).toString()));
 			}
 
 		} catch (Exception e) {
@@ -389,7 +387,6 @@ public class DistributionQueries {
 		}
 		return distributionList;
 	}
-	
 
 	public static ArrayList<DistributionMongoDBObject> getDistributionsWithErrors() {
 
@@ -398,14 +395,18 @@ public class DistributionQueries {
 		try {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			
-			DBObject clause1 = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_CREATING_LINKSETS);  
-			DBObject clause2 = new BasicDBObject(DistributionMongoDBObject.STATUS, DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);    
+
+			DBObject clause1 = new BasicDBObject(
+					DistributionMongoDBObject.STATUS,
+					DistributionMongoDBObject.STATUS_CREATING_LINKSETS);
+			DBObject clause2 = new BasicDBObject(
+					DistributionMongoDBObject.STATUS,
+					DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 			BasicDBList or = new BasicDBList();
 			or.add(clause1);
 			or.add(clause2);
 			DBObject query = new BasicDBObject("$or", or);
-			
+
 			DBCursor instances = collection.find(query);
 
 			for (DBObject instance : instances) {
@@ -418,8 +419,6 @@ public class DistributionQueries {
 		}
 		return list;
 	}
-	
-	
 
 	public static DistributionMongoDBObject getByDownloadURL(String url) {
 
@@ -444,13 +443,13 @@ public class DistributionQueries {
 		}
 		return null;
 	}
-	
+
 	// return all distributions
 	public static ArrayList<DistributionMongoDBObject> getDistributionsWithLinks() {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 		ArrayList<String> distributions = new ArrayList<String>();
-		
+
 		try {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
@@ -458,34 +457,47 @@ public class DistributionQueries {
 					LinksetMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find();
 
-			for (DBObject instance : instances) {					
-				BasicDBObject query = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+			for (DBObject instance : instances) {
+				BasicDBObject query = new BasicDBObject(
+						LinksetMongoDBObject.DISTRIBUTION_TARGET, instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
 				DBCursor d = collection2.find(query);
-				
-				if(d.hasNext()){
-					if(!distributions.contains(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString())){
-					distributions.add(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
-//					System.out.println(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+
+				if (d.hasNext()) {
+					if (!distributions.contains(instance.get(
+							DistributionMongoDBObject.DOWNLOAD_URL).toString())) {
+						distributions.add(instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
+						// System.out.println(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
 					}
 				}
 			}
-			
 
 			for (DBObject instance : instances) {
-				
-				BasicDBObject query = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+
+				BasicDBObject query = new BasicDBObject(
+						LinksetMongoDBObject.DISTRIBUTION_SOURCE, instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
 				DBCursor d = collection2.find(query);
-				
-				if(d.hasNext()){
-					if(!distributions.contains(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString())){
-						distributions.add(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+
+				if (d.hasNext()) {
+					if (!distributions.contains(instance.get(
+							DistributionMongoDBObject.DOWNLOAD_URL).toString())) {
+						distributions.add(instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
 					}
 				}
 			}
-			
+
 			for (DBObject instance : instances) {
-				if(distributions.contains(instance.get(DistributionMongoDBObject.DOWNLOAD_URL)))
-					list.add(new DistributionMongoDBObject(instance.get(DistributionMongoDBObject.URI).toString()));
+				if (distributions.contains(instance
+						.get(DistributionMongoDBObject.DOWNLOAD_URL)))
+					list.add(new DistributionMongoDBObject(instance.get(
+							DistributionMongoDBObject.URI).toString()));
 			}
 
 		} catch (Exception e) {
@@ -493,47 +505,63 @@ public class DistributionQueries {
 		}
 		return list;
 	}
+
 	// return all distributions
-	public static ArrayList<DistributionMongoDBObject> getDistributionsWithLinksFilterByDataset(String dataset) {
+	public static ArrayList<DistributionMongoDBObject> getDistributionsWithLinksFilterByDataset(
+			String dataset) {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 		ArrayList<String> distributions = new ArrayList<String>();
-		
+
 		try {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 			DBCollection collection2 = DataIDDB.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
-			DBCursor instances = collection.find(new BasicDBObject(DistributionMongoDBObject.TOP_DATASET, dataset));
+			DBCursor instances = collection.find(new BasicDBObject(
+					DistributionMongoDBObject.TOP_DATASET, dataset));
 
-			for (DBObject instance : instances) {					
-				BasicDBObject query = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+			for (DBObject instance : instances) {
+				BasicDBObject query = new BasicDBObject(
+						LinksetMongoDBObject.DISTRIBUTION_TARGET, instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
 				DBCursor d = collection2.find(query);
-				
-				if(d.hasNext()){
-					if(!distributions.contains(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString())){
-					distributions.add(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
-//					System.out.println(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+
+				if (d.hasNext()) {
+					if (!distributions.contains(instance.get(
+							DistributionMongoDBObject.DOWNLOAD_URL).toString())) {
+						distributions.add(instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
+						// System.out.println(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
 					}
 				}
 			}
-			
 
 			for (DBObject instance : instances) {
-				
-				BasicDBObject query = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+
+				BasicDBObject query = new BasicDBObject(
+						LinksetMongoDBObject.DISTRIBUTION_SOURCE, instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
 				DBCursor d = collection2.find(query);
-				
-				if(d.hasNext()){
-					if(!distributions.contains(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString())){
-						distributions.add(instance.get(DistributionMongoDBObject.DOWNLOAD_URL).toString());
+
+				if (d.hasNext()) {
+					if (!distributions.contains(instance.get(
+							DistributionMongoDBObject.DOWNLOAD_URL).toString())) {
+						distributions.add(instance.get(
+								DistributionMongoDBObject.DOWNLOAD_URL)
+								.toString());
 					}
 				}
 			}
-			
+
 			for (DBObject instance : instances) {
-				if(distributions.contains(instance.get(DistributionMongoDBObject.DOWNLOAD_URL)))
-					list.add(new DistributionMongoDBObject(instance.get(DistributionMongoDBObject.URI).toString()));
+				if (distributions.contains(instance
+						.get(DistributionMongoDBObject.DOWNLOAD_URL)))
+					list.add(new DistributionMongoDBObject(instance.get(
+							DistributionMongoDBObject.URI).toString()));
 			}
 
 		} catch (Exception e) {

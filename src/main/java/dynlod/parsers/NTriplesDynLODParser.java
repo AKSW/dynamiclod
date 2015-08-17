@@ -8,28 +8,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import org.apache.log4j.Logger;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.helpers.RDFParserBase;
 
-public class NTriplesDynLODParser extends RDFParserBase{
+import dynlod.threads.SplitAndStoreThread;
 
-//	RDFHandlerBase handlerClass;
+public class NTriplesDynLODParser extends RDFParserBase{
+	
+	final static Logger logger = Logger.getLogger(RDFParserBase.class);
+
 	Queue<String> bufferQueue = new ConcurrentLinkedQueue<String>();
 	boolean doneReading = false;
 	
 	public void stream(InputStream inStream){
 		
 		final InputStream inputStream = inStream;
+		
 		
 		try {
 		new Thread(
@@ -39,20 +39,24 @@ public class NTriplesDynLODParser extends RDFParserBase{
 
 		                	int nRead;
 		                	byte[] data = new byte[655360];
+		                	int sleeping = 0;
 
 		                	while ((nRead = new BufferedInputStream(inputStream).read(data, 0, data.length)) != -1) {
-//		                	  out.write(data, 0, nRead)
 		                		bufferQueue.add(new String(data, StandardCharsets.UTF_8));
-		                		if(bufferQueue.size()>200)
+		                		while(bufferQueue.size()>450){
 		                			Thread.sleep(1);
+		                		sleeping++; 
+		                		if(sleeping%5000==0)
+		                			System.out.println("Streaming thread is sleeping for a long time...");
+		                		}
 		                	}
 		                	doneReading = true;
 		                }
 		                catch (IOException e) {
-		                    // logging and exception handling should go here
+		                	doneReading = true;
 		                } catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
+							doneReading = true;
 						}
 		            }
 		        }
@@ -66,127 +70,78 @@ public class NTriplesDynLODParser extends RDFParserBase{
 		
 	}
 	
-//	public void setHandler(RDFHandlerBase handlerClass){
-//		this.handlerClass = handlerClass;
-//	}
-	
-	protected void parse(){
+	protected void parse(){		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		Statement s = null;
+		SplitAndStoreThread splitAndStore = (SplitAndStoreThread) getRDFHandler();
+
 		try {
 
-
-			ValueFactory factory = ValueFactoryImpl.getInstance();
-			URI SubjectStmt = null;
-			URI PropertyStmt= null;
-			URI ObjectStmt= null;
+			String subjectStmt = "";
+			String propertyStmt= "";
+			String objectStmt= "";
 			
 
 			String lastLine = "";
 			String tmpLastSubject = "";
 
+			int showMsgInterval = 100;
+			int bufferCount = 0;
+			
+			
 			// starts reading buffer queue
 			while (!doneReading) {
-				Thread.sleep(10);
+				Thread.sleep(1);
 
 				while (bufferQueue.size() > 0) {
-					// aint.decrementAndGet();
+					bufferCount ++;
+					
+					// shows buffer size each interval
+					if(bufferCount%showMsgInterval==0)
+						logger.debug("Buffer Streaming size: " + bufferQueue.size());
+					
 					try {
-						String o[];
-						o = bufferQueue.remove().split("\n");
+						
+						// split queue line by line
+						String triples[];
+						triples = bufferQueue.remove().split("\n");
+						
+						// case buffer starts with an incomplete triple, 
+						// concatenate with the last line of the previous buffer
 						if (!lastLine.equals("")) {
-							o[0] = lastLine.concat(o[0]);
-
+							triples[0] = lastLine.concat(triples[0]);
 							lastLine = "";
 						}
 
-						for (int q = 0; q < o.length; q++) {
-							String u = o[q];
-//							System.out.println(u);
-							if (!u.startsWith("#")) {
+						// for each triple, separate s, p, o
+						for (int q = 0; q < triples.length; q++) {
+							String triple = triples[q];
+							
+							if (!triple.startsWith("#")) {
 								try {
 
-									Pattern pattern = Pattern
-											.compile("^(<[^>]+>)\\s+(<[^>]+>)\\s(.*)(\\s\\.)");
+//									Pattern pattern = Pattern
+//											.compile("^(<[^>]+>)\\s+(<[^>]+>)\\s(.*)(\\s\\.)");
 
-									Matcher matcher = pattern.matcher(u);
+									Pattern pattern = Pattern
+											.compile("^<([^>]+)>\\s+<([^>]+)>\\s<(.*)>(\\s\\.)");
+									
+
+									Matcher matcher = pattern.matcher(triple);
+									
+									// case it is an incomplete line, 
+									// handle in the catch statement
 									if (!matcher.matches()) {
 										throw new ArrayIndexOutOfBoundsException();
 									}
-									if (!matcher
-											.group(3)
-											.equals("<http://www.w3.org/2002/07/owl#Class>")
-											&& !matcher
-													.group(2)
-													.equals("<http://www.w3.org/2000/01/rdf-schema#subClassOf>")) {
-//									if(true){
+											
+									subjectStmt = matcher.group(1);
+									propertyStmt = matcher.group(2);
+									objectStmt = matcher.group(3);
 
-										// get subject and save to file
-//										if (subject != null) {
-											if (!tmpLastSubject.equals(matcher
-													.group(1))) {
-												tmpLastSubject = matcher
-														.group(1);
-//												subject.write(new String(
-//														matcher.group(1) + "\n")
-//														.getBytes());
-												SubjectStmt = factory.createURI(new String(matcher.group(1).replace("<", "").replace(">","")));
-												PropertyStmt = factory.createURI("http://www.a.com");
-												
-											}
-//										}
-
-										// get object (make sure that its a
-										// resource and not a literal), add
-										// to queue and save to file
-//										if (object != null)
-//											if (!matcher.group(3).startsWith(
-//													"\"")) {
-//												object.write(new String(matcher
-//														.group(3) + "\n")
-//														.getBytes());
-												ObjectStmt = factory.createURI(new String(matcher.group(3).replace("<", "").replace(">","")));
-
-												// add object to object queue
-												// (the queue is read by other
-												// thread)
-//												while (objectQueue.size() > 1000) {
-//													Thread.sleep(1);
-//												}
-//												if (isChain)
-//													objectQueue.add(matcher
-//															.group(3));
-//												objectLines++;
-											}
-											Statement nameStatement = factory.createStatement(SubjectStmt, PropertyStmt, ObjectStmt);
-//											handlerClass.handleStatement(nameStatement);
-											getRDFHandler().handleStatement(nameStatement);
-//									}
+									splitAndStore.saveStatement(subjectStmt, propertyStmt, objectStmt);
 
 								} catch (ArrayIndexOutOfBoundsException e) {
-									// e.printStackTrace();
-									lastLine = u;
+									lastLine = triple;
 								}
 							}
 						}
@@ -200,28 +155,10 @@ public class NTriplesDynLODParser extends RDFParserBase{
 				}
 			}
 
-			
-
 		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 	}
 

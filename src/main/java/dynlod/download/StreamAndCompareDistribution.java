@@ -27,8 +27,9 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.openrdf.rio.turtle.TurtleParser;
 
 import dynlod.DynlodGeneralProperties;
+import dynlod.linksets.MakeLinksets2;
 import dynlod.parsers.NTriplesDynLODParser;
-import dynlod.threads.GetDomainsFromTriplesThread;
+import dynlod.threads.GetFQDNFromTriplesThread;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
@@ -48,15 +49,10 @@ public class StreamAndCompareDistribution extends Download {
 	public Integer objectLines = 0;
 	public Integer totalTriples;
 
-	// control bytes to show percentage
-	public double countBytesReaded = 0;
-
 	public ConcurrentHashMap<String, Integer> objectDomains = new ConcurrentHashMap<String, Integer>();
 	public ConcurrentHashMap<String, Integer> subjectDomains = new ConcurrentHashMap<String, Integer>();
 	public ConcurrentHashMap<String, Integer> countObjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
 	public ConcurrentHashMap<String, Integer> countSubjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
-
-	public AtomicInteger aint = new AtomicInteger(0);
 
 	ConcurrentLinkedQueue<String> bufferQueue = new ConcurrentLinkedQueue<String>();
 	ConcurrentLinkedQueue<String> objectQueue = new ConcurrentLinkedQueue<String>();
@@ -113,11 +109,11 @@ public class StreamAndCompareDistribution extends Download {
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
 				objectQueue, FileUtils.stringToHash(url.toString()));
 
-		GetDomainsFromTriplesThread getDomainFromObjectsThread = new GetDomainsFromTriplesThread(
+		MakeLinksets2 getDomainFromObjectsThread = new MakeLinksets2(
 				objectQueue, countObjectDomainsHashMap, uri);
 		getDomainFromObjectsThread.start();
 
-		GetDomainsFromTriplesThread getDomainFromSubjectsThread = new GetDomainsFromTriplesThread(
+		MakeLinksets2 getDomainFromSubjectsThread = new MakeLinksets2(
 				subjectQueue, countSubjectDomainsHashMap, uri);
 		getDomainFromSubjectsThread.isSubject = true;
 		getDomainFromSubjectsThread.start();
@@ -241,7 +237,8 @@ public class StreamAndCompareDistribution extends Download {
 		doneReadingFile = true;
 
 		// telling thread that we are done streaming
-		splitThread.setDoneReadingFile(true);
+		
+//		splitThread.setDoneReadingFile(true);
 
 		// fileName = splitThread.getFileName();
 		objectLines = splitThread.getObjectLines();

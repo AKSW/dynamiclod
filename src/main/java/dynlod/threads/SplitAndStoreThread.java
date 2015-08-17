@@ -1,6 +1,8 @@
 package dynlod.threads;
 
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
@@ -10,9 +12,8 @@ import org.openrdf.rio.helpers.RDFHandlerBase;
 import dynlod.DynlodGeneralProperties;
 
 public class SplitAndStoreThread extends RDFHandlerBase {
-	
-	final static Logger logger = Logger
-			.getLogger(SplitAndStoreThread.class);
+
+	final static Logger logger = Logger.getLogger(SplitAndStoreThread.class);
 
 	private String fileName;
 
@@ -27,16 +28,18 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	public Integer objectLines = 0;
 
 	public Integer totalTriples = 0;
+	
 	public Integer totalTriplesRead = 0;
+	
+	private String lastSubject = "";
 
 	public boolean isChain = true;
 
-	private int bufferSize = 300000;
+	private int bufferSize = 100000;
 
-	FileOutputStream subject = null;
+	BufferedWriter subjectFile = null;
 
-	FileOutputStream object = null;
-	
+	BufferedWriter objectFile = null;
 
 	public SplitAndStoreThread(ConcurrentLinkedQueue<String> subjectQueue,
 			ConcurrentLinkedQueue<String> objectQueue, String fileName) {
@@ -48,7 +51,8 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	}
 
 	public SplitAndStoreThread(ConcurrentLinkedQueue<String> subjectQueue,
-			ConcurrentLinkedQueue<String> objectQueue, String fileName, boolean isChain) {
+			ConcurrentLinkedQueue<String> objectQueue, String fileName,
+			boolean isChain) {
 		this.objectQueue = objectQueue;
 		this.subjectQueue = subjectQueue;
 		this.fileName = fileName;
@@ -59,17 +63,14 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 	private void startQueues() {
 		try {
-			if (subjectQueue != null) {
-				// creates subject file in disk
-				subject = new FileOutputStream(
+			if (subjectQueue != null)
+				subjectFile = new BufferedWriter(new FileWriter(
 						DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
-								+ fileName);
-			}
+								+ fileName));
 			if (objectQueue != null)
-				// creates object file in disk
-				object = new FileOutputStream(
+				objectFile = new BufferedWriter(new FileWriter(
 						DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
-								+ fileName);
+								+ fileName));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -77,11 +78,10 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 	public void closeQueues() {
 		try {
-			if (object != null)
-				object.close();
-			if (subject != null)
-				subject.close();
-			// DataIDBean.pushDownloadInfo();
+			if (objectFile != null)
+				objectFile.close();
+			if (subjectFile != null)
+				subjectFile.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -111,54 +111,65 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 		return totalTriples;
 	}
 
-	@Override
-	public void handleStatement(Statement st) {
-
-		String stSubject = st.getSubject().toString();
-		String stPredicate = st.getPredicate().toString();
-		String stObject = st.getObject().toString();
-		
+	public void saveStatement(String stSubject, String stPredicate,
+			String stObject) {
 
 		try {
 			if (!stObject.equals("http://www.w3.org/2002/07/owl#Class")
 					&& !stPredicate
 							.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
-
-				// get subject and save to file
-//					subject.write(new String(stSubject + "\n").getBytes());
-					while (subjectQueue.size() > bufferSize) {
-						Thread.sleep(1);
-					}
+				
+				
+				// compare the current subject with the previous one
+				if(!stSubject.equals(lastSubject)){
+					
+					// get subject and save to file
+					subjectFile.write(stSubject+"\n");
 					if (isChain)
 						subjectQueue.add(stSubject);
 					subjectLines++;
-				
+					lastSubject = stSubject;
+					
+				}
 
-				// get object (make sure that its a
-				// resource and not a literal), add
+				// get object (make sure that its a resource and not a literal), add
 				// to queue and save to file
-				if (object != null)
-					if (!stObject.startsWith("\"")) {
-//						object.write(new String(stObject + "\n").getBytes());
+				if (!stObject.startsWith("\"")) {
+					objectFile.write(stObject+"\n");
 
-						// add object to object queue
-						// (the queue is read by other
-						// thread)
-						while (objectQueue.size() > bufferSize) {
-							Thread.sleep(1);
-						}
-						if (isChain)
-							objectQueue.add(stObject);
-						objectLines++;
-					}
+					// add object to object queue (the queue is read by another thread)
+					if (isChain)
+						objectQueue.add(stObject);
+					objectLines++;
+				}
 				totalTriples++;
 			}
-			if(totalTriplesRead%100000==0)
-     			logger.info("Triples read: " + totalTriplesRead); 
-			totalTriplesRead++;
+			while (objectQueue.size() > bufferSize) {
+				Thread.sleep(1);
+			}
+			while (subjectQueue.size() > bufferSize) {
+				Thread.sleep(1);
+				System.out.println(subjectQueue.size());
+			}
 			
+			if (totalTriplesRead % 100000 == 0) {
+				logger.info("Triples read: " + totalTriplesRead);
+				// System.out.println(objectQueue.size());
+				// System.out.println(subjectQueue.size());
+			}
+			totalTriplesRead++;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	@Override
+	public void handleStatement(Statement st) {
+		String stSubject = st.getSubject().toString();
+		String stPredicate = st.getPredicate().toString();
+		String stObject = st.getObject().toString();
+		saveStatement(stSubject, stPredicate, stObject);
 	}
 }

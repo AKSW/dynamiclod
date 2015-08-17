@@ -15,12 +15,12 @@ public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
 		// class properties
 		public static final String DISTRIBUTION_URI = "distributionURI";
 		
-		public static final String SUBJECT_DOMAIN = "subjectDomain";	
+		public static final String SUBJECT_FQDN = "subjectFQDN";	
 		
 		
 		private String distributionURI;
 
-		private String subjectDomain;
+		private String subjectFqdn;
 		
 		
 		public DistributionSubjectDomainsMongoDBObject(String uri) {
@@ -40,8 +40,8 @@ public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
 				mongoDBObject2.put(DISTRIBUTION_URI, distributionURI);
 
 				// updating objectsTarget on mongodb
-				mongoDBObject.put(SUBJECT_DOMAIN, subjectDomain);
-				mongoDBObject2.put(SUBJECT_DOMAIN, subjectDomain);
+				mongoDBObject.put(SUBJECT_FQDN, subjectFqdn);
+				mongoDBObject2.put(SUBJECT_FQDN, subjectFqdn);
 				
 				DBCursor d = objectCollection.find(mongoDBObject2);
 				if (d.hasNext())
@@ -72,7 +72,7 @@ public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
 
 				distributionURI = (String) obj.get(DISTRIBUTION_URI);
 
-				subjectDomain = (String) obj.get(SUBJECT_DOMAIN);
+				subjectFqdn = (String) obj.get(SUBJECT_FQDN);
 
 				return true;
 			}
@@ -95,12 +95,12 @@ public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
 			this.distributionURI = distributionURI;
 		}
 
-		public String getSubjectDomain() {
-			return subjectDomain;
+		public String getSubjectFQDN() {
+			return subjectFqdn;
 		}
 
-		public void setSubjectDomain(String subjectDomain) {
-			this.subjectDomain = subjectDomain;
+		public void setSubjectFQDN(String subjectFQDN) {
+			this.subjectFqdn = subjectFQDN;
 		}
 
 	

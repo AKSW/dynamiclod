@@ -12,42 +12,50 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.linksets.MakeLinksets2;
+import dynlod.linksets.DistributionFQDN;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 
-public class GetDomainsFromTriplesThread extends Thread {
-
+public class GetFQDNFromTriplesThread extends Thread {
 	final static Logger logger = Logger
-			.getLogger(GetDomainsFromTriplesThread.class);
+			.getLogger(GetFQDNFromTriplesThread.class);
 
 	public boolean isSubject = false;
+	
+	// contains all FQDN described by distribution
+	// <FQDN, <list of distribution that describes this fqdn>> 
+	public ConcurrentHashMap<String, DistributionFQDN>  fqdnPerDistribution = 
+			new ConcurrentHashMap<String, DistributionFQDN>();
+	
+	
 
 	private String uri;
 	public DistributionMongoDBObject distributionMongoDBObject = null;
+	
+	public HashMap<String,Integer> localFQDN = new HashMap<String,Integer>();
 
 	private boolean doneSplittingString;
 
 	private ConcurrentLinkedQueue<String> resourceQueue = null;
-	private ArrayList<String> resourecesToBeProcessedQueue = new  ArrayList<String>();
-	DistributionMongoDBObject distribution;
-	ConcurrentHashMap<String, DataModelThread> listOfDataThreads = new ConcurrentHashMap<String, DataModelThread>(); 
+	protected ArrayList<String> resourcesToBeProcessedQueue = new  ArrayList<String>();
+	public DistributionMongoDBObject distribution;
+	protected ConcurrentHashMap<String, DataModelThread> listOfDataThreads = new ConcurrentHashMap<String, DataModelThread>(); 
 	public ConcurrentHashMap<String, Integer> listLoadedFQDN = new ConcurrentHashMap<String, Integer>();
 	
 
 
-	private ConcurrentHashMap<String, Integer> countHashMap = null;
+	private ConcurrentHashMap<String, Integer> countTotalFQDN = null;
 
 	int numberOfReadedTriples = 0;
 
-	int saveDomainsEach = 20000;
+	int saveDomainsEach = 50000;
 
-	public GetDomainsFromTriplesThread(
+	public GetFQDNFromTriplesThread(
 			ConcurrentLinkedQueue<String> resourceQueue,
 			ConcurrentHashMap<String, Integer> countHashMap, String uri) {
 		this.resourceQueue = resourceQueue;
-		this.countHashMap = countHashMap;
+		this.countTotalFQDN = countHashMap;
 		this.uri = uri;
 		this.distribution = new DistributionMongoDBObject(uri);
 
@@ -76,7 +84,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 				numberOfReadedTriples++;
 				try {
 					obj = resourceQueue.remove();
-					resourecesToBeProcessedQueue.add(obj);
+					resourcesToBeProcessedQueue.add(obj);
 
 					if (obj.startsWith("<"))
 						obj = obj.substring(1, obj.length() - 1);
@@ -93,18 +101,14 @@ public class GetDomainsFromTriplesThread extends Thread {
 					}
 
 					if (!obj.equals("")) {
-						countHashMap.putIfAbsent(obj, 1);
-						countHashMap.replace(obj, countHashMap.get(obj) + 1);
+						countTotalFQDN.putIfAbsent(obj, 0);
+						countTotalFQDN.replace(obj, countTotalFQDN.get(obj) + 1);
+						localFQDN.put(obj, 0);
 
 					}
-					if (numberOfReadedTriples%saveDomainsEach==0){
-//						saveDomains();
-//						new MakeLinksets2().start(distribution, listOfDataThreads, 
-//								resourecesToBeProcessedQueue, isSubject, countHashMap);
-						MakeLinksets2 m = new MakeLinksets2(distribution, listOfDataThreads, 
-								(ArrayList<String>) resourecesToBeProcessedQueue.clone(), isSubject, countHashMap, listLoadedFQDN);
-						resourecesToBeProcessedQueue = new ArrayList<String>();
-						m.start();
+					if (numberOfReadedTriples%saveDomainsEach==0){						
+						makeLinks();
+//						System.out.println("size: "+resourceQueue.size());
 					}
 
 				} catch (NoSuchElementException e) {
@@ -113,19 +117,16 @@ public class GetDomainsFromTriplesThread extends Thread {
 				}
 			}
 		}
-		
-		
-		ConcurrentLinkedQueue<String> clone = new ConcurrentLinkedQueue<String>();
-		MakeLinksets2 m = new MakeLinksets2(distribution, listOfDataThreads, 
-				(ArrayList<String>) resourecesToBeProcessedQueue.clone(), isSubject, countHashMap, listLoadedFQDN);
-		m.start();
+				
 		try {
-			m.join();
-		} catch (InterruptedException e) {
+			makeLinks();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		saveDomains();
+		listOfDataThreads  = new ConcurrentHashMap<String, DataModelThread>(); 
 		
 		logger.debug("Ending GetDomainsFromTriplesThread class.");
 	}
@@ -134,7 +135,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 		logger.debug("Saving domains...");
 		ObjectId id = new ObjectId();
 
-		Iterator it = countHashMap.entrySet().iterator();
+		Iterator it = countTotalFQDN.entrySet().iterator();
 
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
@@ -147,7 +148,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 				if (isSubject) {
 					DistributionSubjectDomainsMongoDBObject d2 = new DistributionSubjectDomainsMongoDBObject(id.get()
 							.toString());
-					d2.setSubjectDomain(d);
+					d2.setSubjectFQDN(d);
 					d2.setDistributionURI(uri);
 					
 					try {
@@ -162,7 +163,7 @@ public class GetDomainsFromTriplesThread extends Thread {
 					DistributionObjectDomainsMongoDBObject d2 = null;
 					d2 = new DistributionObjectDomainsMongoDBObject(id.get()
 							.toString());
-					d2.setObjectDomain(d);
+					d2.setObjectFQDN(d);
 					d2.setDistributionURI(uri);
 
 					try {
@@ -178,6 +179,10 @@ public class GetDomainsFromTriplesThread extends Thread {
 		}
 		
 		return true;
+	}
+	
+public void makeLinks() throws Exception{
+		throw new Exception("You have to implement this method."); 
 	}
 
 }
