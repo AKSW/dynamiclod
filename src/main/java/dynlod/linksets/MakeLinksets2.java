@@ -81,6 +81,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 										listOfDataThreads.put(
 												distributionToCompare.getUri(),
 												dataThread);
+										
 									}
 								}
 							} catch (Exception e) {
@@ -88,6 +89,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 										+ e.getMessage());
 								e.printStackTrace();
 							}
+//						System.out.println("Added "+distributionToCompare.getUri());
 					}
 
 					for (DistributionFQDN dFqdn : fqdnPerDistribution.values()) {
@@ -95,13 +97,43 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 						if (isSubject) {
 							for (String fqdn : localFQDNCopy.keySet()) {
 								if (dFqdn.hasObjectFQDN(fqdn)) {
-									listOfDataThreads.get(dFqdn.distribution).active = true;
+									boolean keepTrying = true;
+									while(keepTrying){
+										try{
+											listOfDataThreads.get(dFqdn.distribution).active = true;
+											keepTrying = false;
+										}
+										catch (Exception e){
+											try {
+												Thread.sleep(1);
+											} catch (InterruptedException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+										}
+									}
 								}
 							}
 						} else {
 							for (String fqdn : localFQDNCopy.keySet()) {
 								if (dFqdn.hasSubjectFQDN(fqdn)) {
-									listOfDataThreads.get(dFqdn.distribution).active = true;
+									
+									boolean keepTrying = true;
+									while(keepTrying){
+										try{
+											listOfDataThreads.get(dFqdn.distribution).active = true;
+											keepTrying = false;
+										}
+										catch (Exception e){
+											try {
+												Thread.sleep(1);
+											} catch (InterruptedException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+										}
+									}
+									
 								}
 							}
 						}

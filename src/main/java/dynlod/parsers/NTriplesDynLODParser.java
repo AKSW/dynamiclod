@@ -46,7 +46,7 @@ public class NTriplesDynLODParser extends RDFParserBase{
 		                		while(bufferQueue.size()>450){
 		                			Thread.sleep(1);
 		                		sleeping++; 
-		                		if(sleeping%5000==0)
+		                		if(sleeping%25000==0)
 		                			System.out.println("Streaming thread is sleeping for a long time...");
 		                		}
 		                	}
@@ -84,7 +84,7 @@ public class NTriplesDynLODParser extends RDFParserBase{
 			String lastLine = "";
 			String tmpLastSubject = "";
 
-			int showMsgInterval = 100;
+			int showMsgInterval = 1000;
 			int bufferCount = 0;
 			
 			

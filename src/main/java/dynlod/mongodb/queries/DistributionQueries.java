@@ -124,6 +124,7 @@ public class DistributionQueries {
 							.put(distribution.getUri(),
 									createDistributionFQDNObject(distribution
 											.getUri()));
+
 				}
 			}
 

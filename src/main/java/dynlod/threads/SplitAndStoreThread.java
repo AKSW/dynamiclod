@@ -152,7 +152,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 				System.out.println(subjectQueue.size());
 			}
 			
-			if (totalTriplesRead % 100000 == 0) {
+			if (totalTriplesRead % 1000000 == 0) {
 				logger.info("Triples read: " + totalTriplesRead);
 				// System.out.println(objectQueue.size());
 				// System.out.println(subjectQueue.size());
