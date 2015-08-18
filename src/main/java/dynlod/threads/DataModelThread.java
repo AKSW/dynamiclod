@@ -1,5 +1,6 @@
 package dynlod.threads;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import dynlod.filters.GoogleBloomFilter;
@@ -32,25 +33,18 @@ public class DataModelThread {
 	//
 	//
 
-	public boolean sourceColumnIsSubject;
+	public boolean isSubject;
 
-	// represents what FQDN are described by this filter
-//	public HashMap<String, Integer> describedFQDN = new HashMap<String, Integer>();
-
-	// public ConcurrentHashMap<Integer, ResourceInstance> urlStatus = new
-	// ConcurrentHashMap<Integer, ResourceInstance>();
-	// public HashMap<Integer, String> listURLToTest = new HashMap<Integer,
-	// String>();
-	// public String distributionObjectPath;
-	// public int availabilityCounter = 0 ;
-
-	// path for the filter
+	// 0 for filter not loaded, 1 for loading and 2 for loaded
+	public AtomicInteger filterLoaded = new AtomicInteger(0);
 
 	public String distributionURI;
 	public String datasetURI;
 
 	public String targetDistributionURI;
 	public String targetDatasetURI;
+	
+	public String filterPath;
 
 	public AtomicInteger links = new AtomicInteger(0);
 	public int ontologyLinks = 0;
@@ -66,23 +60,18 @@ public class DataModelThread {
 
 		
 //		DataModelThread dataThread = new DataModelThread();
-		this.sourceColumnIsSubject = isSubject;
+		this.isSubject = isSubject;
 //		dataThread.describedFQDN = describedFQDN;
 
 		if (!distributionToCompare.getUri().equals(distribution.getUri())) {
 			// save dataThread object
 
-			try {
-				if (isSubject)
-					this.filter.loadFilter(distributionToCompare
-							.getObjectFilterPath());
-				else
-					this.filter.loadFilter(distributionToCompare
-							.getSubjectFilterPath());
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			if (isSubject)
+				this.filterPath = distributionToCompare
+						.getObjectFilterPath();
+			else
+				this.filterPath = distributionToCompare
+						.getSubjectFilterPath();
 
 			
 			this.targetDistributionURI = distributionToCompare
@@ -96,6 +85,29 @@ public class DataModelThread {
 
 		}
 
+	}
+	
+	public void startFilter(){
+		while(filterLoaded.get() == 1)
+			try {
+				Thread.sleep(2);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		
+		if(filterLoaded.get()==2) return;
+		
+		try {
+			
+			this.filterLoaded.set(1);
+			this.filter.loadFilter(filterPath);
+			
+			this.filterLoaded.set(2);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -28,7 +28,10 @@ public class GetFQDNFromTriplesThread extends Thread {
 	public ConcurrentHashMap<String, DistributionFQDN>  fqdnPerDistribution = 
 			new ConcurrentHashMap<String, DistributionFQDN>();
 	
+
+	protected int threadNumber = 0;
 	
+	protected ConcurrentHashMap<String, Thread> listOfThreads = new ConcurrentHashMap<String, Thread>();
 
 	private String uri;
 	public DistributionMongoDBObject distributionMongoDBObject = null;
@@ -49,7 +52,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 
 	int numberOfReadedTriples = 0;
 
-	int saveDomainsEach = 25000;
+	int saveDomainsEach = 20000;
 
 	public GetFQDNFromTriplesThread(
 			ConcurrentLinkedQueue<String> resourceQueue,
@@ -108,7 +111,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 					}
 					if (numberOfReadedTriples%saveDomainsEach==0){						
 						makeLinks();
-//						System.out.println("size: "+resourceQueue.size());
+						
 					}
 
 				} catch (NoSuchElementException e) {
@@ -118,8 +121,12 @@ public class GetFQDNFromTriplesThread extends Thread {
 			}
 		}
 				
+		logger.info("Whaiting all threads finish their jobs...");
 		try {
 			makeLinks();
+			for(Thread t : listOfThreads.values()){
+				t.join();
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

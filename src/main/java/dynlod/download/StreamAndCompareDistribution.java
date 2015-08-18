@@ -111,11 +111,13 @@ public class StreamAndCompareDistribution extends Download {
 
 		MakeLinksets2 getDomainFromObjectsThread = new MakeLinksets2(
 				objectQueue, countObjectDomainsHashMap, uri);
+		getDomainFromObjectsThread.setName("getDomainFromObjectsThread");
 		getDomainFromObjectsThread.start();
 
 		MakeLinksets2 getDomainFromSubjectsThread = new MakeLinksets2(
 				subjectQueue, countSubjectDomainsHashMap, uri);
 		getDomainFromSubjectsThread.isSubject = true;
+		getDomainFromSubjectsThread.setName("getDomainFromSubjectsThread");
 		getDomainFromSubjectsThread.start();
 
 		try {

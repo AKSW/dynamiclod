@@ -38,7 +38,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 		resourcesToBeProcessedQueue = new ArrayList<String>();
 
 		try {
-			new Thread(new Runnable() {
+			Thread t = new Thread(new Runnable() {
 				public void run() {
 
 					ArrayList<String> fqdnToSearch = new ArrayList<String>();
@@ -79,9 +79,12 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 											distribution,
 											distributionToCompare, isSubject);
 									if (dataThread.datasetURI != null) {
-										listOfDataThreads.put(
+										listOfDataThreads.putIfAbsent(
 												distributionToCompare.getUri(),
-												dataThread);										
+												dataThread);
+										dataThread = listOfDataThreads.get(distributionToCompare.getUri());
+										dataThread.startFilter();
+										
 									}
 								}
 							} catch (Exception e) {
@@ -89,7 +92,6 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 										+ e.getMessage());
 								e.printStackTrace();
 							}
-						
 					}
 
 					for (DistributionFQDN dFqdn : fqdnPerDistribution.values()) {
@@ -168,8 +170,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 							}
 						}
 
-						// wait all threads finish and then start
-						// load buffer again
+						// wait all threads finish 
 						for (int d = 0; d < threads.length; d++)
 							try {
 								threads[d].join();
@@ -179,7 +180,6 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 							catch (Exception e) {
 								// TODO: handle exception
 							}
-
 					}
 
 					// save linksets into mongodb
@@ -215,7 +215,12 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 					}
 
 				}
-			}).start();
+			});
+			threadNumber++;
+			t.setName("MakingLinksets:"+(threadNumber)+":"+distribution.getUri());
+			listOfThreads.putIfAbsent("MakingLinksets:"+(threadNumber)+":"+distribution.getUri(), t);
+			t.start();
+			
 
 		} catch (Exception e) {
 

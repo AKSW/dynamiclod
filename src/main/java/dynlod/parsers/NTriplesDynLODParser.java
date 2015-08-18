@@ -32,8 +32,9 @@ public class NTriplesDynLODParser extends RDFParserBase{
 		
 		
 		try {
-		new Thread(
+		Thread t = new Thread(
 		        new Runnable() {
+		        	
 		            public void run () {
 		                try {
 
@@ -61,7 +62,9 @@ public class NTriplesDynLODParser extends RDFParserBase{
 						}
 		            }
 		        }
-		).start();
+		);
+		t.setName("StreammingThread");
+		t.start();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

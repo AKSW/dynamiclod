@@ -26,8 +26,6 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	public Integer subjectLines = 0;
 
 	public Integer objectLines = 0;
-
-	public Integer totalTriples = 0;
 	
 	public Integer totalTriplesRead = 0;
 	
@@ -108,7 +106,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	}
 
 	public Integer getTotalTriples() {
-		return totalTriples;
+		return totalTriplesRead;
 	}
 
 	public void saveStatement(String stSubject, String stPredicate,
@@ -147,7 +145,6 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 						objectQueue.add(object);
 					objectLines++;
 				}
-				totalTriples++;
 			}
 			while (objectQueue.size() > bufferSize) {
 				Thread.sleep(1);
