@@ -1,7 +1,7 @@
 DynamicLOD
 ==========
 
-Source code of Dynamic-LOD. For more datails, check our webpage: http://cirola2000.cloudapp.net:3001/#/home
+Source code of Dynamic-LOD. For more datails, check our webpage: http://cirola2000.cloudapp.net
 
 
 ## Requirements
