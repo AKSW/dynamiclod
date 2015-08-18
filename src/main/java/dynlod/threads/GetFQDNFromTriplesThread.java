@@ -121,7 +121,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 			}
 		}
 				
-		logger.info("Whaiting all threads finish their jobs...");
+		logger.info("Waiting all threads finish their jobs...");
 		try {
 			makeLinks();
 			for(Thread t : listOfThreads.values()){
