@@ -330,18 +330,22 @@ public class DistributionQueries {
 		return list;
 	}
 
-	// return all distributions
-	// @Test
+	// return all distributions withn a interval
 	public static ArrayList<DistributionMongoDBObject> getDistributions(
-			int skip, int limit) {
+			int skip, int limit, boolean getOntologies) {
 
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 
 		try {
 			DBCollection collection = DataIDDB.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-
-			DBCursor instances = collection.find().skip(skip).limit(limit);
+			
+			DBObject query;
+			
+			query = new BasicDBObject(DistributionMongoDBObject.IS_VOCABULARY, getOntologies);			
+			
+			
+			DBCursor instances = collection.find(query).skip(skip).limit(limit);
 
 			for (DBObject instance : instances) {
 				list.add(new DistributionMongoDBObject(instance.get(
@@ -353,6 +357,34 @@ public class DistributionQueries {
 		}
 		return list;
 	}
+	
+	// return all distributions
+	public static int countDistributionsByVocabularies(
+			boolean vocabularies) {
+
+		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
+		
+		DBCursor instances;
+
+		try {
+			DBCollection collection = DataIDDB.getInstance().getCollection(
+					DistributionMongoDBObject.COLLECTION_NAME);
+			
+			DBObject query;
+			
+			query = new BasicDBObject(DistributionMongoDBObject.IS_VOCABULARY, vocabularies);			
+			
+			instances = collection.find(query); 
+
+			return instances.count();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+	
 
 	// return all distributions
 	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetAccessURL(

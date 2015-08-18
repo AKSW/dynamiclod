@@ -128,9 +128,11 @@ public class ServiceAPI extends HttpServlet {
 				out.write(new APIStatistics().getStatistics().toJSONString()); 
 			}			
 			if (parameters.containsKey(options.LIST_DISTRIBUTIONS)) {
+				boolean getOntologies = false; 
+				if(parameters.containsKey("ontologies")) getOntologies=true;
 				out.write(new APIStatistics().getDistributions(
 						Integer.parseInt(parameters.get(options.LIST_SKIP)[0]),
-						Integer.parseInt(parameters.get(options.LIST_LIMIT)[0])
+						Integer.parseInt(parameters.get(options.LIST_LIMIT)[0]), getOntologies
 						).toJSONString()); 
 			}
 

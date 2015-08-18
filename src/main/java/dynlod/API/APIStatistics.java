@@ -34,14 +34,14 @@ public class APIStatistics{
 		return apimessage;
 	}
 	
-	public APIMessage getDistributions(int skip, int limit){
+	public APIMessage getDistributions(int skip, int limit, boolean getOntologies){
 		APIMessage apimessage = new APIMessage(); 
 		
 		JSONArray jsonArr = new JSONArray();
 		JSONObject msg = new JSONObject();
 
 		// get how many vocabs and datasets are in the database
-		ArrayList<DistributionMongoDBObject> distributions = DistributionQueries.getDistributions(skip, limit);
+		ArrayList<DistributionMongoDBObject> distributions = DistributionQueries.getDistributions(skip, limit, getOntologies);
 		
 		for (DistributionMongoDBObject d : distributions){
 			JSONArray jsonObj = new JSONArray();
@@ -53,19 +53,7 @@ public class APIStatistics{
 		}
 		
 		msg.put("distributions", jsonArr);
-		msg.put("totalDistributions", DistributionQueries.getNumberOfDistributions());
-		
-		
-//		for (DistributionMongoDBObject d : distributions){
-//			JSONObject jsonObj = new JSONObject();
-//			jsonObj.put(DistributionMongoDBObject.DOWNLOAD_URL, d.getDownloadUrl());
-//			jsonObj.put(DistributionMongoDBObject.DEFAULT_DATASETS, d.getDefaultDatasets().get(0));
-//			jsonObj.put(DistributionMongoDBObject.STATUS, d.getStatus());
-//			jsonObj.put(DistributionMongoDBObject.LAST_TIME_STREAMED, d.getLastTimeStreamed());
-//			jsonArr.put(jsonObj);
-//		}
-		
-		
+		msg.put("totalDistributions", DistributionQueries.countDistributionsByVocabularies(getOntologies));
 
 		apimessage.addListMsg(msg); 
 		
