@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +48,9 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 		obj.put("links", links);
 
 		try {
-			response.getWriter().print(obj);
+			ServletOutputStream out = response.getOutputStream();
+			out.write(obj.toString().getBytes("UTF-8"));
+//			response.getWriter().print(obj);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

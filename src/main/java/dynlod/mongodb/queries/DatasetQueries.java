@@ -80,7 +80,7 @@ public class DatasetQueries {
 					DatasetMongoDBObject.COLLECTION_NAME);
 			BasicDBObject query = new BasicDBObject(DatasetMongoDBObject.IS_VOCABULARY, false);
 //			query.append("$where", "this.distributions_uris.length > 0");
-			DBCursor instances = collection.find(query);
+			DBCursor instances = collection.find(query).sort(new BasicDBObject(DatasetMongoDBObject.TITLE,1));
 
 			for (DBObject instance : instances) {
 				list.add(new DatasetMongoDBObject(instance.get(DataIDDB.URI)

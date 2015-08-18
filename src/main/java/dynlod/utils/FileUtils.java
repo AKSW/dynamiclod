@@ -58,8 +58,11 @@ public class FileUtils {
 			return true;
 		else if (fileName.contains(".tgz"))
 			return true;
+		else if (fileName.contains(".gz"))
+			return true;
 		else {
-			throw new DynamicLODFormatNotAcceptedException("File format not accepted: " + fileName);
+//			throw new DynamicLODFormatNotAcceptedException("File format not accepted: " + fileName);
+		return true;
 		}
 	}
 

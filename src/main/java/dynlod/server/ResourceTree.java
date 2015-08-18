@@ -2,19 +2,17 @@ package dynlod.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.junit.Test;
 
 import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.queries.DatasetQueries;
 
 public class ResourceTree extends HttpServlet {
@@ -72,7 +70,10 @@ public class ResourceTree extends HttpServlet {
 		}
 	
 		try {
-			response.getWriter().print(datasetArray);
+			
+			ServletOutputStream out = response.getOutputStream();
+			out.write(datasetArray.toString().getBytes("UTF-8"));
+//			response.getWriter().print(datasetArray.toString().getBytes("UTF-8"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

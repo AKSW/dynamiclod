@@ -45,8 +45,8 @@ public class APIStatistics{
 		
 		for (DistributionMongoDBObject d : distributions){
 			JSONArray jsonObj = new JSONArray();
-			jsonObj.put(d.getDownloadUrl());
 			jsonObj.put(d.getDefaultDatasets().get(0));
+			jsonObj.put(d.getDownloadUrl());
 			jsonObj.put(d.getStatus());
 			jsonObj.put(d.getLastTimeStreamed());
 			jsonArr.put(jsonObj);
