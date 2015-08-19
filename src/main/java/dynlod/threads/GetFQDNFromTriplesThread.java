@@ -107,7 +107,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 						countTotalFQDN.putIfAbsent(obj, 0);
 						countTotalFQDN.replace(obj, countTotalFQDN.get(obj) + 1);
 						localFQDN.put(obj, 0);
-
+						
 					}
 					if (numberOfReadedTriples%saveDomainsEach==0){						
 						makeLinks();

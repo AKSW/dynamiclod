@@ -111,6 +111,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 	public void saveStatement(String stSubject, String stPredicate,
 			String stObject) {
+		
 
 		try {
 			if (!stObject.equals("http://www.w3.org/2002/07/owl#Class")
@@ -144,6 +145,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 					if (isChain)
 						objectQueue.add(object);
 					objectLines++;
+
 				}
 			}
 			while (objectQueue.size() > bufferSize) {
@@ -174,4 +176,5 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 		String stObject = st.getObject().toString();
 		saveStatement(stSubject, stPredicate, stObject);
 	}
+	
 }

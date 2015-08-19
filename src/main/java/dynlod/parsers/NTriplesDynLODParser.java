@@ -45,6 +45,8 @@ public class NTriplesDynLODParser extends RDFParserBase{
 		                	while ((nRead = new BufferedInputStream(inputStream).read(data, 0, data.length)) != -1) {
 //		                		bufferQueue.add(new String(data, StandardCharsets.UTF_8));
 		                		bufferQueue.add(new String(data,0,nRead, StandardCharsets.UTF_8));
+		                		
+		                		
 		                		while(bufferQueue.size()>450){
 		                			Thread.sleep(1);
 		                		sleeping++; 
@@ -112,13 +114,16 @@ public class NTriplesDynLODParser extends RDFParserBase{
 						// case buffer starts with an incomplete triple, 
 						// concatenate with the last line of the previous buffer
 						if (!lastLine.equals("")) {
+//							System.out.println(lastLine);
 							triples[0] = lastLine.concat(triples[0]);
 							lastLine = "";
+//							System.exit(1);
 						}
 
 						// for each triple, separate s, p, o
 						for (int q = 0; q < triples.length; q++) {
 							String triple = triples[q];
+							
 							
 							if (!triple.startsWith("#")) {
 								try {

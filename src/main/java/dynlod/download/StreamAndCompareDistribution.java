@@ -1,16 +1,17 @@
 package dynlod.download;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -29,7 +30,6 @@ import org.openrdf.rio.turtle.TurtleParser;
 import dynlod.DynlodGeneralProperties;
 import dynlod.linksets.MakeLinksets2;
 import dynlod.parsers.NTriplesDynLODParser;
-import dynlod.threads.GetFQDNFromTriplesThread;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
@@ -167,21 +167,23 @@ public class StreamAndCompareDistribution extends Download {
 						logger.info(++nf + " zip file uncompressed.");
 						logger.info("File name: " + entry.getName());
 
-						byte[] content = new byte[(int) entry.getSize()];
+//						byte[] content = new byte[(int) entry.getSize()];
 
-						zip.read(content, 0, (int) entry.getSize());
+//						zip.read(content, 0, (int) entry.getSize());
 
 						try {
-							rdfParser.parse(new BufferedInputStream(
-									new ByteArrayInputStream(content)), url
+							rdfParser.parse(zip, url
 									.toString());
+							
+//							BufferedReader in=new BufferedReader(new InputStreamReader(entry));
+							
 						} catch (RDFParseException e) {
 							e.printStackTrace();
 							throw new Exception(e.getMessage());
 						}
 					}
 
-					entry = entry = zip.getNextEntry();
+					entry = zip.getNextEntry();
 				}
 
 				setExtension(FilenameUtils.getExtension(getFileName()));
@@ -204,9 +206,11 @@ public class StreamAndCompareDistribution extends Download {
 						tar.read(content, 0, (int) entry.getSize());
 
 						try {
-							rdfParser.parse(new BufferedInputStream(
-									new ByteArrayInputStream(content)), url
+							rdfParser.parse(tar, url
 									.toString());
+//							rdfParser.parse(new BufferedInputStream(
+//									new ByteArrayInputStream(content)), url
+//									.toString());
 						} catch (RDFParseException e) {
 							e.printStackTrace();
 							throw new Exception(e.getMessage());
