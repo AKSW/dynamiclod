@@ -31,78 +31,80 @@ public class StartService extends HttpServlet {
 
 				try {
 					BasicConfigurator.configure();
-					
-					DynlodGeneralProperties properties=  new DynlodGeneralProperties(); 
+
+					DynlodGeneralProperties properties = new DynlodGeneralProperties();
 
 					if (DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH == null) {
 						properties.loadProperties();
 					}
-					
+
 					FileUtils.checkIfFolderExists();
-					
-					
+
 					// creating indexes
 					new IndexesCreator().createIndexes();
 
 					ArrayList<DistributionMongoDBObject> d = new ArrayList<DistributionMongoDBObject>();
 
-					if()
-					// re-download distributions with "Downloading" status
-					ArrayList<String> q = Queries.getMongoDBObject(
-							DistributionMongoDBObject.COLLECTION_NAME,
-							DistributionMongoDBObject.STATUS,
-							DistributionMongoDBObject.STATUS_STREAMING);
-					logger.debug("re-download distributions with \""
-							+ DistributionMongoDBObject.STATUS_STREAMING
-							+ "\" status");
+					if (properties.RESUME) {
+						// re-download distributions with "Downloading" status
+						ArrayList<String> q = Queries.getMongoDBObject(
+								DistributionMongoDBObject.COLLECTION_NAME,
+								DistributionMongoDBObject.STATUS,
+								DistributionMongoDBObject.STATUS_STREAMING);
+						logger.debug("re-download distributions with \""
+								+ DistributionMongoDBObject.STATUS_STREAMING
+								+ "\" status");
 
-					for (String s : q) {
-						DistributionMongoDBObject dist = new DistributionMongoDBObject(
-								s);
-						dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
-						dist.updateObject(true);
-						d.add(dist);
+						for (String s : q) {
+							DistributionMongoDBObject dist = new DistributionMongoDBObject(
+									s);
+							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+							dist.updateObject(true);
+							d.add(dist);
+						}
+
+						// new
+
+						// download distributions with
+						// "STATUS_WAITING_TO_STREAM"
+						// status
+						q = Queries
+								.getMongoDBObject(
+										DistributionMongoDBObject.COLLECTION_NAME,
+										DistributionMongoDBObject.STATUS,
+										DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+						logger.debug("download distributions with \""
+								+ DistributionMongoDBObject.STATUS_WAITING_TO_STREAM
+								+ "\" status");
+
+						for (String s : q) {
+							DistributionMongoDBObject dist = new DistributionMongoDBObject(
+									s);
+							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+							dist.updateObject(true);
+							d.add(dist);
+						}
+
+						// download distributions with "ERROR"
+						// status
+						q = Queries.getMongoDBObject(
+								DistributionMongoDBObject.COLLECTION_NAME,
+								DistributionMongoDBObject.STATUS,
+								DistributionMongoDBObject.STATUS_ERROR);
+						logger.debug("download distributions with \""
+								+ DistributionMongoDBObject.STATUS_WAITING_TO_STREAM
+								+ "\" status");
+
+						for (String s : q) {
+							DistributionMongoDBObject dist = new DistributionMongoDBObject(
+									s);
+							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+							dist.updateObject(true);
+							d.add(dist);
+						}
+
+						new Manager(d);
 					}
-
-//					new
-
-					// download distributions with "STATUS_WAITING_TO_STREAM"
-					// status
-					q = Queries.getMongoDBObject(
-							DistributionMongoDBObject.COLLECTION_NAME,
-							DistributionMongoDBObject.STATUS,
-							DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
-					logger.debug("download distributions with \""
-							+ DistributionMongoDBObject.STATUS_WAITING_TO_STREAM
-							+ "\" status");
-
-					for (String s : q) {
-						DistributionMongoDBObject dist = new DistributionMongoDBObject(
-								s);
-						dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
-						dist.updateObject(true);
-						d.add(dist);
-					}
-					
-					// download distributions with "ERROR"
-					// status
-					q = Queries.getMongoDBObject(
-							DistributionMongoDBObject.COLLECTION_NAME,
-							DistributionMongoDBObject.STATUS,
-							DistributionMongoDBObject.STATUS_ERROR);
-					logger.debug("download distributions with \""
-							+ DistributionMongoDBObject.STATUS_WAITING_TO_STREAM
-							+ "\" status");
-
-					for (String s : q) {
-						DistributionMongoDBObject dist = new DistributionMongoDBObject(
-								s);
-						dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
-						dist.updateObject(true);
-						d.add(dist);
-					}
-
-					new Manager(d);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
