@@ -11,7 +11,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 
@@ -22,13 +22,13 @@ public class Queries {
 
 		ArrayList<String> list = new ArrayList<String>();
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					collectionName);
 			DBObject query = new BasicDBObject(field, value);
 			DBCursor instances = collection.find(query);
 
 			for (DBObject instance : instances) {
-				list.add(instance.get(DataIDDB.URI)
+				list.add(instance.get(DBSuperClass.URI)
 						.toString());
 			}
 

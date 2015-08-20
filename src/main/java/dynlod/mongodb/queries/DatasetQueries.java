@@ -7,7 +7,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 
@@ -42,7 +42,7 @@ public class DatasetQueries {
 	public static int getNumberOfDatasets() {
 		int numberOfDatasets = 0;
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DatasetMongoDBObject.COLLECTION_NAME);
 			numberOfDatasets = (int) collection.count();
 		} catch (Exception e) {
@@ -56,12 +56,12 @@ public class DatasetQueries {
 
 		ArrayList<DatasetMongoDBObject> list = new ArrayList<DatasetMongoDBObject>();
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DatasetMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find();
 
 			for (DBObject instance : instances) {
-				list.add(new DatasetMongoDBObject(instance.get(DataIDDB.URI)
+				list.add(new DatasetMongoDBObject(instance.get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -76,14 +76,14 @@ public class DatasetQueries {
 
 		ArrayList<DatasetMongoDBObject> list = new ArrayList<DatasetMongoDBObject>();
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DatasetMongoDBObject.COLLECTION_NAME);
 			BasicDBObject query = new BasicDBObject(DatasetMongoDBObject.IS_VOCABULARY, false);
 //			query.append("$where", "this.distributions_uris.length > 0");
 			DBCursor instances = collection.find(query).sort(new BasicDBObject(DatasetMongoDBObject.TITLE,1));
 
 			for (DBObject instance : instances) {
-				list.add(new DatasetMongoDBObject(instance.get(DataIDDB.URI)
+				list.add(new DatasetMongoDBObject(instance.get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -98,14 +98,14 @@ public class DatasetQueries {
 
 		ArrayList<DatasetMongoDBObject> list = new ArrayList<DatasetMongoDBObject>();
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DatasetMongoDBObject.COLLECTION_NAME);
 			BasicDBObject query = new BasicDBObject(DatasetMongoDBObject.IS_VOCABULARY, true);
 //			query.append("$where", "this.distributions_uris.length > 0");
 			DBCursor instances = collection.find(query);
 
 			for (DBObject instance : instances) {
-				list.add(new DatasetMongoDBObject(instance.get(DataIDDB.URI)
+				list.add(new DatasetMongoDBObject(instance.get(DBSuperClass.URI)
 						.toString()));
 			}
 

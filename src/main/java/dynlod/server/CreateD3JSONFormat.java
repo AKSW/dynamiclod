@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import dynlod.diagram.Bubble;
-import dynlod.diagram.Diagram;
-import dynlod.diagram.Link;
+import dynlod.API.diagram.Bubble;
+import dynlod.API.diagram.Diagram;
+import dynlod.API.diagram.Link;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;

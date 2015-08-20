@@ -10,7 +10,8 @@ import org.apache.log4j.Logger;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
+import dynlod.mongodb.IndexesCreator;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
@@ -30,28 +31,22 @@ public class StartService extends HttpServlet {
 
 				try {
 					BasicConfigurator.configure();
+					
+					DynlodGeneralProperties properties=  new DynlodGeneralProperties(); 
 
 					if (DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH == null) {
-						new DynlodGeneralProperties().loadProperties();
+						properties.loadProperties();
 					}
+					
 					FileUtils.checkIfFolderExists();
 					
 					
 					// creating indexes
-					DBObject indexOptions = new BasicDBObject();
-					indexOptions.put(DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
-					indexOptions.put(DistributionObjectDomainsMongoDBObject.OBJECT_FQDN, 1);
-					DataIDDB.getInstance().getCollection(DistributionObjectDomainsMongoDBObject.COLLECTION_NAME).createIndex(indexOptions );
-					
-					// creating indexes
-					indexOptions = new BasicDBObject();
-					indexOptions.put(DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI, 1);
-					indexOptions.put(DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN, 1);
-					DataIDDB.getInstance().getCollection(DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME).createIndex(indexOptions );
-					
+					new IndexesCreator().createIndexes();
 
 					ArrayList<DistributionMongoDBObject> d = new ArrayList<DistributionMongoDBObject>();
 
+					if()
 					// re-download distributions with "Downloading" status
 					ArrayList<String> q = Queries.getMongoDBObject(
 							DistributionMongoDBObject.COLLECTION_NAME,

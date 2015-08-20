@@ -30,6 +30,8 @@ public class DynlodGeneralProperties {
 			MONGODB_USERNAME = prop.getProperty("MONGODB_USERNAME");
 			MONGODB_PASSWORD = prop.getProperty("MONGODB_PASSWORD");
 			LOV_URL = prop.getProperty("LOV_URL");
+			RESUME = Boolean.valueOf(prop.getProperty("RESUME"));
+			
 			try{
 				FPP_EQUATION = prop.getProperty("CUSTOMIZED_FPP_EQUATION");
 			}
@@ -91,6 +93,8 @@ public class DynlodGeneralProperties {
 
 	// defining dataset file suffix
 	public static String DISTRIBUTION_PREFIX;
+	
+	public static boolean RESUME;
 
 	// defining file names for distributions after separate subject and object
 	public static String SUBJECT_FILE_DISTRIBUTION_PATH;

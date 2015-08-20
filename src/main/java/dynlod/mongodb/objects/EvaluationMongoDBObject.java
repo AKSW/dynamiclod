@@ -3,9 +3,9 @@ package dynlod.mongodb.objects;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 
-public class EvaluationMongoDBObject extends DataIDDB {
+public class EvaluationMongoDBObject extends DBSuperClass {
 	
 	// Collection name
 		public static final String COLLECTION_NAME = "Evaluation";

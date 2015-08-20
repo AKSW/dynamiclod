@@ -5,9 +5,9 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 
-public class DistributionSubjectDomainsMongoDBObject extends DataIDDB {
+public class DistributionSubjectDomainsMongoDBObject extends DBSuperClass {
 	// Collection name
 		public static final String COLLECTION_NAME = "DistributionSubjectDomains";
 

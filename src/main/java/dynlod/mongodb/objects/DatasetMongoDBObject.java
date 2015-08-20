@@ -7,9 +7,9 @@ import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 
-public class DatasetMongoDBObject extends DataIDDB {
+public class DatasetMongoDBObject extends DBSuperClass {
 	 
 	// Collection name
 	public static final String COLLECTION_NAME = "Dataset";

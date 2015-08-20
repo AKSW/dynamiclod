@@ -11,7 +11,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 
 public class LinksetQueries {
@@ -21,12 +21,12 @@ public class LinksetQueries {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find();
 
 			for (DBObject instance : instances) {
-				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(instance.get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -41,14 +41,14 @@ public class LinksetQueries {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			DBObject query = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));
 			DBCursor instances = collection.find(query);
 
 			for (DBObject instance : instances) {
-				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(instance.get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -64,7 +64,7 @@ public class LinksetQueries {
 		AggregationOutput output;
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 
 			// Now the $group operation
@@ -102,12 +102,12 @@ public class LinksetQueries {
 		try {
 			ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find();
 
 			for (DBObject instance : instances) {
-				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(instance.get(DBSuperClass.URI)
 						.toString()));
 			}
 		
@@ -125,7 +125,7 @@ public class LinksetQueries {
 		try {
 			ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 
 			ArrayList<BasicDBObject> a = new ArrayList<BasicDBObject>();
@@ -139,7 +139,7 @@ public class LinksetQueries {
 			DBCursor instances = collection.find(or);
 
 			for (DBObject instance : instances) {
-				list.add(new LinksetMongoDBObject(instance.get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(instance.get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -155,7 +155,7 @@ public class LinksetQueries {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, new BasicDBObject("$regex", url+".*"));  
@@ -169,7 +169,7 @@ public class LinksetQueries {
 			DBCursor d = collection.find(query);
 
 			while (d.hasNext()) {
-				list.add(new LinksetMongoDBObject(d.next().get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(d.next().get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -187,7 +187,7 @@ public class LinksetQueries {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, new BasicDBObject("$regex", url+".*"));  
@@ -202,7 +202,7 @@ public class LinksetQueries {
 			DBCursor d = collection.find(query);
 
 			while (d.hasNext()) {
-				list.add(new LinksetMongoDBObject(d.next().get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(d.next().get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -220,7 +220,7 @@ public class LinksetQueries {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DATASET_TARGET,  new BasicDBObject("$regex", url+".*"));  
@@ -234,7 +234,7 @@ public class LinksetQueries {
 			DBCursor d = collection.find(query);
 
 			while (d.hasNext()) {
-				list.add(new LinksetMongoDBObject(d.next().get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(d.next().get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -251,7 +251,7 @@ public class LinksetQueries {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DATASET_SOURCE, new BasicDBObject("$regex", url+".*"));  
@@ -266,7 +266,7 @@ public class LinksetQueries {
 			DBCursor d = collection.find(query);
 
 			while (d.hasNext()) {
-				list.add(new LinksetMongoDBObject(d.next().get(DataIDDB.URI)
+				list.add(new LinksetMongoDBObject(d.next().get(DBSuperClass.URI)
 						.toString()));
 			}
 
@@ -281,7 +281,7 @@ public class LinksetQueries {
 	public static boolean isOnLinksetList(String downloadURLObject,
 			String downloladURLSubject) {
 
-		DBCollection collection = DataIDDB.getInstance().getCollection(
+		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject query = new BasicDBObject(
 				LinksetMongoDBObject.DISTRIBUTION_TARGET,
@@ -300,7 +300,7 @@ public class LinksetQueries {
 	
 	public static boolean checkIfDatasetExists(String datasetURL) {
 
-		DBCollection collection = DataIDDB.getInstance().getCollection(
+		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject clause1 = new BasicDBObject(
 				LinksetMongoDBObject.DATASET_TARGET,
@@ -325,7 +325,7 @@ public class LinksetQueries {
 	
 	public static boolean checkIfDistributionExists(String distributionURL) {
 
-		DBCollection collection = DataIDDB.getInstance().getCollection(
+		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);
 		BasicDBObject clause1 = new BasicDBObject(
 				LinksetMongoDBObject.DISTRIBUTION_TARGET,

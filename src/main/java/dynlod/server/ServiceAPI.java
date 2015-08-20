@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import dynlod.API.APIDataset;
-import dynlod.API.APIFactory;
-import dynlod.API.APIOption;
-import dynlod.API.APIRetrieveRDF;
-import dynlod.API.APIStatistics;
-import dynlod.API.APIStatus;
-import dynlod.API.ServiceAPIOptions;
+import dynlod.API.core.APIOption;
+import dynlod.API.core.ServiceAPIOptions;
+import dynlod.API.services.APIDataset;
+import dynlod.API.services.APIFactory;
+import dynlod.API.services.APIRetrieveRDF;
+import dynlod.API.services.APIStatistics;
+import dynlod.API.services.APIStatus;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoParametersFoundExceiption;

@@ -16,7 +16,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import dynlod.linksets.DistributionFQDN;
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
@@ -31,7 +31,7 @@ public class DistributionQueries {
 	public static int getNumberOfDistributions() {
 		int numberOfDistributions = 0;
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 			numberOfDistributions = (int) collection.count();
 		} catch (Exception e) {
@@ -45,7 +45,7 @@ public class DistributionQueries {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
 
 			// get all objects domain of a distribution
@@ -73,7 +73,7 @@ public class DistributionQueries {
 					DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN,
 					new BasicDBObject("$in", vals));
 
-			collection = DataIDDB.getInstance().getCollection(
+			collection = DBSuperClass.getInstance().getCollection(
 					DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
 
 			cursor = collection.find(query2, fields2);
@@ -105,7 +105,7 @@ public class DistributionQueries {
 					DistributionSubjectDomainsMongoDBObject.SUBJECT_FQDN,
 					new BasicDBObject("$in", fqdnToSearch));
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
 
 			DBCursor cursor = collection.find(query);
@@ -143,7 +143,7 @@ public class DistributionQueries {
 				DistributionSubjectDomainsMongoDBObject.DISTRIBUTION_URI,
 				distribution);
 
-		DBCollection collection = DataIDDB.getInstance().getCollection(
+		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
 
 		DBCursor cursor = collection.find(subjectQuery);
@@ -161,7 +161,7 @@ public class DistributionQueries {
 				DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI,
 				distribution);
 
-		collection = DataIDDB.getInstance().getCollection(
+		collection = DBSuperClass.getInstance().getCollection(
 				DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
 
 		cursor = collection.find(objectQuery);
@@ -194,7 +194,7 @@ public class DistributionQueries {
 					DistributionObjectDomainsMongoDBObject.OBJECT_FQDN,
 					new BasicDBObject("$in", fqdnToSearch));
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
 
 			DBCursor cursor = collection.find(query2);
@@ -227,7 +227,7 @@ public class DistributionQueries {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME);
 
 			// get all subject domain from distribution got as parameter
@@ -255,7 +255,7 @@ public class DistributionQueries {
 					DistributionObjectDomainsMongoDBObject.OBJECT_FQDN,
 					new BasicDBObject("$in", vals));
 
-			collection = DataIDDB.getInstance().getCollection(
+			collection = DBSuperClass.getInstance().getCollection(
 					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
 
 			cursor = collection.find(query2, fields2);
@@ -280,7 +280,7 @@ public class DistributionQueries {
 	public static int getNumberOfTriples() {
 		int numberOfTriples = 0;
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 
 			BasicDBObject select = new BasicDBObject("$match",
@@ -315,13 +315,13 @@ public class DistributionQueries {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find();
 
 			for (DBObject instance : instances) {
 				list.add(new DistributionMongoDBObject(instance.get(
-						DataIDDB.URI).toString()));
+						DBSuperClass.URI).toString()));
 			}
 
 		} catch (Exception e) {
@@ -337,7 +337,7 @@ public class DistributionQueries {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 			
 			DBObject query;
@@ -349,7 +349,7 @@ public class DistributionQueries {
 
 			for (DBObject instance : instances) {
 				list.add(new DistributionMongoDBObject(instance.get(
-						DataIDDB.URI).toString()));
+						DBSuperClass.URI).toString()));
 			}
 
 		} catch (Exception e) {
@@ -367,7 +367,7 @@ public class DistributionQueries {
 		DBCursor instances;
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 			
 			DBObject query;
@@ -394,17 +394,17 @@ public class DistributionQueries {
 
 		ArrayList<String> datasetList = new ArrayList<String>();
 
-		DBCollection collection = DataIDDB.getInstance().getCollection(
+		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				DatasetMongoDBObject.COLLECTION_NAME);
 		DBCursor inst = collection.find(new BasicDBObject(
 				DatasetMongoDBObject.ACCESS_URL, new BasicDBObject("$regex",
 						topDataset + ".*")));
 		while (inst.hasNext()) {
-			datasetList.add((String) inst.next().get(DataIDDB.URI));
+			datasetList.add((String) inst.next().get(DBSuperClass.URI));
 		}
 
 		try {
-			collection = DataIDDB.getInstance().getCollection(
+			collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find(new BasicDBObject(
 					DistributionMongoDBObject.DEFAULT_DATASETS,
@@ -412,7 +412,7 @@ public class DistributionQueries {
 
 			for (DBObject instance : instances) {
 				distributionList.add(new DistributionMongoDBObject(instance
-						.get(DataIDDB.URI).toString()));
+						.get(DBSuperClass.URI).toString()));
 			}
 
 		} catch (Exception e) {
@@ -426,7 +426,7 @@ public class DistributionQueries {
 		ArrayList<DistributionMongoDBObject> list = new ArrayList<DistributionMongoDBObject>();
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 
 			DBObject clause1 = new BasicDBObject(
@@ -444,7 +444,7 @@ public class DistributionQueries {
 
 			for (DBObject instance : instances) {
 				list.add(new DistributionMongoDBObject(instance.get(
-						DataIDDB.URI).toString()));
+						DBSuperClass.URI).toString()));
 			}
 
 		} catch (Exception e) {
@@ -458,7 +458,7 @@ public class DistributionQueries {
 		DistributionMongoDBObject dist = null;
 		try {
 
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
 
 			BasicDBObject query = new BasicDBObject(
@@ -484,9 +484,9 @@ public class DistributionQueries {
 		ArrayList<String> distributions = new ArrayList<String>();
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			DBCollection collection2 = DataIDDB.getInstance().getCollection(
+			DBCollection collection2 = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find();
 
@@ -547,9 +547,9 @@ public class DistributionQueries {
 		ArrayList<String> distributions = new ArrayList<String>();
 
 		try {
-			DBCollection collection = DataIDDB.getInstance().getCollection(
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					DistributionMongoDBObject.COLLECTION_NAME);
-			DBCollection collection2 = DataIDDB.getInstance().getCollection(
+			DBCollection collection2 = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			DBCursor instances = collection.find(new BasicDBObject(
 					DistributionMongoDBObject.TOP_DATASET, dataset));

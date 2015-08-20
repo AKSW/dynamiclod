@@ -3,9 +3,9 @@ package dynlod.mongodb.objects;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 
-public class APIStatusMongoDBObject extends DataIDDB {
+public class APIStatusMongoDBObject extends DBSuperClass {
 	 
 	public APIStatusMongoDBObject(String uri) {
 		super(COLLECTION_NAME, uri);

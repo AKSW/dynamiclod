@@ -5,9 +5,9 @@ import java.util.Date;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 
-public class SystemPropertiesMongoDBObject extends DataIDDB {
+public class SystemPropertiesMongoDBObject extends DBSuperClass {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "SystemProperties";

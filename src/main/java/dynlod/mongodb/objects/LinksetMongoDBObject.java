@@ -3,9 +3,9 @@ package dynlod.mongodb.objects;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DataIDDB;
+import dynlod.mongodb.DBSuperClass;
 
-public class LinksetMongoDBObject extends DataIDDB {
+public class LinksetMongoDBObject extends DBSuperClass {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "Linkset";
