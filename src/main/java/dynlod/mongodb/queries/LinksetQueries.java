@@ -16,7 +16,7 @@ import dynlod.mongodb.objects.LinksetMongoDBObject;
 
 public class LinksetQueries {
 
-	public static ArrayList<LinksetMongoDBObject> getLinksets() {
+	public ArrayList<LinksetMongoDBObject> getLinksets() {
 
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 
@@ -36,7 +36,7 @@ public class LinksetQueries {
 		return list;
 	}
 
-	public static ArrayList<LinksetMongoDBObject> getLinksetsWithLinks() {
+	public ArrayList<LinksetMongoDBObject> getLinksetsWithLinks() {
 
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 
@@ -60,7 +60,7 @@ public class LinksetQueries {
 
 	// @Test
 	// public void getLinksetsGroupByDatasets() {
-	public static ArrayList<LinksetMongoDBObject> getLinksetsGroupByDatasets() {
+	public ArrayList<LinksetMongoDBObject> getLinksetsGroupByDatasets() {
 		AggregationOutput output;
 		try {
 
@@ -97,7 +97,7 @@ public class LinksetQueries {
 	}
 	
 
-	public static ArrayList<LinksetMongoDBObject> getLinksetsGroupByDistributions() {
+	public ArrayList<LinksetMongoDBObject> getLinksetsGroupByDistributions() {
 
 		try {
 			ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
@@ -150,15 +150,15 @@ public class LinksetQueries {
 		return null;
 	}
 
-	public static ArrayList<LinksetMongoDBObject> getLinksetsInDegreeByDistribution(
-			String url) {
+	public ArrayList<LinksetMongoDBObject> getLinksetsInDegreeByDistribution(
+			int id) {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
 			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, new BasicDBObject("$regex", url+".*"));  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, id);  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -182,15 +182,15 @@ public class LinksetQueries {
 		return null;
 	}
 
-	public static ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDistribution(
-			String url) {
+	public ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDistribution(
+			int id) {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
 			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
-			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, new BasicDBObject("$regex", url+".*"));  
+			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, id);  
 			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -215,7 +215,7 @@ public class LinksetQueries {
 	}
 	
 
-	public static ArrayList<LinksetMongoDBObject> getLinksetsInDegreeByDataset(
+	public ArrayList<LinksetMongoDBObject> getLinksetsInDegreeByDataset(
 			String url) {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
@@ -246,7 +246,7 @@ public class LinksetQueries {
 		return null;
 	}
 
-	public static ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDataset(
+	public ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDataset(
 			String url) {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
@@ -278,7 +278,7 @@ public class LinksetQueries {
 		return null;
 	}
 
-	public static boolean isOnLinksetList(String downloadURLObject,
+	public boolean isOnLinksetList(String downloadURLObject,
 			String downloladURLSubject) {
 
 		DBCollection collection = DBSuperClass.getInstance().getCollection(
@@ -298,7 +298,7 @@ public class LinksetQueries {
 		return false;
 	}
 	
-	public static boolean checkIfDatasetExists(String datasetURL) {
+	public boolean checkIfDatasetExists(String datasetURL) {
 
 		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);
@@ -323,7 +323,7 @@ public class LinksetQueries {
 		return false;
 	}
 	
-	public static boolean checkIfDistributionExists(String distributionURL) {
+	public boolean checkIfDistributionExists(String distributionURL) {
 
 		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				LinksetMongoDBObject.COLLECTION_NAME);

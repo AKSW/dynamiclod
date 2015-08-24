@@ -7,20 +7,15 @@ import javax.servlet.http.HttpServlet;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-
-import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.IndexesCreator;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
-import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dynlod.mongodb.queries.Queries;
 import dynlod.utils.FileUtils;
 
 // start service properly case service was killed in the middle of streaming
 public class StartService extends HttpServlet {
 
+	private static final long serialVersionUID = 9131804335500741880L;
 	final static Logger logger = Logger.getLogger(StartService.class);
 
 	public StartService() {
@@ -43,9 +38,10 @@ public class StartService extends HttpServlet {
 					// creating indexes
 					new IndexesCreator().createIndexes();
 
-					ArrayList<DistributionMongoDBObject> d = new ArrayList<DistributionMongoDBObject>();
+					ArrayList<DistributionMongoDBObject> distributions = new ArrayList<DistributionMongoDBObject>();
 
-					if (properties.RESUME) {
+					if (DynlodGeneralProperties.RESUME) {
+						
 						// re-download distributions with "Downloading" status
 						ArrayList<String> q = Queries.getMongoDBObject(
 								DistributionMongoDBObject.COLLECTION_NAME,
@@ -60,7 +56,7 @@ public class StartService extends HttpServlet {
 									s);
 							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 							dist.updateObject(true);
-							d.add(dist);
+							distributions.add(dist);
 						}
 
 						// new
@@ -82,7 +78,7 @@ public class StartService extends HttpServlet {
 									s);
 							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 							dist.updateObject(true);
-							d.add(dist);
+							distributions.add(dist);
 						}
 
 						// download distributions with "ERROR"
@@ -100,11 +96,12 @@ public class StartService extends HttpServlet {
 									s);
 							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 							dist.updateObject(true);
-							d.add(dist);
+							distributions.add(dist);
 						}
 
-						new Manager(d);
 					}
+					new Manager(distributions);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

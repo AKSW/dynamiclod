@@ -23,13 +23,13 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 	public static final String LINKS = "links";
 
-	private String distributionTarget;
+	private int distributionTarget;
 
-	private String distributionSource;
+	private int distributionSource;
 
-	private String datasetTarget;
+	private int datasetTarget;
 
-	private String datasetSource;
+	private int datasetSource;
 
 	private int availability = 0;
 
@@ -87,15 +87,15 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 		if (obj != null) {
 
-			distributionTarget = (String) obj
-					.get(DISTRIBUTION_TARGET);
+			distributionTarget = ((Number) obj
+					.get(DISTRIBUTION_TARGET)).intValue();
 
-			distributionSource = (String) obj
-					.get(DISTRIBUTION_SOURCE);
+			distributionSource =  ((Number) obj
+					.get(DISTRIBUTION_SOURCE)).intValue();
 
-			datasetSource = (String) obj.get(DATASET_SOURCE);
+			datasetSource =  ((Number) obj.get(DATASET_SOURCE)).intValue();
 
-			datasetTarget = (String) obj.get(DATASET_TARGET);
+			datasetTarget =  ((Number) obj.get(DATASET_TARGET)).intValue();
 
 			availability = Integer.valueOf(obj.get(AVAILABILITY).toString());
 
@@ -106,35 +106,35 @@ public class LinksetMongoDBObject extends DBSuperClass {
 		return false;
 	}
 
-	public String getDistributionTarget() {
+	public int getDistributionTarget() {
 		return distributionTarget;
 	}
 
-	public void setDistributionTarget(String subjectsDistributionTarget) {
+	public void setDistributionTarget(int subjectsDistributionTarget) {
 		this.distributionTarget = subjectsDistributionTarget;
 	}
 
-	public String getDistributionSource() {
+	public int getDistributionSource() {
 		return distributionSource;
 	}
 
-	public void setDistributionSource(String objectsDistributionTarget) {
+	public void setDistributionSource(int objectsDistributionTarget) {
 		this.distributionSource = objectsDistributionTarget;
 	}
 
-	public String getDatasetTarget() {
+	public int getDatasetTarget() {
 		return datasetTarget;
 	}
 
-	public void setDatasetTarget(String subjectsDatasetTarget) {
+	public void setDatasetTarget(int subjectsDatasetTarget) {
 		this.datasetTarget = subjectsDatasetTarget;
 	}
 
-	public String getDatasetSource() {
+	public int getDatasetSource() {
 		return datasetSource;
 	}
 
-	public void setDatasetSource(String objectsDatasetTarget) {
+	public void setDatasetSource(int objectsDatasetTarget) {
 		this.datasetSource = objectsDatasetTarget;
 	}
 

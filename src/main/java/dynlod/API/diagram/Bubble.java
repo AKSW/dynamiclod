@@ -6,13 +6,12 @@ import org.json.JSONObject;
 
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.queries.DatasetQueries;
 
 public class Bubble {
 
 	Object dynLodObject;
 
-	String uri;
+	int id;
 
 	String text;
 
@@ -24,15 +23,15 @@ public class Bubble {
 	
 	int radius;
 	
-	ArrayList<String> parentDataset = new ArrayList<String>();
+	int group;
+	
+	boolean isVocab = false;
 
 	public JSONObject getJSON() {
 		JSONObject node = new JSONObject();
-		
-		String group =  parentDataset.iterator().next();
 
 		node.put("text", getText());
-		node.put("group", parentDataset.iterator().next());
+		node.put("group", group);
 		DatasetMongoDBObject d = new DatasetMongoDBObject(group);
 		
 		if(!d.getTitle().equals(""))
@@ -42,8 +41,9 @@ public class Bubble {
 		else
 			node.put("group_name", group);		
 		node.put("color", getColor());
-		node.put("name", getUri());
+		node.put("name", getID());
 		node.put("radius", getRadius());
+		node.put("isVocab", isVocab);
 		
 
 		return node;
@@ -54,9 +54,9 @@ public class Bubble {
 		startBubble(source);
 	}
 	
-	public Bubble(Object source, boolean visible, String lastParentDataset) {
+	public Bubble(Object source, boolean visible, int group) {
 		this.visible = visible;
-		parentDataset.add(lastParentDataset);
+		this.group = group;
 		startBubble(source);
 	}
 	
@@ -68,19 +68,21 @@ public class Bubble {
 		if (source instanceof DistributionMongoDBObject) {
 
 			DistributionMongoDBObject tmp = (DistributionMongoDBObject) source;
+			this.group = tmp.getTopDataset();
+			this.isVocab = tmp.getIsVocabulary();
 			if (tmp.getTitle() != null && !tmp.getTitle().equals(""))
 				setText(tmp.getTitle());
 			else
 				setText(tmp.getUri());
 			setName(tmp.getDownloadUrl());
-			setUri(tmp.getUri());
+			setID(tmp.getDynLodID());
 	
 				setRadius(31);
 
 
 			if (tmp.getIsVocabulary()){
 				setColor("rgb(253, 174, 107)");
-				setRadius(27);
+				setRadius(30);
 			}
 
 			else
@@ -92,6 +94,7 @@ public class Bubble {
 
 		else if (source instanceof DatasetMongoDBObject) {
 			DatasetMongoDBObject tmp = (DatasetMongoDBObject) source;
+			this.isVocab = tmp.getIsVocabulary();
 
 			if (tmp.getTitle() != null || !tmp.getTitle().equals(""))
 				setText(tmp.getTitle());
@@ -101,7 +104,7 @@ public class Bubble {
 				setText(tmp.getUri());
 			
 			setName(tmp.getUri());
-			setUri(tmp.getUri());
+			setID(tmp.getDynLodID());
 		
 
 			setRadius(31);
@@ -149,12 +152,12 @@ public class Bubble {
 		this.color = color;
 	}
 
-	public String getUri() {
-		return uri;
+	public int getID() {
+		return id;
 	}
 
-	public void setUri(String uri) {
-		this.uri = uri;
+	public void setID(int id) {
+		this.id = id;
 	}
 
 	public int getRadius() {
@@ -163,16 +166,6 @@ public class Bubble {
 
 	public void setRadius(int radius) {
 		this.radius = radius;
-	}
-
-	public ArrayList<String> getParentDataset() {
-		return parentDataset;
-	}
-
-	public void addParentDataset(String parentDataset) {
-		if(!this.parentDataset.contains(parentDataset)){
-			this.parentDataset.add(parentDataset);
-		}
 	}
 
 	public boolean isVisible() {

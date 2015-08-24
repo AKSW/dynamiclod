@@ -11,9 +11,9 @@ import dynlod.Manager;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 
 public class FileUtils {
-	
+
 	final static Logger logger = Logger.getLogger(FileUtils.class);
-	
+
 	public static void checkIfFolderExists() {
 
 		// check if folders needed exists
@@ -36,7 +36,7 @@ public class FileUtils {
 		f = new File(DynlodGeneralProperties.FILE_URL_PATH);
 		if (!f.exists())
 			f.mkdirs();
-		
+
 		f = new File(DynlodGeneralProperties.DUMP_PATH);
 		if (!f.exists())
 			f.mkdirs();
@@ -61,8 +61,10 @@ public class FileUtils {
 		else if (fileName.contains(".gz"))
 			return true;
 		else {
-//			throw new DynamicLODFormatNotAcceptedException("File format not accepted: " + fileName);
-		return true;
+			// throw new
+			// DynamicLODFormatNotAcceptedException("File format not accepted: "
+			// + fileName);
+			return true;
 		}
 	}
 
@@ -84,8 +86,16 @@ public class FileUtils {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-
 		return null;
+	}
+
+	public static void removeFile(String filePath) {
+		try {
+			File file = new File(filePath);
+			file.delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

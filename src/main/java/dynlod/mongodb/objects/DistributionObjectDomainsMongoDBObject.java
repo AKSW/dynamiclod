@@ -14,12 +14,12 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 
 	
 	// class properties
-	public static final String DISTRIBUTION_URI = "distributionURI";
+	public static final String DISTRIBUTION_ID = "distributionID";
 	
 	public static final String OBJECT_FQDN = "objectFqdn";	
 	
 	
-	private String distributionURI;
+	private int distributionID;
 
 	private String objectFqdn;
 	
@@ -37,8 +37,8 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 		// save object case it doens't exists
 		try {
 			// updating subjectsTarget on mongodb
-			mongoDBObject.put(DISTRIBUTION_URI, distributionURI);
-			mongoDBObject2.put(DISTRIBUTION_URI, distributionURI);
+			mongoDBObject.put(DISTRIBUTION_ID, distributionID);
+			mongoDBObject2.put(DISTRIBUTION_ID, distributionID);
 
 			// updating objectsTarget on mongodb
 			mongoDBObject.put(OBJECT_FQDN, objectFqdn);
@@ -72,7 +72,7 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 
 		if (obj != null) {
 
-			distributionURI = (String) obj.get(DISTRIBUTION_URI);
+			distributionID = ((Number) obj.get(DISTRIBUTION_ID)).intValue();
 
 			objectFqdn = (String) obj.get(OBJECT_FQDN);
 
@@ -83,20 +83,20 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 	
 	public boolean remove(){
 		BasicDBObject tmp = new BasicDBObject();
-		tmp.put(DISTRIBUTION_URI, distributionURI);
+		tmp.put(DISTRIBUTION_ID, distributionID);
 		DBCursor d = objectCollection.find(tmp);
 		objectCollection.remove(tmp);
 		return true;
 	}
 
-	public String getDistributionURI() {
-		return distributionURI;
+	public int getDistributionID() {
+		return distributionID;
 	}
 
-	public void setDistributionURI(String distributionURI) {
-		this.distributionURI = distributionURI;
+	public void setDistributionID(int distributionID) {
+		this.distributionID = distributionID;
 	}
-
+ 
 	public String getObjectFQDN() {
 		return objectFqdn;
 	}

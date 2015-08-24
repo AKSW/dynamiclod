@@ -68,7 +68,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 
 					for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
 						if (!listOfDataThreads
-								.containsKey(distributionToCompare.getUri()))
+								.containsKey(distributionToCompare.getDynLodID()))
 							try {
 
 								// check if distributions had already been
@@ -78,11 +78,11 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 									DataModelThread dataThread = new DataModelThread(
 											distribution,
 											distributionToCompare, isSubject);
-									if (dataThread.datasetURI != null) {
+									if (dataThread.datasetID != 0) {
 										listOfDataThreads.putIfAbsent(
-												distributionToCompare.getUri(),
+												distributionToCompare.getDynLodID(),
 												dataThread);
-										dataThread = listOfDataThreads.get(distributionToCompare.getUri());
+										dataThread = listOfDataThreads.get(distributionToCompare.getDynLodID());
 										dataThread.startFilter();
 										
 									}
@@ -102,7 +102,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 									boolean keepTrying = true;
 									while(keepTrying){
 										try{
-											if(!dFqdn.distribution.equals(distribution.getUri())){
+											if(! (dFqdn.distribution == distribution.getDynLodID())){
 												listOfDataThreads.get(dFqdn.distribution).active = true;
 											}
 											keepTrying = false;
@@ -125,7 +125,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 									boolean keepTrying = true;
 									while(keepTrying){
 										try{
-											if(!dFqdn.distribution.equals(distribution.getUri()))
+											if(!(dFqdn.distribution == distribution.getDynLodID()))
 												listOfDataThreads.get(dFqdn.distribution).active = true;
 											
 											keepTrying = false;
@@ -164,7 +164,7 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 														.clone()));
 								threads[threadIndex]
 										.setName("MakeLinkSetWorker-"
-												+ threadIndex + dataThread2.targetDistributionURI);
+												+ threadIndex + dataThread2.targetDistributionID);
 								threads[threadIndex].start();
 								threadIndex++;
 							}
@@ -187,31 +187,39 @@ public class MakeLinksets2 extends GetFQDNFromTriplesThread {
 							.values()) {
 
 						dataThread.active = false;
+						
+						LinksetMongoDBObject l; 
 
-						String mongoDBURL = dataThread.distributionURI + "-2-"
-								+ dataThread.targetDistributionURI;
+						String mongoDBURL;
 
-						LinksetMongoDBObject l = new LinksetMongoDBObject(
-								mongoDBURL);
+						
 
 						// System.out.println(" Links working: "+positive + "
-						l.setLinks(dataThread.links.get());
 						
 						if(isSubject){
-							l.setDistributionSource(dataThread.targetDistributionURI);
-							l.setDistributionTarget(dataThread.distributionURI);
-							l.setDatasetSource(dataThread.targetDatasetURI);
-							l.setDatasetTarget(dataThread.datasetURI);
+							 mongoDBURL = dataThread.targetDistributionID+ "-2-" + dataThread.distributionID;
+							 l = new LinksetMongoDBObject(
+										mongoDBURL);
+							l.setDistributionSource(dataThread.targetDistributionID);
+							l.setDistributionTarget(dataThread.distributionID);
+							l.setDatasetSource(dataThread.targetDatasetID);
+							l.setDatasetTarget(dataThread.datasetID);
 							
 						}
 						else{
+							 mongoDBURL = dataThread.distributionID + "-2-"
+										+ dataThread.targetDistributionID;
+							 l = new LinksetMongoDBObject(
+										mongoDBURL);
 						
-						l.setDistributionSource(dataThread.distributionURI);
-						l.setDistributionTarget(dataThread.targetDistributionURI);
-						l.setDatasetSource(dataThread.datasetURI);
-						l.setDatasetTarget(dataThread.targetDatasetURI);
+						l.setDistributionSource(dataThread.distributionID);
+						l.setDistributionTarget(dataThread.targetDistributionID);
+						l.setDatasetSource(dataThread.datasetID);
+						l.setDatasetTarget(dataThread.targetDatasetID);
 						}
-						l.updateObject(true);
+						l.setLinks(dataThread.links.get());
+						if(l.getLinks()>0)
+							l.updateObject(true); 
 					}
 
 				}

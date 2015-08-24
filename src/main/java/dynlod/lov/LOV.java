@@ -144,9 +144,9 @@ public class LOV extends Download {
 
 				Statement triple = triples.next();
 
-				subjects.add("<" + triple.getSubject().toString() + ">");
+				subjects.add(triple.getSubject().toString() );
 				if (triple.getObject().isResource())
-					objects.add("<" + triple.getObject().toString() + ">");
+					objects.add(triple.getObject().toString());
 
 			}
 			distribution = new DistributionMongoDBObject(node.getNameSpace());
@@ -155,14 +155,14 @@ public class LOV extends Download {
 			else if (d.getLabel() != null)
 				distribution.setTitle(d.getLabel());
 
-			SaveDist(node.getNameSpace(), subjects, objects);
+			SaveDist(node.getNameSpace(), subjects, objects, d.getDynLodID());
 
 		}
 
 	}
 
 	public void SaveDist(String nameSpace, ArrayList<String> subjects,
-			ArrayList<String> objects) throws Exception {
+			ArrayList<String> objects, int parentDynID) throws Exception {
 		
 	
 		
@@ -247,12 +247,12 @@ public class LOV extends Download {
 		
 		
 
-		ArrayList<String> parentDataset = new ArrayList<String>();
-		parentDataset.add(nameSpace);
-
+		ArrayList<Integer> parentDataset = new ArrayList<Integer>();
+		parentDataset.add(parentDynID);
+		
 		distribution.setDownloadUrl(nameSpace);
 		distribution.setDefaultDatasets(parentDataset);
-		distribution.setTopDataset(nameSpace);
+		distribution.setTopDataset(parentDynID);
 		distribution.setTriples(subjects.size() + objects.size());
 		distribution.setTimeToCreateSubjectFilter(timer);
 		distribution.setTimeToCreateObjectFilter(timer2);
@@ -284,7 +284,7 @@ public class LOV extends Download {
 		ObjectId id = new ObjectId();
 		DistributionSubjectDomainsMongoDBObject ds = new DistributionSubjectDomainsMongoDBObject(
 				id.get().toString());
-		ds.setDistributionURI(nameSpace);
+		ds.setDistributionID(distribution.getDynLodID());
 		ds.setSubjectFQDN(obj);
 		ds.updateObject(true);
 	}

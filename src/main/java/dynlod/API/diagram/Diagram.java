@@ -1,6 +1,5 @@
 package dynlod.API.diagram;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,29 +13,32 @@ import org.json.JSONArray;
 
 public class Diagram {
 
-	
-	public DirectedWeightedMultigraph<String, DefaultWeightedEdge> g = new DirectedWeightedMultigraph<String, DefaultWeightedEdge>(
-			DefaultWeightedEdge.class);
+//	
+//	public DirectedWeightedMultigraph<String, DefaultWeightedEdge> g = new DirectedWeightedMultigraph<String, DefaultWeightedEdge>(
+//			DefaultWeightedEdge.class);
 
 	
 	ArrayList<Link> links = new ArrayList<Link>();
 
-	public HashMap<String, Bubble> bubbles = new HashMap<String, Bubble>();
+	public HashMap<Integer, Bubble> bubbles = new HashMap<Integer, Bubble>();
 
-	public void addBubble(Bubble source) {
-		if (!bubbles.containsKey(source.getUri())) {
-			bubbles.put(source.getUri(), source);
-			g.addVertex(source.getUri());
+	public Bubble addBubble(Bubble source) {
+		if (!bubbles.containsKey(source.getID())) {
+			bubbles.put(source.getID(), source);
+			return source; 
+//			g.addVertex(String.valueOf(source.getID()));
 		} else {
-			Bubble b = bubbles.get(source.getUri());
-			b.setText(source.getText());
-			if(source.isVisible()) b.setVisible(true);
-			if(!source.isVisible() && b.isVisible()) b.setVisible(true);
-			else if(!source.isVisible()) b.setVisible(false);
+			Bubble b = bubbles.get(source.getID());
+			return b;
+//			b.setText(source.getText());
+//			if(source.isVisible()) b.setVisible(true);
+//			if(!source.isVisible() && b.isVisible()) b.setVisible(true);
+//			else if(!source.isVisible()) b.setVisible(false);
+//			b.group = 
 			
-			for (String parent : source.getParentDataset()) {
-				b.addParentDataset(parent);
-			}
+//			for (String parent : source.getParentDataset()) {
+//				b.addParentDataset(parent);
+//			}
 
 		}
 	}
@@ -50,8 +52,6 @@ public class Diagram {
 				return;
 		}
 		links.add(link);
-		DefaultWeightedEdge e = g.addEdge(link.source.name, link.target.name);
-		g.setEdgeWeight(e,link.getLinks());
 	}
 
 	public JSONArray getBubblesJSON() {
@@ -75,10 +75,10 @@ public class Diagram {
 		return edges;
 	}
 
-	public void printSelectedBubbles(String[] b1) {
+	public void printSelectedBubbles(int[] b1) {
 		for (Bubble bubble : bubbles.values()) {
-			for (String b : b1) {
-				if (bubble.uri.equals(b)) {
+			for (int b : b1) {
+				if (bubble.getID() ==  b) {
 					bubble.setColor("rgb(189, 189, 189)");
 				}
 			}
@@ -112,47 +112,47 @@ public class Diagram {
 	 * @param to
 	 * @return
 	 */
-	public ArrayList<GraphPath<String, DefaultWeightedEdge>> getAllDirectPathsBetween(
-			DirectedGraph<String, DefaultWeightedEdge> graph, String from,
-			String to) {
-		
-		ArrayList<GraphPath<String, DefaultWeightedEdge>> paths = getAllShortestPathsBetween(
-				graph, from, to);
-		ArrayList<GraphPath<String, DefaultWeightedEdge>> results = new ArrayList<GraphPath<String, DefaultWeightedEdge>>(
-				paths);
-		for (GraphPath<String, DefaultWeightedEdge> path : paths) {
-			ArrayList<String> pathVertexList = (ArrayList<String>) Graphs.getPathVertexList(path);
-			for (int i = 1; i < pathVertexList.size(); i++) {
-				String flowElement = (String) pathVertexList.get(i);
-//				if (flowElement instanceof Tap || flowElement instanceof Group) {
-//					results.remove(path);
-//					break;
-//				}
-			}
-		}
-		return results;
-	}
-	
-	public int getPathWeight(String source, String target){
-		if(source.equals(target)) return 0;
-		int weight = 0;
-		for (GraphPath<String, DefaultWeightedEdge> path : getAllDirectPathsBetween(g, source, target)) {
-
-			weight = (int) (weight + path.getWeight());
-		}
-		return weight;
-	}
-
-	public ArrayList<GraphPath<String, DefaultWeightedEdge>> getAllShortestPathsBetween(
-			DirectedGraph<String, DefaultWeightedEdge> graph, String from,
-			String to) {
-		ArrayList<GraphPath<String, DefaultWeightedEdge>> paths = (ArrayList<GraphPath<String, DefaultWeightedEdge>>) new KShortestPaths<String, DefaultWeightedEdge>(
-				graph, from, Integer.MAX_VALUE).getPaths(to);
-
-		if (paths == null)
-			return new ArrayList<GraphPath<String, DefaultWeightedEdge>>();
-
-		return paths;
-	}
+//	public ArrayList<GraphPath<String, DefaultWeightedEdge>> getAllDirectPathsBetween(
+//			DirectedGraph<String, DefaultWeightedEdge> graph, String from,
+//			String to) {
+//		
+//		ArrayList<GraphPath<String, DefaultWeightedEdge>> paths = getAllShortestPathsBetween(
+//				graph, from, to);
+//		ArrayList<GraphPath<String, DefaultWeightedEdge>> results = new ArrayList<GraphPath<String, DefaultWeightedEdge>>(
+//				paths);
+//		for (GraphPath<String, DefaultWeightedEdge> path : paths) {
+//			ArrayList<String> pathVertexList = (ArrayList<String>) Graphs.getPathVertexList(path);
+//			for (int i = 1; i < pathVertexList.size(); i++) {
+//				String flowElement = (String) pathVertexList.get(i);
+////				if (flowElement instanceof Tap || flowElement instanceof Group) {
+////					results.remove(path);
+////					break;
+////				}
+//			}
+//		}
+//		return results;
+//	}
+//	
+//	public int getPathWeight(String source, String target){
+//		if(source.equals(target)) return 0;
+//		int weight = 0;
+//		for (GraphPath<String, DefaultWeightedEdge> path : getAllDirectPathsBetween(g, source, target)) {
+//
+//			weight = (int) (weight + path.getWeight());
+//		}
+//		return weight;
+//	}
+//
+//	public ArrayList<GraphPath<String, DefaultWeightedEdge>> getAllShortestPathsBetween(
+//			DirectedGraph<String, DefaultWeightedEdge> graph, String from,
+//			String to) {
+//		ArrayList<GraphPath<String, DefaultWeightedEdge>> paths = (ArrayList<GraphPath<String, DefaultWeightedEdge>>) new KShortestPaths<String, DefaultWeightedEdge>(
+//				graph, from, Integer.MAX_VALUE).getPaths(to);
+//
+//		if (paths == null)
+//			return new ArrayList<GraphPath<String, DefaultWeightedEdge>>();
+//
+//		return paths;
+//	}
 
 }

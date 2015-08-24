@@ -21,7 +21,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
@@ -42,7 +41,6 @@ public class InputRDFParser {
 	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
 	int numberOfDistributions = 0;
 	public boolean someDownloadURLFound = false;
-	private String datasetURI;
 	private String fileURLHash;
 	private String access_url;
 
@@ -88,7 +86,7 @@ public class InputRDFParser {
 		StmtIterator datasetsStmt = getFirstStmt();
 
 		if (datasetsStmt.hasNext())
-			iterateSubsetsNew(datasetsStmt, null, null);
+			iterateSubsetsNew(datasetsStmt, 0, 0);
 		else
 			throw new DynamicLODNoDatasetFoundException(
 					"We could not parse any datasets.");
@@ -98,7 +96,7 @@ public class InputRDFParser {
 
 	// iterating over the subsets (recursive method)
 	private void iterateSubsetsNew(StmtIterator stmtDatasets,
-			String parentDataset, String topDataset)
+			int parentDataset, int topDataset)
 			throws DynamicLODGeneralException,
 			DynamicLODFormatNotAcceptedException {
 
@@ -111,15 +109,16 @@ public class InputRDFParser {
 			String datasetURI = dataset.getSubject().toString();
 			logger.info("Found dataset: " + datasetURI);
 
-			// setting TOP dataset
-			if (topDataset == null) {
-				topDataset = datasetURI;
-			}
 
 			// create a mongodb dataset object
 			DatasetMongoDBObject datasetMongoDBObj = new DatasetMongoDBObject(
 					datasetURI);
-			datasetMongoDBObj.addParentDatasetURI(parentDataset);
+			
+			// setting TOP dataset
+			if (topDataset == 0) {
+				topDataset = datasetMongoDBObj.getDynLodID();
+			}
+
 			datasetMongoDBObj.setAccess_url(access_url);
 
 			// add description file path
@@ -142,6 +141,7 @@ public class InputRDFParser {
 				datasetMongoDBObj.setLabel(datasetURI);
 
 			datasetMongoDBObj.updateObject(true);
+			datasetMongoDBObj.addParentDatasetID(parentDataset);
 
 			// find subset within subset
 			StmtIterator stmtDatasets2 = inModel.listStatements(dataset
@@ -172,9 +172,11 @@ public class InputRDFParser {
 					}
 
 					if (stmtDatasets3.hasNext()) {
-						iterateSubsetsNew(stmtDatasets3, datasetURI, topDataset);
-						datasetMongoDBObj.addSubsetURI(subset.getObject()
-								.toString());
+						iterateSubsetsNew(stmtDatasets3, datasetMongoDBObj.getDynLodID(), topDataset);
+//						datasetMongoDBObj.addSubsetID(subset.getObject()
+//								.toString());
+						datasetMongoDBObj.addSubsetID(new DatasetMongoDBObject(subset.getObject()
+								.toString()).getDynLodID());
 						datasetMongoDBObj.updateObject(true);
 					}
 				}
@@ -290,7 +292,7 @@ public class InputRDFParser {
 
 	public void addDistribution(Statement downloadURLStmt,
 			Statement stmtDistribution, DatasetMongoDBObject subsetMongoDBObj,
-			String topDataset) {
+			int topDataset) {
 
 		logger.info("Distribution found: downloadURL: "
 				+ downloadURLStmt.getObject().toString());
@@ -305,10 +307,10 @@ public class InputRDFParser {
 
 		distributionMongoDBObj.setResourceUri(stmtDistribution.getSubject()
 				.toString());
+ 
+		distributionMongoDBObj.addDefaultDataset(subsetMongoDBObj.getDynLodID());
 
-		distributionMongoDBObj.addDefaultDataset(subsetMongoDBObj.getUri());
-
-		distributionMongoDBObj.setTopDataset(topDataset);
+		distributionMongoDBObj.setTopDataset(topDataset); 
 
 		distributionMongoDBObj.setDownloadUrl(downloadURLStmt.getObject()
 				.toString());
@@ -362,6 +364,9 @@ public class InputRDFParser {
 									.getObject().asResource()
 									.getProperty(RDFProperties.rdfValue)
 									.getObject().toString()));
+					
+					
+					
 				}
 			} catch (Exception e) {
 
@@ -383,8 +388,7 @@ public class InputRDFParser {
 
 		if (subsetMongoDBObj != null) {
 			// update dataset or subset on mongodb with distribution
-			subsetMongoDBObj.addDistributionURI(downloadURLStmt.getObject()
-					.toString());
+			subsetMongoDBObj.addDistributionID(distributionMongoDBObj.getDynLodID());
 			subsetMongoDBObj.updateObject(true);
 		}
 

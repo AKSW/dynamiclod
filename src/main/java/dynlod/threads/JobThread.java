@@ -1,10 +1,13 @@
 package dynlod.threads;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 public class JobThread implements Runnable {
 	ArrayList<String> lines;
 	DataModelThread dataThread = null;
+	
 
 	public JobThread(DataModelThread dataThread, ArrayList<String> lines) {
 		this.lines = lines;
@@ -15,7 +18,6 @@ public class JobThread implements Runnable {
 	public void run() {
 		try {
 			for (String val: lines) {
-
 				if (dataThread.filter.compare(val)) {
 					dataThread.links.addAndGet(1);
 //					System.out.println(val + dataThread.links.get() + dataThread.sourceColumnIsSubject);

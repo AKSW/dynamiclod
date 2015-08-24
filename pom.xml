@@ -150,6 +150,12 @@
 			<artifactId>sesame-rio-n3</artifactId>
 			<version>${openrdf-rio.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-jsonld</artifactId>
+			<version>${openrdf-rio.version}</version>
+		</dependency>
+
 
 	</dependencies>
 

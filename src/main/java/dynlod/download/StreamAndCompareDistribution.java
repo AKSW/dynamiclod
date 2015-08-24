@@ -23,12 +23,14 @@ import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.BasicParserSettings;
+import org.openrdf.rio.jsonld.JSONLDParser;
 import org.openrdf.rio.n3.N3ParserFactory;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.openrdf.rio.turtle.TurtleParser;
 
 import dynlod.DynlodGeneralProperties;
 import dynlod.linksets.MakeLinksets2;
+import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.parsers.NTriplesDynLODParser;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
@@ -83,8 +85,13 @@ public class StreamAndCompareDistribution extends Download {
 		objectFilePath = DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
 				+ hashFileName;
 
-		if (RDFFormat == null || RDFFormat.equals(""))
-			RDFFormat = getExtension();
+		if (RDFFormat == null || RDFFormat.equals("")){
+			DistributionMongoDBObject dist = new DistributionMongoDBObject(url.toString());
+			if (dist.getFormat() == null || dist.getFormat() == "" || dist.getFormat().equals("") )
+				RDFFormat = getExtension();
+			else
+				RDFFormat= dist.getFormat();
+		}
 		StreamDistribution();
 
 		// setExtension(Formats.getEquivalentFormat(getExtension()));
@@ -130,10 +137,13 @@ public class StreamAndCompareDistribution extends Download {
 			} else if (RDFFormat.equals(Formats.DEFAULT_NTRIPLES)) {
 //				rdfParser = new NTriplesParser();
 				rdfParser = new NTriplesDynLODParser();
-				logger.info("==== NTriplesParser loaded ====");
+				logger.info("==== NTriples Parser loaded ====");
 			} else if (RDFFormat.equals(Formats.DEFAULT_RDFXML)) {
 				rdfParser = new RDFXMLParser();
-				logger.info("==== RDFXMLParser loaded ====");
+				logger.info("==== RDF/XML Parser loaded ====");
+			} else if (RDFFormat.equals(Formats.DEFAULT_JSONLD)) {
+				rdfParser = new JSONLDParser();
+				logger.info("==== JSON-LD Parser loaded ====");
 			} else if (RDFFormat.equals(Formats.DEFAULT_N3)) {
 				rdfParser = new N3ParserFactory().getParser();
 				logger.info("==== N3Parser loaded ====");

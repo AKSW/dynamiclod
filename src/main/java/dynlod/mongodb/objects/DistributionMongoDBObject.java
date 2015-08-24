@@ -6,9 +6,9 @@ import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DBSuperClass;
+import dynlod.mongodb.queries.DatasetQueries;
 
-public class DistributionMongoDBObject extends DBSuperClass {
+public class DistributionMongoDBObject extends ResourceMongoDBObject {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "Distribution";
@@ -31,9 +31,6 @@ public class DistributionMongoDBObject extends DBSuperClass {
 	public static final String STATUS_ERROR = "ERROR";
 	
 	public static final String STATUS_DONE = "DONE";
-	
-	public static final String DYN_LOD_ID = "dynLodID";
-	
 	
 	
 	// collection properties
@@ -64,8 +61,6 @@ public class DistributionMongoDBObject extends DBSuperClass {
 	public static final String LAST_MSG = "lastMsg";
 
 
-	public static final String TITLE = "title";
-
 	public static final String HTTP_BYTE_SIZE = "httpByteSize";
 
 	public static final String HTTP_FORMAT = "httpFormat";
@@ -76,20 +71,18 @@ public class DistributionMongoDBObject extends DBSuperClass {
 	
 	public static final String FORMAT = "format";
 	
-	public static final String IS_VOCABULARY = "isVocabulary";
-	
 	public static final String RESOURCE_URI = "resourceUri";
 	
 	public static final String LAST_TIME_STREAMED = "lastTimeStreamed";
 	
-	private int dynLodID = 0;
+	
 
 	
-	private ArrayList<String> defaultDatasets = new ArrayList<String>();
+	private ArrayList<Integer> defaultDatasets = new ArrayList<Integer>();
 
 	private String downloadUrl;
 
-	private String topDataset;
+	private int topDataset;
 
 	private String subjectFilterPath;
 
@@ -105,8 +98,6 @@ public class DistributionMongoDBObject extends DBSuperClass {
 	
 	private String timeToCreateSubjectFilter;
 
-	private String title;
-
 	private String httpByteSize;
 
 	private String httpFormat;
@@ -118,8 +109,6 @@ public class DistributionMongoDBObject extends DBSuperClass {
 	private String format;
 	
 	private boolean successfullyDownloaded;
-	
-	private boolean isVocabulary = false;
 	
 	private String lastMsg = "";
 //	private String lastErrorMsg = "";
@@ -136,9 +125,19 @@ public class DistributionMongoDBObject extends DBSuperClass {
 		super(COLLECTION_NAME, uri);
 		loadObject();
 	}
+	
+	public DistributionMongoDBObject(int id) {
+		super(COLLECTION_NAME, id);
+		loadObject(id);
+	}
+	
+	public DistributionMongoDBObject(DBObject object) {
+		super(COLLECTION_NAME, object);
+		load(object);
+	}
 
 
-	public void addDefaultDataset(String defaultDataset) {
+	public void addDefaultDataset(int defaultDataset) {
 		if (!defaultDatasets.contains(defaultDataset))
 			this.defaultDatasets.add(defaultDataset);
 	}
@@ -197,13 +196,26 @@ public class DistributionMongoDBObject extends DBSuperClass {
 		return false;
 	}
 
+	protected void loadObject(int id) {
+		DBObject obj = search(id);
+		load(obj);
+	}
+	
+	@Override
 	protected boolean loadObject() {
 		DBObject obj = search();
+		load(obj);
+		return true;
+		
+	}
+	
+	protected void load(DBObject obj){
+		
 
 		if (obj != null) {
 			downloadUrl = (String) obj.get(DOWNLOAD_URL);
 			httpByteSize = (String) obj.get(HTTP_BYTE_SIZE);
-			topDataset = (String) obj.get(TOP_DATASET);
+			topDataset = ((Number) obj.get(TOP_DATASET)).intValue();
 			subjectFilterPath = (String) obj.get(SUBJECT_FILTER_PATH);
 			objectFilterPath = (String) obj.get(OBJECT_FILTER_PATH);
 			objectPath = (String) obj.get(OBJECT_PATH);
@@ -234,14 +246,12 @@ public class DistributionMongoDBObject extends DBSuperClass {
 					.get(DEFAULT_DATASETS);
 			if (defaultDatasetList != null)
 				for (Object sd : defaultDatasetList) {
-					defaultDatasets.add((String) sd);
+					defaultDatasets.add((((Number) sd)).intValue());
 				}
 
-			return true;
 		}
-		return false;
 	}
-
+	
 	public String getDownloadUrl() {
 		return downloadUrl;
 	}
@@ -258,11 +268,11 @@ public class DistributionMongoDBObject extends DBSuperClass {
 		this.httpByteSize = httpByteSize;
 	}
 
-	public String getTopDataset() {
+	public int getTopDataset() {
 		return topDataset;
 	}
 
-	public void setTopDataset(String topDataset) {
+	public void setTopDataset(int topDataset) {
 		this.topDataset = topDataset;
 	}
 
@@ -302,11 +312,17 @@ public class DistributionMongoDBObject extends DBSuperClass {
 		this.numberOfObjectTriples = numberOfObjectTriples;
 	}
 
-	public ArrayList<String> getDefaultDatasets() {
+	public ArrayList<Integer> getDefaultDatasets() {
 		return defaultDatasets;
 	}
 
-	public void setDefaultDatasets(ArrayList<String> defaultDatasets) {
+	
+	public ArrayList<DatasetMongoDBObject> getDefaultDatasetsAsResources() {
+		return new DatasetQueries().getDatasets(defaultDatasets);
+	}
+
+	
+	public void setDefaultDatasets(ArrayList<Integer> defaultDatasets) {
 		this.defaultDatasets = defaultDatasets;
 	}
 
@@ -429,6 +445,16 @@ public class DistributionMongoDBObject extends DBSuperClass {
 
 	public void setLastTimeStreamed(String lastTimeStreamed) {
 		this.lastTimeStreamed = lastTimeStreamed;
+	}
+
+
+	public int getDynLodID() {
+		return dynLodID;
+	}
+
+
+	public void setDynLodID(int dynLodID) {
+		this.dynLodID = dynLodID;
 	}
 	
 	

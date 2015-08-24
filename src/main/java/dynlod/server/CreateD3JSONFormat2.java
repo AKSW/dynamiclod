@@ -19,6 +19,8 @@ import dynlod.API.diagram.Link;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.queries.DatasetQueries;
+import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 
 public class CreateD3JSONFormat2 extends HttpServlet {
@@ -80,14 +82,14 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 		if (parameters.containsKey("getAllDistributions")) {
 
 			Diagram diagram = new Diagram();
-			ArrayList<LinksetMongoDBObject> linksets = LinksetQueries
+			ArrayList<LinksetMongoDBObject> linksets = new LinksetQueries()
 					.getLinksetsWithLinks();
 
 			for (LinksetMongoDBObject linkset : linksets) {
 
-				Bubble target = new Bubble(new DistributionMongoDBObject(
+				Bubble target = new Bubble( new DistributionMongoDBObject(
 						linkset.getDistributionTarget()));
-				Bubble source = new Bubble(new DistributionMongoDBObject(
+				Bubble source = new Bubble( new DistributionMongoDBObject(
 						linkset.getDistributionSource()));
 
 				Link link = new Link(source, target, linkset.getLinks());
@@ -105,14 +107,16 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 
 		if (parameters.containsKey("dataset")) {
 			Diagram diagramTemp = new Diagram();
-			for (String datasetURI : parameters.get("dataset")) {
+			for (String datasetID : parameters.get("dataset")) {
 
 				int currentLevel = 1;
 //				if (parameters.containsKey("level")) {
 //					currentLevel = Integer.parseInt(parameters.get("level")[0]);
 //				}
+				
+				DatasetMongoDBObject d = new DatasetMongoDBObject(Integer.valueOf(datasetID));
 
-				iterateDataset(datasetURI, diagramTemp, datasetURI, currentLevel);				
+				iterateDataset(d, diagramTemp, d.getDynLodID(), currentLevel);				
 			}
 			
 			Diagram diagram = new Diagram();
@@ -140,7 +144,16 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 //			}
 
 			
-			diagramTemp.printSelectedBubbles(parameters.get("dataset"));
+
+			int[] results = new int[parameters.get("dataset").length];
+
+			for (int i = 0; i < results.length; i++) {
+			    try {
+			        results[i] = Integer.parseInt(parameters.get("dataset")[i]);
+			    } catch (NumberFormatException nfe) {};
+			}
+			
+			diagramTemp.printSelectedBubbles(results);
 			
 			nodes = diagramTemp.getBubblesJSON();
 			links = diagramTemp.getLinksJSON();
@@ -150,54 +163,53 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 
 	}
 
-	private void iterateDataset(String datasetURI,
-			Diagram diagram, String lastParentDataset, int currentLevel) {
-		DatasetMongoDBObject d = new DatasetMongoDBObject(datasetURI);
-
+	private void iterateDataset(DatasetMongoDBObject dataset,
+			Diagram diagram, int parentDataset, int currentLevel) {
 		
 		
-		for (String subset : d.getSubsetsURIs()) {
-			
-		
-			makeLink0(new Bubble(new DatasetMongoDBObject(datasetURI), true,lastParentDataset),
-					  new Bubble(new DatasetMongoDBObject(subset), true,lastParentDataset), diagram, 0);				
-			iterateDataset(subset, diagram, lastParentDataset, --currentLevel);
+		for (DatasetMongoDBObject subset : dataset.getSubsetsAsMongoDBObject()) {
+			makeLink0(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
+					diagram.addBubble(new Bubble(subset, true,parentDataset)), diagram, 0);				
+			iterateDataset(subset, diagram, parentDataset, --currentLevel);
 		}
-
-		for (String distributionURI : d.getDistributionsURIs()) {
+		
+		for (DistributionMongoDBObject distribution : dataset.getDistributionsAsMongoDBObjects()) {
 			
 
-			makeLink0(new Bubble(new DatasetMongoDBObject(datasetURI), true,lastParentDataset),
-					new Bubble(new DistributionMongoDBObject(distributionURI), true,lastParentDataset), diagram, 0);
+			makeLink0(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
+					diagram.addBubble(new Bubble(distribution, true,parentDataset)), diagram, 0);
 
 			// get indegree and outdegree for a distribution
-			ArrayList<LinksetMongoDBObject> in = LinksetQueries
-					.getLinksetsInDegreeByDistribution(distributionURI);
-			ArrayList<LinksetMongoDBObject> out = LinksetQueries
-					.getLinksetsOutDegreeByDistribution(distributionURI);
+			ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
+					.getLinksetsInDegreeByDistribution(distribution.getDynLodID());
+			ArrayList<LinksetMongoDBObject> out = new LinksetQueries()
+					.getLinksetsOutDegreeByDistribution(distribution.getDynLodID());
 			
 
 			for (LinksetMongoDBObject linkset : in) {
-				DistributionMongoDBObject a = new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject b = new DistributionMongoDBObject(linkset.getDistributionTarget());
+				DistributionMongoDBObject a =  new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject b =  new DistributionMongoDBObject(linkset.getDistributionTarget());
 				
 				if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )
-				makeLink0(new Bubble(a, showDistribution,lastParentDataset),
-						new Bubble(b, showDistribution,lastParentDataset), diagram, linkset.getLinks());
+					makeLink0(diagram.addBubble(new Bubble(a, showDistribution,parentDataset)),
+							diagram.addBubble(new Bubble(b, showDistribution,parentDataset)), diagram, linkset.getLinks());
+					
+//				makeLink0(new Bubble(a, showDistribution,parentDataset),
+//						new Bubble(b, showDistribution,parentDataset), diagram, linkset.getLinks());
 
 			}
 			for (LinksetMongoDBObject linkset : out) {
-				DistributionMongoDBObject a = new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject b = new DistributionMongoDBObject(linkset.getDistributionTarget());
+				DistributionMongoDBObject a =  new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject b =  new DistributionMongoDBObject(linkset.getDistributionTarget());
 				
 				if(!showOntologies){
 					if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )				
-						makeLink0(new Bubble(a, showDistribution,lastParentDataset),
-								new Bubble(b, showDistribution,lastParentDataset), diagram, linkset.getLinks());
+						makeLink0(diagram.addBubble(new Bubble(a, showDistribution,parentDataset)),
+								diagram.addBubble(new Bubble(b, showDistribution,parentDataset)), diagram, linkset.getLinks());
 				}
 				else
-					makeLink0(new Bubble(a, showDistribution,lastParentDataset),
-							new Bubble(b, showDistribution,lastParentDataset), diagram, linkset.getLinks());
+					makeLink0(diagram.addBubble(new Bubble(a, showDistribution,parentDataset)),
+							diagram.addBubble(new Bubble(b, showDistribution,parentDataset)), diagram, linkset.getLinks());
 				
 			}
 

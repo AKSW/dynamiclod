@@ -2,9 +2,6 @@ package dynlod.API.core;
 
 import java.util.ArrayList;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 
 public abstract class API extends Thread{
 	

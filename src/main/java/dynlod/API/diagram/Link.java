@@ -21,9 +21,9 @@ public class Link {
 		JSONObject link = new JSONObject();
 		
 		link.put("target", target
-				.getUri());
+				.getID());
 		link.put("source", source
-				.getUri());
+				.getID());
 		link.put("value", links);
 		
 		return link;

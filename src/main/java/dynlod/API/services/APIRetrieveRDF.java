@@ -16,6 +16,7 @@ import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DatasetQueries;
+import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 import dynlod.ontology.NS;
 import dynlod.ontology.RDFProperties;
@@ -60,7 +61,7 @@ public class APIRetrieveRDF extends API {
 			DatasetMongoDBObject d = new DatasetMongoDBObject(URI, true);
 			getDatasetChildren(d);
 		}
-		printModel();
+//		printModel();
 
 	}
 
@@ -82,10 +83,13 @@ public class APIRetrieveRDF extends API {
 
 	public void retrieveByDistribution(String distributionURI) throws DynamicLODAPINoLinksFoundException {
 		// get indegree and outdegree for a distribution
-		ArrayList<LinksetMongoDBObject> in = LinksetQueries
-				.getLinksetsInDegreeByDistribution(distributionURI);
-		ArrayList<LinksetMongoDBObject> out = LinksetQueries
-				.getLinksetsOutDegreeByDistribution(distributionURI);
+		DistributionMongoDBObject dis = new DistributionMongoDBObject(distributionURI);
+		DistributionQueries queries = new DistributionQueries();
+		
+		ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
+				.getLinksetsInDegreeByDistribution(dis.getDynLodID());
+		ArrayList<LinksetMongoDBObject> out = new LinksetQueries()
+				.getLinksetsOutDegreeByDistribution(dis.getDynLodID());
 
 		// add choosen distribution to jena
 		// addDistributionToModel(new
@@ -98,11 +102,11 @@ public class APIRetrieveRDF extends API {
 			DistributionMongoDBObject distributionSubject = new DistributionMongoDBObject(
 					linkset.getDistributionTarget());
 
-			DistributionMongoDBObject distributionObject = new DistributionMongoDBObject(
+			DistributionMongoDBObject distributionObject =  new DistributionMongoDBObject(
 					linkset.getDistributionSource());
 
-			for (String d1 : distributionSubject.getDefaultDatasets()) {
-				for (String d2 : distributionObject.getDefaultDatasets()) {
+			for (int d1 : distributionSubject.getDefaultDatasets()) {
+				for (int d2 : distributionObject.getDefaultDatasets()) {
 					if(addLinksetToModel(d2, d1, linkset.getLinks()))
 						linksetsFound = true;
 				}
@@ -110,14 +114,14 @@ public class APIRetrieveRDF extends API {
 		}
 		// add linksets to jena model
 		for (LinksetMongoDBObject linkset : out) {
-			DistributionMongoDBObject distributionSubject = new DistributionMongoDBObject(
+			DistributionMongoDBObject distributionSubject =  new DistributionMongoDBObject(
 					linkset.getDistributionTarget());
 
 			DistributionMongoDBObject distributionObject = new DistributionMongoDBObject(
 					linkset.getDistributionSource());
 
-			for (String d1 : distributionSubject.getDefaultDatasets()) {
-				for (String d2 : distributionObject.getDefaultDatasets()) {
+			for (int d1 : distributionSubject.getDefaultDatasets()) {
+				for (int d2 : distributionObject.getDefaultDatasets()) {
 					if(addLinksetToModel(d2, d1, linkset.getLinks()))
 						linksetsFound = true;
 				}
@@ -161,18 +165,20 @@ public class APIRetrieveRDF extends API {
 
 		r.addProperty(RDFProperties.title, name);
 		r.addProperty(RDFProperties.triples,
-				String.valueOf(DatasetQueries.getNumberOfTriples(dataset)));
+				String.valueOf(new DatasetQueries().getNumberOfTriples(dataset)));
 		r.addProperty(RDFProperties.subset, outModel.createResource(subset));
 	}
 
-	private boolean addLinksetToModel(String source, String target, int links) {
+	private boolean addLinksetToModel(int source, int target, int links) {
 		DatasetMongoDBObject datasetSource = new DatasetMongoDBObject(source);
-		DatasetMongoDBObject datasetTarget = new DatasetMongoDBObject(target);
+		DatasetMongoDBObject datasetTarget =new DatasetMongoDBObject(target);
 
 		if (!datasetSource.getIsVocabulary()
 				&& !datasetTarget.getIsVocabulary()) {
 //			 add linksets
-			String linksetURI = target + "_" + source;
+//			String linksetURI = target + "_" + source;
+			String linksetURI = dynlod.server.ServiceAPI.getServerURL() + "?source="+
+					datasetSource.getUri() + "&target="+ datasetTarget.getUri();
 			Resource r = outModel.createResource(linksetURI);
 			Resource wasDerivedFrom = outModel
 					.createResource(dynlod.server.ServiceAPI.getServerURL());
@@ -182,11 +188,11 @@ public class APIRetrieveRDF extends API {
 			r.addProperty(
 					ResourceFactory.createProperty(NS.VOID_URI
 							+ "objectsTarget"),
-					ResourceFactory.createResource(source));
+					ResourceFactory.createResource(datasetSource.getUri()));
 			r.addProperty(
 					ResourceFactory.createProperty(NS.VOID_URI
 							+ "subjectsTarget"),
-					ResourceFactory.createResource(target));
+					ResourceFactory.createResource(datasetTarget.getUri()));
 			r.addProperty(RDFProperties.wasDerivedFrom, wasDerivedFrom);
 			r.addProperty(
 					ResourceFactory.createProperty(NS.VOID_URI + "triples"),
@@ -206,15 +212,15 @@ public class APIRetrieveRDF extends API {
 			throws DynamicLODNoDatasetFoundException, DynamicLODAPINoLinksFoundException {
 		boolean datasetOrDistribuionFound = false;
 
-		for (String child : d.getSubsetsURIs()) {
+		for (int child : d.getSubsetsIDs()) {
 			DatasetMongoDBObject datasetChild = new DatasetMongoDBObject(child);
 			getDatasetChildren(datasetChild);
-			addDatasetToModel(d, child);
+			addDatasetToModel(d, new DatasetMongoDBObject(child).getUri());
 			datasetOrDistribuionFound = true;
 		}
 
-		for (String dist : d.getDistributionsURIs()) {
-			retrieveByDistribution(dist);
+		for (int dist : d.getDistributionsIDs()) {
+			retrieveByDistribution(new  DistributionMongoDBObject(dist).getUri());
 			datasetOrDistribuionFound = true;
 		}
 

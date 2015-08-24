@@ -62,7 +62,7 @@ public class RemoveData extends HttpServlet {
 	private void removeFromDomainList(String distributionURI) {
 		ArrayList<String> domains = Queries.getMongoDBObject(
 				DistributionObjectDomainsMongoDBObject.COLLECTION_NAME,
-				DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI,
+				DistributionObjectDomainsMongoDBObject.DISTRIBUTION_ID,
 				distributionURI);
 		for (String domain : domains) {
 			DistributionObjectDomainsMongoDBObject dom = new DistributionObjectDomainsMongoDBObject(
@@ -71,7 +71,7 @@ public class RemoveData extends HttpServlet {
 		}
 		domains = Queries.getMongoDBObject(
 				DistributionSubjectDomainsMongoDBObject.COLLECTION_NAME,
-				DistributionObjectDomainsMongoDBObject.DISTRIBUTION_URI,
+				DistributionObjectDomainsMongoDBObject.DISTRIBUTION_ID,
 				distributionURI);
 		for (String domain : domains) {
 			DistributionSubjectDomainsMongoDBObject dom = new DistributionSubjectDomainsMongoDBObject(
@@ -115,30 +115,30 @@ public class RemoveData extends HttpServlet {
 		DatasetMongoDBObject d = new DatasetMongoDBObject(dataset);
 
 		// check children and distributions
-		List<String> children = d.getSubsetsURIs();
-		for (String child : children) {
-			safelyRemoveDataset(child, datasetToRemove, d.getUri());
-		}
+//		List<String> children = d.getSubsetsIDs();
+//		for (String child : children) {
+//			safelyRemoveDataset(child, datasetToRemove, d.getUri());
+//		}
 
-		List<String> distributions = d.getDistributionsURIs();
-		for (String distribution : distributions) {
-			DistributionMongoDBObject dist = new DistributionMongoDBObject(
-					distribution);
-			if (dist.getDefaultDatasets().size() > 1) {
-				for (String defaultDataset : dist.getDefaultDatasets()) {
-					if (defaultDataset.equals(dataset)) {
-						dist.removeDefaultDataset(dataset);
-						dist.updateObject(true);
-					}
-				}
-			} else {
-				safelyRemoveDistribution(dist.getUri());
-			}
-			d.removeSubsetURI(dist.getUri());
-			d.updateObject(true);
-		}
+//		List<String> distributions = d.getDistributionsURIs();
+//		for (String distribution : distributions) {
+//			DistributionMongoDBObject dist = new DistributionMongoDBObject(
+//					distribution);
+//			if (dist.getDefaultDatasets().size() > 1) {
+////				for (String defaultDataset : dist.getDefaultDatasets()) {
+////					if (defaultDataset.equals(dataset)) {
+////						dist.removeDefaultDataset(dataset);
+////						dist.updateObject(true);
+////					}
+////				}
+//			} else {
+//				safelyRemoveDistribution(dist.getUri());
+//			}
+//			d.removeSubsetURI(dist.getUri());
+//			d.updateObject(true);
+//		}
 
-		if (d.getParentDatasetURI().size() == 1) {
+		if (d.getParentDatasetID().size() == 1) {
 			d.remove();
 		} else {
 			d.removeParentDatasetURI(lastDataset);
@@ -147,12 +147,12 @@ public class RemoveData extends HttpServlet {
 
 		if (dataset.equals(datasetToRemove)) {
 			// check children and distributions
-			List<String> parents = d.getParentDatasetURI();
-			for (String parent : parents) {
-				DatasetMongoDBObject dd = new DatasetMongoDBObject(parent);
-				dd.removeSubsetURI(datasetToRemove);
-				dd.updateObject(true);
-			}
+			List<Integer> parents = d.getParentDatasetID();
+//			for (Integer parent : parents) {
+//				DatasetMongoDBObject dd = new DatasetMongoDBObject(parent);
+//				dd.removeSubsetURI(datasetToRemove);
+//				dd.updateObject(true);
+//			}
 			d.remove();
 		}
 

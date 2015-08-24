@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import dynlod.API.core.APIMessage;
+import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.queries.DatasetQueries;
 import dynlod.mongodb.queries.DistributionQueries;
@@ -18,9 +19,9 @@ public class APIStatistics{
 		JSONObject jsonMsg = new JSONObject();
 
 		// get how many vocabs and datasets are in the database
-		int datasets = DatasetQueries.getDatasetsNotVocab().size();
+		int datasets = new DatasetQueries().getDatasetsNotVocab().size();
 		
-		int vocabularies = DatasetQueries.getDatasetsVocab().size(); 
+		int vocabularies = new DatasetQueries().getDatasetsVocab().size(); 
 		
 		int triples = DistributionQueries.getNumberOfTriples();
 		
@@ -46,7 +47,7 @@ public class APIStatistics{
 		
 		for (DistributionMongoDBObject d : distributions){
 			JSONArray jsonObj = new JSONArray();
-			jsonObj.put(d.getDefaultDatasets().get(0));
+			jsonObj.put(new DatasetMongoDBObject(d.getDefaultDatasets().get(0)).getUri());
 			jsonObj.put(d.getDownloadUrl());
 			jsonObj.put(d.getStatus());
 			jsonObj.put(d.getLastTimeStreamed());

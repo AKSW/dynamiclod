@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class ServiceAPIOptions extends ArrayList<APIOption>{
 	
+	private static final long serialVersionUID = -7797640635790893518L;
+
 	public String ADD_DATASET = "addDataset";
 	
 	public String DATASET_STATUS = "datasetStatus";

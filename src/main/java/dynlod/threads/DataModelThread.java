@@ -38,11 +38,11 @@ public class DataModelThread {
 	// 0 for filter not loaded, 1 for loading and 2 for loaded
 	public AtomicInteger filterLoaded = new AtomicInteger(0);
 
-	public String distributionURI;
-	public String datasetURI;
+	public int distributionID = 0;
+	public int datasetID= 0;
 
-	public String targetDistributionURI;
-	public String targetDatasetURI;
+	public int targetDistributionID= 0;
+	public int targetDatasetID= 0;
 	
 	public String filterPath;
 
@@ -74,14 +74,14 @@ public class DataModelThread {
 						.getSubjectFilterPath();
 
 			
-			this.targetDistributionURI = distributionToCompare
-					.getUri();
-			this.targetDatasetURI = distributionToCompare.getTopDataset();
+			this.targetDistributionID = distributionToCompare
+					.getDynLodID();
+			this.targetDatasetID = distributionToCompare.getTopDataset();
 
-			this.datasetURI = distribution.getTopDataset();
-			this.distributionURI = distribution.getUri();
+			this.datasetID = distribution.getTopDataset();
+			this.distributionID = distribution.getDynLodID();
 			// dataThread.distributionObjectPath = distribution
-			// .getObjectPath();
+			// .getObjectPath(); 
 
 		}
 

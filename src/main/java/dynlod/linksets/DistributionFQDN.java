@@ -6,7 +6,7 @@ import dynlod.mongodb.objects.DistributionMongoDBObject;
 
 public class DistributionFQDN {
 	
-	public String distribution;
+	public int distribution;
 
 	public DistributionMongoDBObject distributionMongoDBObject;
 	

@@ -25,8 +25,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 	
 	// contains all FQDN described by distribution
 	// <FQDN, <list of distribution that describes this fqdn>> 
-	public ConcurrentHashMap<String, DistributionFQDN>  fqdnPerDistribution = 
-			new ConcurrentHashMap<String, DistributionFQDN>();
+	public ConcurrentHashMap<Integer, DistributionFQDN>  fqdnPerDistribution = 
+			new ConcurrentHashMap<Integer, DistributionFQDN>();
 	
 
 	protected int threadNumber = 0;
@@ -43,7 +43,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 	private ConcurrentLinkedQueue<String> resourceQueue = null;
 	protected ArrayList<String> resourcesToBeProcessedQueue = new  ArrayList<String>();
 	public DistributionMongoDBObject distribution;
-	protected ConcurrentHashMap<String, DataModelThread> listOfDataThreads = new ConcurrentHashMap<String, DataModelThread>(); 
+	protected ConcurrentHashMap<Integer, DataModelThread> listOfDataThreads = new ConcurrentHashMap<Integer, DataModelThread>(); 
 	public ConcurrentHashMap<String, Integer> listLoadedFQDN = new ConcurrentHashMap<String, Integer>();
 	
 
@@ -133,7 +133,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 		}
 
 		saveDomains();
-		listOfDataThreads  = new ConcurrentHashMap<String, DataModelThread>(); 
+		listOfDataThreads  = new ConcurrentHashMap<Integer, DataModelThread>(); 
 		
 		logger.debug("Ending GetDomainsFromTriplesThread class.");
 	}
@@ -143,6 +143,9 @@ public class GetFQDNFromTriplesThread extends Thread {
 		ObjectId id = new ObjectId();
 
 		Iterator it = countTotalFQDN.entrySet().iterator();
+		
+		if(distributionMongoDBObject==null)
+			distributionMongoDBObject = new DistributionMongoDBObject(uri);
 
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
@@ -156,7 +159,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 					DistributionSubjectDomainsMongoDBObject d2 = new DistributionSubjectDomainsMongoDBObject(id.get()
 							.toString());
 					d2.setSubjectFQDN(d);
-					d2.setDistributionURI(uri);
+					d2.setDistributionID(distributionMongoDBObject.getDynLodID());
 					
 					try {
 						d2.updateObject(true);
@@ -171,7 +174,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 					d2 = new DistributionObjectDomainsMongoDBObject(id.get()
 							.toString());
 					d2.setObjectFQDN(d);
-					d2.setDistributionURI(uri);
+					d2.setDistributionID(distributionMongoDBObject.getDynLodID());
 
 					try {
 						d2.updateObject(true);

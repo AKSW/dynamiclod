@@ -1,6 +1,7 @@
 package dynlod.API.services;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -11,6 +12,7 @@ import dynlod.mongodb.objects.APIStatusMongoDBObject;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.queries.DatasetQueries;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 
@@ -33,7 +35,7 @@ public class APIStatus extends API {
 //		logger.debug("APIStatus initialized. ");
 		
 		apiStatus = new APIStatusMongoDBObject(url);
-		distributions=DistributionQueries.getDistributionsByTopDatasetAccessURL(url);
+		distributions=DistributionQueries.getDistributionsByTopDatasetID(url);
 		
 		apiMessage.setCoreMsgSuccess();
 //		apiMessage.setParserMsg("Dataset status:  " + apiStatus.getMessage());
@@ -44,12 +46,21 @@ public class APIStatus extends API {
 			
 			JSONObject datasetMessage = new JSONObject();
 			
+			ArrayList<DatasetMongoDBObject> d = distribution.getDefaultDatasetsAsResources();
+			
+			Iterator<DatasetMongoDBObject> i = d.iterator();
+			
+			ArrayList<String> parentNames = new ArrayList<String>();
+			while(i.hasNext()){
+				parentNames.add(i.next().getUri());
+			}
+			
 			if(distribution.getStatus().equals(DistributionMongoDBObject.STATUS_ERROR)){
 				datasetMessage.put(DistributionMongoDBObject.LAST_MSG, distribution.getLastMsg());
 			}
 			datasetMessage.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
 			datasetMessage.put(DistributionMongoDBObject.RESOURCE_URI, distribution.getResourceUri()); 
-			datasetMessage.put(DistributionMongoDBObject.DEFAULT_DATASETS, distribution.getDefaultDatasets()); 
+			datasetMessage.put(DistributionMongoDBObject.DEFAULT_DATASETS, parentNames); 
 			datasetMessage.put(DistributionMongoDBObject.STATUS, distribution.getStatus());
 			datasetMessage.put(DistributionMongoDBObject.TITLE, distribution.getTitle());
 			datasetMessage.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
@@ -59,7 +70,7 @@ public class APIStatus extends API {
 			
 			
 			// indegrees
-			ArrayList<LinksetMongoDBObject> indegrees = LinksetQueries.getLinksetsInDegreeByDistribution(distribution.getDownloadUrl());
+			ArrayList<LinksetMongoDBObject> indegrees = new  LinksetQueries().getLinksetsInDegreeByDistribution(distribution.getDynLodID());
 			int indegreeCount = 0;
 			JSONArray inegreeArray = new JSONArray();
 			
@@ -79,10 +90,10 @@ public class APIStatus extends API {
 				}
 				
 				indegreeTmpObj.put("links",linkset.getLinks());
-				indegreeTmpObj.put("sourceDataset",linkset.getDatasetSource());
-				indegreeTmpObj.put("targetDataset",linkset.getDatasetTarget());
-				indegreeTmpObj.put("sourceDistribution",linkset.getDistributionSource());
-				indegreeTmpObj.put("targetDistribution",linkset.getDistributionTarget());
+				indegreeTmpObj.put("sourceDataset", new DatasetMongoDBObject(linkset.getDatasetSource()).getUri());
+				indegreeTmpObj.put("targetDataset",  new DatasetMongoDBObject(linkset.getDatasetTarget()).getUri());
+				indegreeTmpObj.put("sourceDistribution", new DistributionMongoDBObject(linkset.getDistributionSource()).getUri());
+				indegreeTmpObj.put("targetDistribution", new DistributionMongoDBObject(linkset.getDistributionTarget()).getUri());
 				
 				inegreeArray.put(indegreeTmpObj); 
 			}
@@ -93,7 +104,7 @@ public class APIStatus extends API {
 //			datasetMessage.put("indegreeLinksCount", indegreeCount);
 			
 			// outdegrees
-			ArrayList<LinksetMongoDBObject> outdegrees = LinksetQueries.getLinksetsOutDegreeByDistribution(distribution.getDownloadUrl());
+			ArrayList<LinksetMongoDBObject> outdegrees = new LinksetQueries().getLinksetsOutDegreeByDistribution(distribution.getDynLodID());
 			int outdegreeCount = 0;
 			JSONArray outdegreeArray = new JSONArray();
 			for(LinksetMongoDBObject linkset : outdegrees){
@@ -112,10 +123,10 @@ public class APIStatus extends API {
 				}
 				
 				outdegreeTmpObj.put("links",linkset.getLinks());
-				outdegreeTmpObj.put("sourceDataset",linkset.getDatasetSource());
-				outdegreeTmpObj.put("targetDataset",linkset.getDatasetTarget());
-				outdegreeTmpObj.put("sourceDistribution",linkset.getDistributionSource());
-				outdegreeTmpObj.put("targetDistribution",linkset.getDistributionTarget());
+				outdegreeTmpObj.put("sourceDataset", new DatasetMongoDBObject(linkset.getDatasetSource()).getUri());
+				outdegreeTmpObj.put("targetDataset",new DatasetMongoDBObject(linkset.getDatasetTarget()).getUri());
+				outdegreeTmpObj.put("sourceDistribution",new DistributionMongoDBObject(linkset.getDistributionSource()).getUri());
+				outdegreeTmpObj.put("targetDistribution",new DistributionMongoDBObject(linkset.getDistributionTarget()).getUri());
 				
 				outdegreeArray.put(outdegreeTmpObj); 
 			}

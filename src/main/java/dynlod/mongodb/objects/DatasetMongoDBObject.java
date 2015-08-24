@@ -7,30 +7,24 @@ import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.mongodb.DBSuperClass;
+import dynlod.mongodb.queries.DatasetQueries;
 
-public class DatasetMongoDBObject extends DBSuperClass {
+public class DatasetMongoDBObject extends ResourceMongoDBObject {
 	 
 	// Collection name
 	public static final String COLLECTION_NAME = "Dataset";
-
-	public static final String LABEL = "label";
-
-	public static final String TITLE = "title";
 	
 	public static final String PARENT_DATASETS = "parentDatasets";
 
-	public static final String SUBSET_URIS = "subsetUris";
+	public static final String SUBSET_IDS = "subsetIDs";
 
-	public static final String DISTRIBUTIONS_URIS = "distributionsUris";
+	public static final String DISTRIBUTIONS_IDS = "distributionsIDs";
 
 	public static final String DESCRIPTION_FILENAME = "descriptionFileName";
 	
 	public static final String OBJECT_FILENAME = "objectFileName";
 	
 	public static final String SUBJECT_FILTER_FILENAME = "subjectFileName";
-	
-	public static final String IS_VOCABULARY = "isVocabulary";
 	
 	public static final String ACCESS_URL = "accessUrl";
 	
@@ -40,24 +34,18 @@ public class DatasetMongoDBObject extends DBSuperClass {
 
 	// class properties
 
-	private String label;
-
-	private String title;
-
 	private String descriptionFileName;
 
 	private String access_url;
 
 	private int dynLodID = 0;
-
-	private boolean isVocabulary = false;
 	
 
-	public ArrayList<String> subsetsURIs = new ArrayList<String> ();
+	public ArrayList<Integer> subsetsIDs = new ArrayList<Integer> ();
 
-	public ArrayList<String>  distributionsURIs = new ArrayList<String> ();
+	public ArrayList<Integer>  distributionsIDs = new ArrayList<Integer> ();
 	
-	private ArrayList<String> parentDatasetsURI = new ArrayList<String>();
+	private ArrayList<Integer> parentDatasetsIDs = new ArrayList<Integer>();
 
 	public DatasetMongoDBObject(String uri) {
 		super(COLLECTION_NAME, uri);
@@ -67,20 +55,30 @@ public class DatasetMongoDBObject extends DBSuperClass {
 		super(COLLECTION_NAME, uri, isRegex);
 		loadObject();
 	}
+	
+	public DatasetMongoDBObject(int id) {
+		super(COLLECTION_NAME, id);
+		loadObject(id);
+	}
+	
+	public DatasetMongoDBObject(DBObject object) {
+		super(COLLECTION_NAME, object);
+		load(object);
+	}
 
 	public boolean updateObject(boolean checkBeforeInsert) {
 
 		// save object case it doens't exists
 		try {
 			// updating subsets on mongodb
-			mongoDBObject.put(SUBSET_URIS, subsetsURIs);
+			mongoDBObject.put(SUBSET_IDS, subsetsIDs);
 			
 			if(dynLodID == 0)
 				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
 			mongoDBObject.put(DYN_LOD_ID, dynLodID);
 			
 			// updating distributions on mongodb
-			mongoDBObject.put(DISTRIBUTIONS_URIS, distributionsURIs);
+			mongoDBObject.put(DISTRIBUTIONS_IDS, distributionsIDs);
 	
 			mongoDBObject.put(TITLE, title);
 
@@ -90,7 +88,7 @@ public class DatasetMongoDBObject extends DBSuperClass {
 			
 			mongoDBObject.put(IS_VOCABULARY, isVocabulary);
 			
-			mongoDBObject.put(PARENT_DATASETS, parentDatasetsURI);
+			mongoDBObject.put(PARENT_DATASETS, parentDatasetsIDs);
 			
 			mongoDBObject.put(ACCESS_URL, access_url);
 			
@@ -111,10 +109,8 @@ public class DatasetMongoDBObject extends DBSuperClass {
 			}
 		}
 	}
-
-	protected boolean loadObject() {
-		DBObject obj = search();
-
+	
+	protected void load(DBObject obj){
 		if (obj != null) {
 			// mongoDBObject = (BasicDBObject) obj;
 
@@ -129,43 +125,52 @@ public class DatasetMongoDBObject extends DBSuperClass {
 				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
 
 			// loading subsets to object
-			BasicDBList subsetList = (BasicDBList) obj.get(SUBSET_URIS);
+			BasicDBList subsetList = (BasicDBList) obj.get(SUBSET_IDS);
 			for (Object sd : subsetList) {
-				subsetsURIs.add((String)sd);
+				subsetsIDs.add(((Number)sd).intValue());
 			}
 
 			// loading distributions to object
 			BasicDBList distributionList = (BasicDBList) obj
-					.get(DISTRIBUTIONS_URIS);
+					.get(DISTRIBUTIONS_IDS);
 			for (Object sd : distributionList) {
-				distributionsURIs.add((String)sd);
+				distributionsIDs.add(((Number)sd).intValue());
 			}
 			
 			// loading parent datasets to object
 			BasicDBList parentDatasetsList = (BasicDBList) obj
 					.get(PARENT_DATASETS);
 			for (Object sd : parentDatasetsList) {
-				parentDatasetsURI.add((String) sd);
+				parentDatasetsIDs.add(((Number)(sd)).intValue());
 			}
-
-			return true;
 		}
-		return false;
 	}
 
-	public void addSubsetURI(String subsetURI) {
-		if (!subsetsURIs.contains(subsetURI) && subsetURI!=null)
-			subsetsURIs.add(subsetURI);
+	protected boolean loadObject() {
+		DBObject obj = search();
+		load(obj); 
+		return true;
+	}
+
+	protected boolean loadObject(int id) {
+		DBObject obj = search(id);
+		load(obj); 
+		return true;
+	}
+
+	public void addSubsetID(int subsetID) {
+		if (!subsetsIDs.contains(subsetID) && subsetID!=0)
+			subsetsIDs.add(subsetID);
 	}
 
 	public void removeSubsetURI(String subsetURI) {
-		if (subsetsURIs.contains(subsetURI) && subsetURI!=null)
-			subsetsURIs.remove(subsetURI);
+		if (subsetsIDs.contains(subsetURI) && subsetURI!=null)
+			subsetsIDs.remove(subsetURI);
 	}
 	
-	public void addDistributionURI(String distributionURI) {
-		if (!distributionsURIs.contains(distributionURI) && distributionURI!=null)
-			distributionsURIs.add(distributionURI);
+	public void addDistributionID(int distributionURI) {
+		if (!distributionsIDs.contains(distributionURI) && distributionURI!=0)
+			distributionsIDs.add(distributionURI);
 	}
 
 	public void setLabel(String label) {
@@ -173,12 +178,22 @@ public class DatasetMongoDBObject extends DBSuperClass {
 		mongoDBObject.put(LABEL, label);
 	}
 
-	public List<String> getDistributionsURIs() {
-		return distributionsURIs;
+	public List<Integer> getDistributionsIDs() {
+		return distributionsIDs;
+	}
+	
+	public List<DistributionMongoDBObject> getDistributionsAsMongoDBObjects() {
+		return new DatasetQueries().getDistributionsAsMongoDBObject(this);
 	}
 
-	public List<String> getSubsetsURIs() {
-		return subsetsURIs;
+	public List<Integer> getSubsetsIDs() {
+		return subsetsIDs;
+	}
+	
+	public ArrayList<DatasetMongoDBObject> getSubsetsAsMongoDBObject(){
+		
+		return new DatasetQueries().getSubsetsAsMongoDBObject(this);
+		
 	}
 
 	public String getLabel() {
@@ -209,17 +224,19 @@ public class DatasetMongoDBObject extends DBSuperClass {
 		this.isVocabulary = isVocabulary;
 	}
 	
-	public ArrayList<String> getParentDatasetURI() {
-		return parentDatasetsURI;
+	public ArrayList<Integer> getParentDatasetID() {
+		if(parentDatasetsIDs.get(0) != 0 || parentDatasetsIDs.size()>=1)
+		return parentDatasetsIDs;
+		else return new  ArrayList<Integer>();
 	}
-	public void addParentDatasetURI(String parentDatasetURI) {
-		if (!parentDatasetsURI.contains(parentDatasetURI) && parentDatasetURI!=null)
-			parentDatasetsURI.add(parentDatasetURI);
+	public void addParentDatasetID(int parentDatasetURI) {
+		if (!parentDatasetsIDs.contains(parentDatasetURI))
+			parentDatasetsIDs.add(parentDatasetURI);
 	}
 
 	public void removeParentDatasetURI(String parentDatasetURI) {
-		if (parentDatasetsURI.contains(parentDatasetURI) && parentDatasetURI!=null)
-			parentDatasetsURI.remove(parentDatasetURI);
+		if (parentDatasetsIDs.contains(parentDatasetURI) && parentDatasetURI!=null)
+			parentDatasetsIDs.remove(parentDatasetURI);
 	}
 
 	public String getAccess_url() {
@@ -231,6 +248,8 @@ public class DatasetMongoDBObject extends DBSuperClass {
 	}
 	
 	public int getDynLodID() {
+		if(dynLodID == 0)
+			dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
 		return dynLodID;
 	}
 

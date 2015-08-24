@@ -106,7 +106,7 @@ public class Manager {
 
 					logger.info("Creating bloom filter.");
 
-					createBloomFilter(downloadedFile, distributionMongoDBObj);
+					createBloomFilters(downloadedFile, distributionMongoDBObj);
 
 					// save distribution in a mongodb object
 
@@ -339,9 +339,10 @@ public class Manager {
 		return needDownload;
 	}
 
-	public boolean createBloomFilter(
+	public boolean createBloomFilters(
 			StreamAndCompareDistribution downloadedFile,
 			DistributionMongoDBObject distributionMongoDBObj) {
+		
 		GoogleBloomFilter filterSubject;
 		GoogleBloomFilter filterObject;
 		if (downloadedFile.subjectLines != 0) {
@@ -444,6 +445,14 @@ public class Manager {
 						+ downloadedFile.hashFileName);
 		distributionMongoDBObj.setNumberOfObjectTriples(String
 				.valueOf(f.elementsLoadedIntoFilter));
+		
+		// remove temp files
+		FileUtils.removeFile(DynlodGeneralProperties.SUBJECT_FILE_DISTRIBUTION_PATH
+						+ downloadedFile.hashFileName);
+		
+		FileUtils.removeFile(DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
+				+ downloadedFile.hashFileName);
+		
 
 		return false;
 	}

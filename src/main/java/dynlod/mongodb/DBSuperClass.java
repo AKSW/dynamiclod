@@ -67,7 +67,6 @@ abstract public class DBSuperClass {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 	
 	public DBSuperClass(String collectionName, String uri, boolean isRegex) {
@@ -87,8 +86,44 @@ abstract public class DBSuperClass {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
+	
+	public DBSuperClass(String collectionName, DBObject object) {
+		
+		try {
+			getInstance();
+
+			this.collectionName = collectionName;
+
+			objectCollection = getInstance().getCollection(collectionName);
+
+			mongoDBObject.put(URI,  object.get(URI).toString());
+
+			this.uri = object.get(URI).toString();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public DBSuperClass(String collectionName, int id) {
+
+		try {
+			getInstance();
+
+			this.collectionName = collectionName;
+			objectCollection = getInstance().getCollection(collectionName);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected DBObject searchByID(int id){
+		return null;
+	}
+	
 
 	public static DB getInstance() {
 		try {

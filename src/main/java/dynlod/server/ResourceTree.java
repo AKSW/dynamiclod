@@ -2,6 +2,7 @@ package dynlod.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -32,21 +33,49 @@ public class ResourceTree extends HttpServlet {
 
 	public void getTree(HttpServletRequest request,
 			HttpServletResponse response) {
-		d = DatasetQueries.getDatasetsNotVocab();
+		
+		Map<String, String[]> parameters = request.getParameterMap();
+		if(parameters.containsKey("linkedDatasets"))
+			d = new DatasetQueries().getDatasetsNotVocabWithLinks();
+		else
+			d = new DatasetQueries().getTopDatasetsNotVocab();
+		
 
 		JsonArray data2 = new JsonArray();
 
 		JsonArray datasetArray = new JsonArray();
 		for (DatasetMongoDBObject dataset : d) {
-			ArrayList<String> parent_list = dataset.getParentDatasetURI();
-			for (String parent : parent_list) {
-				JsonObject jsonparent = new JsonObject();
-				jsonparent.put("parent", parent);
-				jsonparent.put("id", dataset.getUri());
-				jsonparent.put("text", dataset.getTitle());
+			ArrayList<DatasetMongoDBObject> parent_list = dataset.getSubsetsAsMongoDBObject();
+			
+			// add dataset
+			JsonObject jsonparent = new JsonObject();
+			jsonparent.put("parent", "#");					
+			jsonparent.put("id", dataset.getDynLodID());
+			jsonparent.put("text", dataset.getTitle());
+			datasetArray.add(jsonparent);
+			
+			for (DatasetMongoDBObject parent : parent_list) {
+				jsonparent = new JsonObject();
+				jsonparent.put("parent", parent.getParentDatasetID().get(0));					
+				jsonparent.put("id", parent.getDynLodID());
+				jsonparent.put("text", parent.getTitle());
 				datasetArray.add(jsonparent);
 				
 			}
+			
+			
+			
+//			ArrayList<Integer> parent_list = dataset.getParentDatasetID();
+//			for (Integer parent : parent_list) {
+//				JsonObject jsonparent = new JsonObject();
+//				jsonparent.put("parent", parent);
+//				jsonparent.put("id", dataset.getDynLodID());
+//				jsonparent.put("text", dataset.getTitle());
+//				datasetArray.add(jsonparent);
+//				
+//			}
+			
+			
 //			List<String> distribution_list = dataset.getDistributionsURIs();
 //				for (String distribution : distribution_list) {
 //					JsonObject jsondistribution = new JsonObject();
@@ -56,15 +85,15 @@ public class ResourceTree extends HttpServlet {
 //					jsondistribution.put("text", d.getTitle() +" (Distribution)");
 //					datasetArray.add(jsondistribution);
 //			}
-			if (parent_list.size() == 0) {
-				JsonObject jsonparent = new JsonObject();
-				jsonparent.put("parent", "#");
-
-				jsonparent.put("id", dataset.getUri());
-				
-				jsonparent.put("text", dataset.getTitle());
-				datasetArray.add(jsonparent);
-			}
+//			if (parent_list.size() == 0) {
+//				jsonparent = new JsonObject();
+//				jsonparent.put("parent", "#");
+//
+//				jsonparent.put("id", dataset.getDynLodID());
+//				
+//				jsonparent.put("text", dataset.getTitle());
+//				datasetArray.add(jsonparent);
+//			}
 			data2.add(datasetArray);
 			
 		}
