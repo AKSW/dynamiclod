@@ -86,7 +86,7 @@ public class InputRDFParser {
 		StmtIterator datasetsStmt = getFirstStmt();
 
 		if (datasetsStmt.hasNext())
-			iterateSubsetsNew(datasetsStmt, 0, 0);
+			iterateSubsetsNew(datasetsStmt, 0, 0, true);
 		else
 			throw new DynamicLODNoDatasetFoundException(
 					"We could not parse any datasets.");
@@ -96,7 +96,7 @@ public class InputRDFParser {
 
 	// iterating over the subsets (recursive method)
 	private void iterateSubsetsNew(StmtIterator stmtDatasets,
-			int parentDataset, int topDataset)
+			int parentDataset, int topDatasetID, boolean isTopDataset)
 			throws DynamicLODGeneralException,
 			DynamicLODFormatNotAcceptedException {
 
@@ -114,10 +114,15 @@ public class InputRDFParser {
 			DatasetMongoDBObject datasetMongoDBObj = new DatasetMongoDBObject(
 					datasetURI);
 			
+			// do not overlap LOV datasets
+			if(datasetMongoDBObj.getIsVocabulary())
+				break;
+			
 			// setting TOP dataset
-			if (topDataset == 0) {
-				topDataset = datasetMongoDBObj.getDynLodID();
+			if (isTopDataset) {
+				topDatasetID = datasetMongoDBObj.getDynLodID();
 			}
+			
 
 			datasetMongoDBObj.setAccess_url(access_url);
 
@@ -172,7 +177,7 @@ public class InputRDFParser {
 					}
 
 					if (stmtDatasets3.hasNext()) {
-						iterateSubsetsNew(stmtDatasets3, datasetMongoDBObj.getDynLodID(), topDataset);
+						iterateSubsetsNew(stmtDatasets3, datasetMongoDBObj.getDynLodID(), topDatasetID, false);
 //						datasetMongoDBObj.addSubsetID(subset.getObject()
 //								.toString());
 						datasetMongoDBObj.addSubsetID(new DatasetMongoDBObject(subset.getObject()
@@ -195,7 +200,7 @@ public class InputRDFParser {
 								.createProperty(NS.VOID_URI, "dataDump"))) {
 					Statement stmtDistribution2 = stmtDistribution.next();
 					addDistribution(stmtDistribution2, stmtDistribution2,
-							datasetMongoDBObj, topDataset);
+							datasetMongoDBObj, topDatasetID);
 				} else if (stmtDistribution.hasNext()) {
 					break;
 				}
@@ -240,7 +245,7 @@ public class InputRDFParser {
 										downloadURLFound = true;
 										addDistribution(downloadURLStmt,
 												distributionStmt,
-												datasetMongoDBObj, topDataset);
+												datasetMongoDBObj, topDatasetID);
 
 									}
 								} catch (Exception ex) {
@@ -278,7 +283,7 @@ public class InputRDFParser {
 								downloadURLFound = true;
 								addDistribution(downloadURLStmt,
 										distributionStmt, datasetMongoDBObj,
-										topDataset);
+										topDatasetID);
 
 							}
 						} catch (DynamicLODFormatNotAcceptedException ex) {
@@ -305,6 +310,10 @@ public class InputRDFParser {
 		DistributionMongoDBObject distributionMongoDBObj = new DistributionMongoDBObject(
 				downloadURLStmt.getObject().toString());
 
+		// do not overlap LOV datasets
+		if(distributionMongoDBObj.getIsVocabulary())
+			return;
+		
 		distributionMongoDBObj.setResourceUri(stmtDistribution.getSubject()
 				.toString());
  

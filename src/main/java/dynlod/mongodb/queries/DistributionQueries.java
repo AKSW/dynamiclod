@@ -387,7 +387,7 @@ public class DistributionQueries {
 		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				DatasetMongoDBObject.COLLECTION_NAME);
 		DBCursor inst = collection.find(new BasicDBObject(
-				DatasetMongoDBObject.ACCESS_URL, new BasicDBObject("$regex",
+				DatasetMongoDBObject.URI, new BasicDBObject("$regex",
 						topDataset + ".*")));
 		while (inst.hasNext()) {
 			datasetList.add(((Number)inst.next().get(DatasetMongoDBObject.DYN_LOD_ID)).intValue());
