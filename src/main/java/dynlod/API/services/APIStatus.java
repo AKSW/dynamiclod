@@ -8,17 +8,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import dynlod.API.core.API;
-import dynlod.mongodb.objects.APIStatusMongoDBObject;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
-import dynlod.mongodb.queries.DatasetQueries;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 
 public class APIStatus extends API {
 
-	APIStatusMongoDBObject apiStatus = null;
+//	APIStatusMongoDBObject apiStatus = null;
 	
 	ArrayList<DistributionMongoDBObject> distributions;
 	
@@ -34,8 +32,9 @@ public class APIStatus extends API {
 		
 //		logger.debug("APIStatus initialized. ");
 		
-		apiStatus = new APIStatusMongoDBObject(url);
-		distributions=DistributionQueries.getDistributionsByTopDatasetID(url);
+		
+//		apiStatus = new APIStatusMongoDBObject(url);
+		distributions=new DistributionQueries().getDistributionsByTopDatasetID(url);
 		
 		apiMessage.setCoreMsgSuccess();
 //		apiMessage.setParserMsg("Dataset status:  " + apiStatus.getMessage());

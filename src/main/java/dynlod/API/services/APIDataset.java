@@ -11,7 +11,6 @@ import dynlod.API.core.APITasks;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
-import dynlod.mongodb.objects.APIStatusMongoDBObject;
 
 public class APIDataset extends API {
 
@@ -43,9 +42,9 @@ public class APIDataset extends API {
 			} else {
 				apiMessage.setParserMsg("No datasets found.");
 
-				APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(
-						datasetURI);
-				apiStatus.setMessage("We didn't find any distributions!");
+//				APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(
+//						datasetURI);
+//				apiStatus.setMessage("We didn't find any distributions!");
 
 			}
 		} catch (DynamicLODNoDatasetFoundException e) {

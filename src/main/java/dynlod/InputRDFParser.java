@@ -25,7 +25,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
-import dynlod.mongodb.objects.APIStatusMongoDBObject;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.ontology.NS;
@@ -44,7 +43,7 @@ public class InputRDFParser {
 	private String fileURLHash;
 	private String access_url;
 
-	APIStatusMongoDBObject apiStatus = null;
+//	APIStatusMongoDBObject apiStatus = null;
 
 	boolean isVoid = false;
 	boolean isDataid = false;
@@ -250,8 +249,8 @@ public class InputRDFParser {
 									}
 								} catch (Exception ex) {
 									ex.printStackTrace();
-									apiStatus.setHasError(true);
-									apiStatus.setMessage(ex.getMessage());
+//									apiStatus.setHasError(true);
+//									apiStatus.setMessage(ex.getMessage());
 								}
 							}
 							break;
@@ -418,7 +417,7 @@ public class InputRDFParser {
 	public String readModel(String URL, String format)
 			throws MalformedURLException, IOException,
 			DynamicLODNoDatasetFoundException, RiotException {
-		apiStatus = new APIStatusMongoDBObject(URL);
+//		apiStatus = new APIStatusMongoDBObject(URL);
 		access_url = URL;
 		String someDatasetURI = null;
 		format = getJenaFormat(format);
@@ -437,17 +436,17 @@ public class InputRDFParser {
 			logger.info("Jena model created. ");
 			logger.info("Looks that this is a valid VoID/DCAT/DataID file! "
 					+ someDatasetURI);
-			apiStatus
-					.setMessage("Looks that this is a valid VoID/DCAT/DataID file! "
-							+ someDatasetURI);
+//			apiStatus
+//					.setMessage("Looks that this is a valid VoID/DCAT/DataID file! "
+//							+ someDatasetURI);
 
 			fileURLHash = FileUtils.stringToHash(URL);
 			inModel.write(new FileOutputStream(new File(
 					DynlodGeneralProperties.FILE_URL_PATH + fileURLHash)));
 		} else {
-			apiStatus
-					.setMessage("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
-			apiStatus.setHasError(true);
+//			apiStatus
+//					.setMessage("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
+//			apiStatus.setHasError(true);
 			throw new DynamicLODNoDatasetFoundException(
 					"It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
 		}

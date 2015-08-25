@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import dynlod.API.core.APITasks;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
-import dynlod.mongodb.objects.APIStatusMongoDBObject;
 
 public class APIFactory {
 	
@@ -29,12 +28,12 @@ public class APIFactory {
 	public static APIStatus createStatusDataset(String datasetURI) {
 		
 //		logger.debug("API Factory Create Status Dataset started");
-		APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
-		if(apiStatus.getMessage()!=null){
+//		APIStatusMongoDBObject apiStatus = new APIStatusMongoDBObject(datasetURI);
+//		if(apiStatus.getMessage()!=null){
 //			logger.debug("APIStatus instance created");
 			return new APIStatus(datasetURI);
-		}
-		else return null;
+//		}
+//		else return null;
 		
 	}
 

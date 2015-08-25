@@ -377,7 +377,7 @@ public class DistributionQueries {
 	
 
 	// return all distributions
-	public static ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetID(
+	public ArrayList<DistributionMongoDBObject> getDistributionsByTopDatasetID(
 			String topDataset) {
 
 		ArrayList<DistributionMongoDBObject> distributionList = new ArrayList<DistributionMongoDBObject>();
@@ -405,7 +405,6 @@ public class DistributionQueries {
 		DBCursor inst = collection.find(new BasicDBObject("$or", or));
 		
 		
-		System.out.println("opa!" + topDataset);
 		while (inst.hasNext()) {
 			datasetList.add(((Number)inst.next().get(DatasetMongoDBObject.DYN_LOD_ID)).intValue());
 		}
