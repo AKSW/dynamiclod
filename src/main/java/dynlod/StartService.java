@@ -81,9 +81,12 @@ public class StartService extends HttpServlet {
 							distributions.add(dist);
 						}
 
+					}
+					
+					if(DynlodGeneralProperties.RESUME_ERRORS){
 						// download distributions with "ERROR"
 						// status
-						q = Queries.getMongoDBObject(
+						ArrayList<String> q = Queries.getMongoDBObject(
 								DistributionMongoDBObject.COLLECTION_NAME,
 								DistributionMongoDBObject.STATUS,
 								DistributionMongoDBObject.STATUS_ERROR);
@@ -98,8 +101,8 @@ public class StartService extends HttpServlet {
 							dist.updateObject(true);
 							distributions.add(dist);
 						}
-
 					}
+
 					new Manager(distributions);
 
 				} catch (Exception e) {

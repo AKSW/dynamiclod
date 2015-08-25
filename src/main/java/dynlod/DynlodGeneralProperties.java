@@ -31,6 +31,7 @@ public class DynlodGeneralProperties {
 			MONGODB_PASSWORD = prop.getProperty("MONGODB_PASSWORD");
 			LOV_URL = prop.getProperty("LOV_URL");
 			RESUME = Boolean.valueOf(prop.getProperty("RESUME"));
+			RESUME_ERRORS = Boolean.valueOf(prop.getProperty("RESUME_ERRORS"));
 			
 			try{
 				FPP_EQUATION = prop.getProperty("CUSTOMIZED_FPP_EQUATION");
@@ -95,6 +96,8 @@ public class DynlodGeneralProperties {
 	public static String DISTRIBUTION_PREFIX;
 	
 	public static boolean RESUME;
+
+	public static boolean RESUME_ERRORS;
 
 	// defining file names for distributions after separate subject and object
 	public static String SUBJECT_FILE_DISTRIBUTION_PATH;
