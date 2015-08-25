@@ -386,9 +386,26 @@ public class DistributionQueries {
 
 		DBCollection collection = DBSuperClass.getInstance().getCollection(
 				DatasetMongoDBObject.COLLECTION_NAME);
-		DBCursor inst = collection.find(new BasicDBObject(
+		
+		// find address by URI...
+		BasicDBObject uriQuery = new BasicDBObject(
 				DatasetMongoDBObject.URI, new BasicDBObject("$regex",
-						topDataset + ".*")));
+						topDataset + ".*"));
+				
+		// ... or by access url
+		BasicDBObject accessQuery = new BasicDBObject(
+				DatasetMongoDBObject.ACCESS_URL, new BasicDBObject("$regex",
+						topDataset + ".*"));
+		
+		// make a OR operator
+		BasicDBList or = new BasicDBList();
+		or.add(uriQuery);
+		or.add(accessQuery);		
+		
+		DBCursor inst = collection.find(new BasicDBObject("$or", or));
+		
+		
+		System.out.println("opa!" + topDataset);
 		while (inst.hasNext()) {
 			datasetList.add(((Number)inst.next().get(DatasetMongoDBObject.DYN_LOD_ID)).intValue());
 		}
