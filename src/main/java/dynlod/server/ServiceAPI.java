@@ -119,8 +119,21 @@ public class ServiceAPI extends HttpServlet {
 			if (parameters.containsKey(options.RETRIEVE_DATASET)) {
 				for (String datasetURI : parameters
 						.get(options.RETRIEVE_DATASET)) {
-					APIRetrieveRDF apiRetrieve = APIFactory
+					APIRetrieveRDF apiRetrieve = null;
+					
+					if(parameters
+						.containsKey("source")  && parameters
+						.containsKey("target")){
+						apiRetrieve = APIFactory
+								.retrieveDataset(parameters
+										.get("source")[0],
+										parameters
+										.get("target")[0]									);
+					}
+					else
+					apiRetrieve = APIFactory
 							.retrieveDataset(datasetURI);
+					
 					apiRetrieve.outModel.write(out, "TURTLE");
 				}
 			}

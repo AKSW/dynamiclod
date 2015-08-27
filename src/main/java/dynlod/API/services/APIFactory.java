@@ -40,5 +40,9 @@ public class APIFactory {
 	public static APIRetrieveRDF retrieveDataset(String datasetURI) throws DynamicLODNoDatasetFoundException, DynamicLODAPINoLinksFoundException {
 		return new APIRetrieveRDF(datasetURI);
 	}
+	
+	public static APIRetrieveRDF retrieveDataset(String source, String target) throws DynamicLODNoDatasetFoundException, DynamicLODAPINoLinksFoundException {
+		return new APIRetrieveRDF(source, target);
+	}
 
 }

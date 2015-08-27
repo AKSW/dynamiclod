@@ -133,13 +133,17 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 			// loading distributions to object
 			BasicDBList distributionList = (BasicDBList) obj
 					.get(DISTRIBUTIONS_IDS);
+			if(distributionsIDs == null)
+				distributionsIDs = new ArrayList<Integer>();
 			for (Object sd : distributionList) {
-				distributionsIDs.add(((Number)sd).intValue());
+				distributionsIDs.add(((Number) sd).intValue());
 			}
 			
 			// loading parent datasets to object
 			BasicDBList parentDatasetsList = (BasicDBList) obj
 					.get(PARENT_DATASETS);
+			if(parentDatasetsIDs == null)
+				parentDatasetsIDs = new ArrayList<Integer>();
 			for (Object sd : parentDatasetsList) {
 				parentDatasetsIDs.add(((Number)(sd)).intValue());
 			}

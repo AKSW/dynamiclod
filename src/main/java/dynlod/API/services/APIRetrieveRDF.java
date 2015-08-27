@@ -44,26 +44,42 @@ public class APIRetrieveRDF extends API {
 //				"http://gerbil.aksw.org/gerbil/dataId/corpora/N3-RSS-500#dataset"));
 //		printModel();
 //	}
+	
+	
 
+	public APIRetrieveRDF(String source, String target) throws DynamicLODNoDatasetFoundException,
+			DynamicLODAPINoLinksFoundException{
+		retrieveRDF(source, target);
+	}
 	public APIRetrieveRDF(String URI) throws DynamicLODNoDatasetFoundException,
-			DynamicLODAPINoLinksFoundException {
+	DynamicLODAPINoLinksFoundException {
+		retrieveRDF(URI, (String) null);
+	}
+	
+	public void retrieveRDF(String source, String target) throws DynamicLODNoDatasetFoundException,
+	DynamicLODAPINoLinksFoundException{
 		
 		outModelInit();
 		
 		// try to find by distribution
-		DistributionMongoDBObject dist = new DistributionMongoDBObject(URI);
+		DistributionMongoDBObject dist = new DistributionMongoDBObject(source);
 		
 		if(dist.getDefaultDatasets().size()>0){
 			retrieveByDistribution(dist.getUri());
 			logger.debug("APIRetrieve found a distribution to retrieve RDF: "+ dist.getUri());
 		}
 		else{
-			DatasetMongoDBObject d = new DatasetMongoDBObject(URI, true);
+			DatasetMongoDBObject d = new DatasetMongoDBObject(source, true);
 			getDatasetChildren(d);
 		}
 //		printModel();
-
+		System.out.println(source);
+		System.out.println(target);
+		
 	}
+	
+
+
 
 	private void outModelInit() {
 		outModel = ModelFactory.createDefaultModel();
@@ -84,7 +100,6 @@ public class APIRetrieveRDF extends API {
 	public void retrieveByDistribution(String distributionURI) throws DynamicLODAPINoLinksFoundException {
 		// get indegree and outdegree for a distribution
 		DistributionMongoDBObject dis = new DistributionMongoDBObject(distributionURI);
-		DistributionQueries queries = new DistributionQueries();
 		
 		ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
 				.getLinksetsInDegreeByDistribution(dis.getDynLodID());
@@ -177,7 +192,7 @@ public class APIRetrieveRDF extends API {
 				&& !datasetTarget.getIsVocabulary()) {
 //			 add linksets
 //			String linksetURI = target + "_" + source;
-			String linksetURI = dynlod.server.ServiceAPI.getServerURL() + "?source="+
+			String linksetURI = dynlod.server.ServiceAPI.getServerURL() + "?retrieveDataset&source="+
 					datasetSource.getUri() + "&target="+ datasetTarget.getUri();
 			Resource r = outModel.createResource(linksetURI);
 			Resource wasDerivedFrom = outModel
