@@ -126,6 +126,8 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 
 			// loading subsets to object
 			BasicDBList subsetList = (BasicDBList) obj.get(SUBSET_IDS);
+			if(subsetsIDs == null)
+				subsetsIDs = new ArrayList<Integer>();
 			for (Object sd : subsetList) {
 				subsetsIDs.add(((Number)sd).intValue());
 			}

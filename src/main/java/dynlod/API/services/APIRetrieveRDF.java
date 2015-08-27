@@ -73,9 +73,6 @@ public class APIRetrieveRDF extends API {
 			getDatasetChildren(d);
 		}
 //		printModel();
-		System.out.println(source);
-		System.out.println(target);
-		
 	}
 	
 
