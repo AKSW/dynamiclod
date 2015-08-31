@@ -34,7 +34,7 @@ import com.hp.hpl.jena.sparql.core.DatasetGraph;
 
 import dynlod.DynlodGeneralProperties;
 import dynlod.Manager;
-import dynlod.download.Download;
+import dynlod.download.Stream;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
@@ -43,7 +43,7 @@ import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
 
-public class LOV extends Download {
+public class LOV extends Stream {
 	final static Logger logger = Logger.getLogger(LOV.class);
 
 	DistributionMongoDBObject distribution = null;
@@ -193,6 +193,10 @@ public class LOV extends Download {
 
 		String obj = nameSpace;
 		String[] ar = obj.split("/");
+//		if (ar.length > 5)
+//			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/"+ ar[5] + "/";
+//		if (ar.length > 4)
+//			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/";
 		if (ar.length > 3)
 			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/";
 		else if (ar.length > 2)

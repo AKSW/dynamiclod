@@ -109,9 +109,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 						localFQDN.put(obj, 0);
 						
 					}
-					if (numberOfReadedTriples%saveDomainsEach==0){						
+					if (numberOfReadedTriples%saveDomainsEach==0){		
 						makeLinks();
-						
 					}
 
 				} catch (NoSuchElementException e) {

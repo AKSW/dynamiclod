@@ -1,9 +1,10 @@
 package dynlod.threads;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import dynlod.filters.GoogleBloomFilter;
+import dynlod.linksets.DistributionFQDN;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 
 public class DataModelThread {
@@ -47,36 +48,45 @@ public class DataModelThread {
 	public String filterPath;
 
 	public AtomicInteger links = new AtomicInteger(0);
+	public AtomicInteger invalidLinks = new AtomicInteger(0);
 	public int ontologyLinks = 0;
 
 	public GoogleBloomFilter filter = new GoogleBloomFilter();
+	
+	public TreeSet<String> targetFQDNTree = new TreeSet<String>();
 
 	// flat to execute or not this model in a thread
 	public boolean active = true;
 
 	public DataModelThread(
 			DistributionMongoDBObject distribution,
-			DistributionMongoDBObject distributionToCompare, boolean isSubject) {
+			DistributionMongoDBObject targetDistribution, 
+			DistributionFQDN distributionFQDN,
+			boolean isSubject) {
 
 		
 //		DataModelThread dataThread = new DataModelThread();
 		this.isSubject = isSubject;
 //		dataThread.describedFQDN = describedFQDN;
 
-		if (!distributionToCompare.getUri().equals(distribution.getUri())) {
+		if (!targetDistribution.getUri().equals(distribution.getUri())) {
 			// save dataThread object
 
-			if (isSubject)
-				this.filterPath = distributionToCompare
+			if (isSubject){
+				this.filterPath = targetDistribution
 						.getObjectFilterPath();
-			else
-				this.filterPath = distributionToCompare
+				targetFQDNTree = distributionFQDN.objectsFQDN;
+			}
+			else{
+				this.filterPath = targetDistribution
 						.getSubjectFilterPath();
+				targetFQDNTree = distributionFQDN.subjectsFQDN;
+			}
 
 			
-			this.targetDistributionID = distributionToCompare
+			this.targetDistributionID = targetDistribution
 					.getDynLodID();
-			this.targetDatasetID = distributionToCompare.getTopDataset();
+			this.targetDatasetID = targetDistribution.getTopDataset();
 
 			this.datasetID = distribution.getTopDataset();
 			this.distributionID = distribution.getDynLodID();

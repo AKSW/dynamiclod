@@ -69,7 +69,7 @@ public class APIStatus extends API {
 			
 			
 			// indegrees
-			ArrayList<LinksetMongoDBObject> indegrees = new  LinksetQueries().getLinksetsInDegreeByDistribution(distribution.getDynLodID());
+			ArrayList<LinksetMongoDBObject> indegrees = new  LinksetQueries().getLinksetsInDegreeByDistribution(distribution.getDynLodID(), false);
 			int indegreeCount = 0;
 			JSONArray inegreeArray = new JSONArray();
 			
@@ -103,7 +103,7 @@ public class APIStatus extends API {
 //			datasetMessage.put("indegreeLinksCount", indegreeCount);
 			
 			// outdegrees
-			ArrayList<LinksetMongoDBObject> outdegrees = new LinksetQueries().getLinksetsOutDegreeByDistribution(distribution.getDynLodID());
+			ArrayList<LinksetMongoDBObject> outdegrees = new LinksetQueries().getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), false);
 			int outdegreeCount = 0;
 			JSONArray outdegreeArray = new JSONArray();
 			for(LinksetMongoDBObject linkset : outdegrees){

@@ -151,7 +151,7 @@ public class LinksetQueries {
 	}
 
 	public ArrayList<LinksetMongoDBObject> getLinksetsInDegreeByDistribution(
-			int id) {
+			int id, boolean invalidLinks) {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
@@ -159,7 +159,12 @@ public class LinksetQueries {
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, id);  
-			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
+			DBObject clause2;
+			if(invalidLinks)
+				clause2 = new BasicDBObject(LinksetMongoDBObject.INVALID_LINKS,
+						new BasicDBObject("$gt", 50));   
+			else
+				clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
 			BasicDBList or = new BasicDBList();
@@ -183,7 +188,7 @@ public class LinksetQueries {
 	}
 
 	public ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDistribution(
-			int id) {
+			int id, boolean invalidLinks) {
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
 
@@ -191,7 +196,13 @@ public class LinksetQueries {
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, id);  
-			DBObject clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
+			DBObject clause2;
+			
+			if(invalidLinks)
+				clause2 = new BasicDBObject(LinksetMongoDBObject.INVALID_LINKS,
+						new BasicDBObject("$gt", 50));   
+			else
+				clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
 			BasicDBList and = new BasicDBList();

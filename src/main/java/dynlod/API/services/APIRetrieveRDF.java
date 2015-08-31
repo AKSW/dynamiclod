@@ -99,9 +99,9 @@ public class APIRetrieveRDF extends API {
 		DistributionMongoDBObject dis = new DistributionMongoDBObject(distributionURI);
 		
 		ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
-				.getLinksetsInDegreeByDistribution(dis.getDynLodID());
+				.getLinksetsInDegreeByDistribution(dis.getDynLodID(), false);
 		ArrayList<LinksetMongoDBObject> out = new LinksetQueries()
-				.getLinksetsOutDegreeByDistribution(dis.getDynLodID());
+				.getLinksetsOutDegreeByDistribution(dis.getDynLodID(), false);
 
 		// add choosen distribution to jena
 		// addDistributionToModel(new

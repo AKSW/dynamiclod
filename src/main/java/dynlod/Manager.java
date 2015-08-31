@@ -1,5 +1,6 @@
 package dynlod;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,8 +13,10 @@ import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.log4j.Logger;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 
-import dynlod.download.CheckWhetherDownload;
+import dynlod.download.CheckWhetherToStream;
 import dynlod.download.StreamAndCompareDistribution;
 import dynlod.exceptions.DynamicLODFileNotAcceptedException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
@@ -90,7 +93,8 @@ public class Manager {
 
 					logger.info("Streaming distribution.");
 
-					downloadedFile.streamDistribution();
+						downloadedFile.streamDistribution();
+					
 
 					// uptate status of distribution
 					distributionMongoDBObj
@@ -129,75 +133,6 @@ public class Manager {
 					distributionMongoDBObj
 							.setTriples(downloadedFile.totalTriples);
 
-					// remove old domains object
-					// ObjectId id = new ObjectId();
-					// DistributionObjectDomainsMongoDBObject d2 = new
-					// DistributionObjectDomainsMongoDBObject(
-					// id.get().toString());
-					// d2.setDistributionURI(distributionMongoDBObj.getUri());
-					// d2.remove();
-					// // save object domains
-					// int count = 0;
-					// Iterator it = downloadedFile.objectDomains.entrySet()
-					// .iterator();
-					// while (it.hasNext()) {
-					// Map.Entry pair = (Map.Entry) it.next();
-					// String d = (String) pair.getKey();
-					// // distributionMongoDBObj.addAuthorityObjects(d);
-					// count++;
-					// if (count % 100000 == 0) {
-					// logger.debug(count
-					// + " different objects domain saved ("
-					// + (downloadedFile.objectDomains.size() - count)
-					// + " remaining).");
-					// }
-					//
-					// id = new ObjectId();
-					// d2 = new DistributionObjectDomainsMongoDBObject(id
-					// .get().toString());
-					// d2.setObjectDomain(d);
-					// d2.setDistributionURI(distributionMongoDBObj.getUri());
-					//
-					// d2.updateObject(false);
-					// }
-					//
-					// // remove old subjects domains
-					// id = new ObjectId();
-					// DistributionSubjectDomainsMongoDBObject d3 = new
-					// DistributionSubjectDomainsMongoDBObject(
-					// id.get().toString());
-					// d3.setDistributionURI(distributionMongoDBObj.getUri());
-					// d3.remove();
-					//
-					// // save subject domains
-					// count = 0;
-					// it = downloadedFile.subjectDomains.entrySet().iterator();
-					// while (it.hasNext()) {
-					// Map.Entry pair = (Map.Entry) it.next();
-					// String d = (String) pair.getKey();
-					// // distributionMongoDBObj.addAuthorityObjects(d);
-					// count++;
-					// if (count % 100000 == 0) {
-					// logger.debug(count
-					// + " different subjects domain saved ("
-					// + (downloadedFile.subjectDomains.size() - count)
-					// + " remaining).");
-					// }
-					//
-					// id = new ObjectId();
-					// d3 = new DistributionSubjectDomainsMongoDBObject(id
-					// .get().toString());
-					// d3.setSubjectDomain(d);
-					// d3.setDistributionURI(distributionMongoDBObj.getUri());
-					//
-					// d3.updateObject(false);
-					// }
-					//
-					// logger.info(downloadedFile.objectDomains.size()
-					// + " different objects domain saved.");
-					//
-					// logger.info(downloadedFile.subjectDomains.size()
-					// + " different subjects domain saved.");
 
 					distributionMongoDBObj.setSuccessfullyDownloaded(true);
 					distributionMongoDBObj.updateObject(true);
@@ -229,6 +164,9 @@ public class Manager {
 					e.printStackTrace();
 					distributionMongoDBObj.setSuccessfullyDownloaded(false);
 					distributionMongoDBObj.updateObject(true);
+					
+					
+					
 				}
 
 		}
@@ -332,7 +270,7 @@ public class Manager {
 		else if (distributionMongoDBObj.getStatus().equals(
 				DistributionMongoDBObject.STATUS_ERROR))
 			needDownload = true;
-		else if (new CheckWhetherDownload()
+		else if (new CheckWhetherToStream()
 				.checkDistribution(distributionMongoDBObj))
 			needDownload = true;
 

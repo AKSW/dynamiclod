@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -20,6 +21,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.openrdf.rio.ParserConfig;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.BasicParserSettings;
@@ -29,14 +31,16 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.openrdf.rio.turtle.TurtleParser;
 
 import dynlod.DynlodGeneralProperties;
-import dynlod.linksets.MakeLinksets2;
+import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
+import dynlod.exceptions.DynamicLODGeneralException;
+import dynlod.linksets.MakeLinksets;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.parsers.NTriplesDynLODParser;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
 
-public class StreamAndCompareDistribution extends Download {
+public class StreamAndCompareDistribution extends Stream {
 
 	final static Logger logger = Logger
 			.getLogger(StreamAndCompareDistribution.class);
@@ -63,6 +67,9 @@ public class StreamAndCompareDistribution extends Download {
 	boolean doneReadingFile = false;
 	boolean doneSplittingString = false;
 	boolean doneAuthorityObject = false;
+	
+	public MakeLinksets getDomainFromObjectsThread = null;
+	public MakeLinksets getDomainFromSubjectsThread = null; 
 
 	public StreamAndCompareDistribution(String accessURL, String RDFFormat,
 			String uri) throws MalformedURLException {
@@ -71,7 +78,7 @@ public class StreamAndCompareDistribution extends Download {
 		this.uri = uri;
 	}
 
-	public void streamDistribution() throws Exception {
+	public void streamDistribution() throws IOException, DynamicLODGeneralException, InterruptedException, RDFHandlerException, RDFParseException, DynamicLODFormatNotAcceptedException  {
 
 		openStream();
 
@@ -108,7 +115,7 @@ public class StreamAndCompareDistribution extends Download {
 		inputStream.close();
 	}
 
-	private void StreamDistribution() throws Exception {
+	private void StreamDistribution() throws InterruptedException, DynamicLODGeneralException, RDFHandlerException, RDFParseException, DynamicLODFormatNotAcceptedException  {
 
 		// SplitAndStoreThread splitThread = new SplitAndStoreThread(
 		// bufferQueue, subjectQueue, objectQueue, getFileName());
@@ -116,12 +123,12 @@ public class StreamAndCompareDistribution extends Download {
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
 				objectQueue, FileUtils.stringToHash(url.toString()));
 
-		MakeLinksets2 getDomainFromObjectsThread = new MakeLinksets2(
+		getDomainFromObjectsThread = new MakeLinksets(
 				objectQueue, countObjectDomainsHashMap, uri);
 		getDomainFromObjectsThread.setName("getDomainFromObjectsThread");
 		getDomainFromObjectsThread.start();
 
-		MakeLinksets2 getDomainFromSubjectsThread = new MakeLinksets2(
+		getDomainFromSubjectsThread = new MakeLinksets(
 				subjectQueue, countSubjectDomainsHashMap, uri);
 		getDomainFromSubjectsThread.isSubject = true;
 		getDomainFromSubjectsThread.setName("getDomainFromSubjectsThread");
@@ -150,9 +157,9 @@ public class StreamAndCompareDistribution extends Download {
 			} else {
 				httpConn.disconnect();
 				inputStream.close();
-				logger.info("RDF format not supported: " + getExtension());
-				throw new Exception("RDF format not supported: "
-						+ getExtension());
+				logger.info("RDF format not supported: " + RDFFormat);
+				throw new DynamicLODFormatNotAcceptedException("RDF format not supported: "
+						+ RDFFormat);
 			}
 
 			rdfParser.setRDFHandler(splitThread);
@@ -181,16 +188,11 @@ public class StreamAndCompareDistribution extends Download {
 
 //						zip.read(content, 0, (int) entry.getSize());
 
-						try {
 							rdfParser.parse(zip, url
 									.toString());
 							
 //							BufferedReader in=new BufferedReader(new InputStreamReader(entry));
-							
-						} catch (RDFParseException e) {
-							e.printStackTrace();
-							throw new Exception(e.getMessage());
-						}
+						
 					}
 
 					entry = zip.getNextEntry();
@@ -215,16 +217,9 @@ public class StreamAndCompareDistribution extends Download {
 
 						tar.read(content, 0, (int) entry.getSize());
 
-						try {
 							rdfParser.parse(tar, url
 									.toString());
-//							rdfParser.parse(new BufferedInputStream(
-//									new ByteArrayInputStream(content)), url
-//									.toString());
-						} catch (RDFParseException e) {
-							e.printStackTrace();
-							throw new Exception(e.getMessage());
-						}
+
 					}
 
 					entry = (TarArchiveEntry) tar.getNextEntry();
@@ -234,21 +229,16 @@ public class StreamAndCompareDistribution extends Download {
 			}
 
 			else {
-				try {
 					rdfParser.parse(inputStream, url.toString());
-				} catch (RDFParseException e) {
-					e.printStackTrace();
-					throw new Exception(e.getMessage());
-					
-				}
+			
 			}
 
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			throw new Exception(e.getMessage());
-
 		}
+	catch (RDFHandlerException | IOException | RDFParseException e){
+
+
+	}
+	
 
 		doneReadingFile = true;
 
@@ -273,7 +263,7 @@ public class StreamAndCompareDistribution extends Download {
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 			if ((Integer) pair.getValue() > 50) {
-				if (((String) pair.getKey()).length() < 100) {
+				if (((String) pair.getKey()).length() < 1000990) {
 					objectDomains.put((String) pair.getKey(),
 							(Integer) pair.getValue());
 				}
@@ -285,7 +275,7 @@ public class StreamAndCompareDistribution extends Download {
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 			if ((Integer) pair.getValue() > 50) {
-				if (((String) pair.getKey()).length() < 100) {
+				if (((String) pair.getKey()).length() < 1000000) {
 					subjectDomains.put((String) pair.getKey(),
 							(Integer) pair.getValue());
 				}

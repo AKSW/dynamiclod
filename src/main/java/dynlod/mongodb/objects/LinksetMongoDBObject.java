@@ -19,7 +19,7 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 	public static final String DATASET_SOURCE = "datasetSource";
 
-	public static final String AVAILABILITY = "availability";
+	public static final String INVALID_LINKS = "invalidLinks";
 
 	public static final String LINKS = "links";
 
@@ -31,9 +31,9 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 	private int datasetSource;
 
-	private int availability = 0;
-
 	private int links = 0;
+
+	private int invalidLinks = 0;
 
 	public LinksetMongoDBObject(String uri) {
 		super(COLLECTION_NAME, uri);
@@ -62,7 +62,7 @@ public class LinksetMongoDBObject extends DBSuperClass {
 			mongoDBObject.put(LINKS, links);
 
 			// updating links on mongodb
-			mongoDBObject.put(AVAILABILITY, availability);
+			mongoDBObject.put(INVALID_LINKS, invalidLinks);
 
 			insert(checkBeforeInsert);
 		} catch (Exception e2) {
@@ -97,7 +97,7 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 			datasetTarget =  ((Number) obj.get(DATASET_TARGET)).intValue();
 
-			availability = Integer.valueOf(obj.get(AVAILABILITY).toString());
+			invalidLinks = Integer.valueOf(obj.get(INVALID_LINKS).toString());
 
 			links = Integer.valueOf(obj.get(LINKS).toString());
 
@@ -146,12 +146,12 @@ public class LinksetMongoDBObject extends DBSuperClass {
 		this.links = links;
 	}
 
-	public int getAvailability() {
-		return availability;
+	public int getInvalidLinks() {
+		return invalidLinks;
 	}
 
-	public void setAvailability(int availability) {
-		this.availability = availability;
+	public void setInvalidLinks(int invalidLinks) {
+		this.invalidLinks = invalidLinks;
 	}
 
 	

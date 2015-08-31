@@ -35,7 +35,7 @@ public class APIDataset extends API {
 			if (inputRDFParser.distributionsLinks.size() > 0) {
 				apiMessage.setParserMsg(inputRDFParser.distributionsLinks
 						.size()
-						+ " distributions found. We are processsing them!");
+						+ " distributions found. We are processing them!");
 				
 				// stream distributions
 				Manager m = new Manager(inputRDFParser.distributionsLinks);
