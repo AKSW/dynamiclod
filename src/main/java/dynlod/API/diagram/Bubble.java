@@ -1,7 +1,5 @@
 package dynlod.API.diagram;
 
-import java.util.ArrayList;
-
 import org.json.JSONObject;
 
 import dynlod.mongodb.objects.DatasetMongoDBObject;

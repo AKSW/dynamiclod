@@ -203,7 +203,7 @@ public class LinksetQueries {
 						new BasicDBObject("$gt", 50));   
 			else
 				clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
-					new BasicDBObject("$gt", 50));   
+						new BasicDBObject("$gt", 50));   
 
 			BasicDBList and = new BasicDBList();
 			and.add(clause1);

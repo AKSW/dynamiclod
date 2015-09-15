@@ -3,6 +3,8 @@ package dynlod.threads;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
@@ -35,9 +37,16 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 	private int bufferSize = 100000;
 
+	// tmp files to store subjects and objects. 
+	// these files will be used to create Bloom folters
 	BufferedWriter subjectFile = null;
-
 	BufferedWriter objectFile = null;
+	
+	// saving all predicates
+	public HashSet<String> predicates = new HashSet<String>();
+
+	// saving all classes
+	public HashSet<String> classes = new HashSet<String>();
 
 	public SplitAndStoreThread(ConcurrentLinkedQueue<String> subjectQueue,
 			ConcurrentLinkedQueue<String> objectQueue, String fileName) {
@@ -112,9 +121,18 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	public void saveStatement(String stSubject, String stPredicate,
 			String stObject) {
 		
-
+		// check if we are describing a Class
+		boolean isClass = false;
+		if(stObject.equals("<http://www.w3.org/2002/07/owl#Class>")){
+			isClass = true;
+			classes.add(stSubject);
+		}
+		
+		// save predicate
+		predicates.add(stPredicate);
+		
 		try {
-			if (!stObject.equals("http://www.w3.org/2002/07/owl#Class")
+			if ((!isClass)
 					&& !stPredicate
 							.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
 				

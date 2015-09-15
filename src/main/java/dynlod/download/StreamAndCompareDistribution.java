@@ -1,12 +1,9 @@
 package dynlod.download;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -33,8 +30,12 @@ import org.openrdf.rio.turtle.TurtleParser;
 import dynlod.DynlodGeneralProperties;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.linksets.MakeLinksets;
+import dynlod.linksets.MakeLinksetsMasterThread;
+import dynlod.mongodb.objects.ClassMongoDBObject;
+import dynlod.mongodb.objects.ClassResourceMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.objects.PredicateMongoDBObject;
+import dynlod.mongodb.objects.PredicateResourceMongoDBObject;
 import dynlod.parsers.NTriplesDynLODParser;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
@@ -67,18 +68,23 @@ public class StreamAndCompareDistribution extends Stream {
 	boolean doneReadingFile = false;
 	boolean doneSplittingString = false;
 	boolean doneAuthorityObject = false;
-	
-	public MakeLinksets getDomainFromObjectsThread = null;
-	public MakeLinksets getDomainFromSubjectsThread = null; 
 
-	public StreamAndCompareDistribution(String accessURL, String RDFFormat,
-			String uri) throws MalformedURLException {
-		this.url = new URL(accessURL);
-		this.RDFFormat = RDFFormat;
-		this.uri = uri;
+	public MakeLinksetsMasterThread getDomainFromObjectsThread = null;
+	public MakeLinksetsMasterThread getDomainFromSubjectsThread = null;
+	
+	private DistributionMongoDBObject distribution = null;
+
+	public StreamAndCompareDistribution(DistributionMongoDBObject distributionMongoDBObj) throws MalformedURLException {
+		this.distribution = distributionMongoDBObj;
+		this.url = new URL(distributionMongoDBObj.getDownloadUrl());
+		this.RDFFormat = distributionMongoDBObj.getFormat();
+		this.uri = distributionMongoDBObj.getUri();
 	}
 
-	public void streamDistribution() throws IOException, DynamicLODGeneralException, InterruptedException, RDFHandlerException, RDFParseException, DynamicLODFormatNotAcceptedException  {
+	public void streamDistribution() throws IOException,
+			DynamicLODGeneralException, InterruptedException,
+			RDFHandlerException, RDFParseException,
+			DynamicLODFormatNotAcceptedException {
 
 		openStream();
 
@@ -92,12 +98,14 @@ public class StreamAndCompareDistribution extends Stream {
 		objectFilePath = DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
 				+ hashFileName;
 
-		if (RDFFormat == null || RDFFormat.equals("")){
-			DistributionMongoDBObject dist = new DistributionMongoDBObject(url.toString());
-			if (dist.getFormat() == null || dist.getFormat() == "" || dist.getFormat().equals("") )
+		if (RDFFormat == null || RDFFormat.equals("")) {
+			DistributionMongoDBObject dist = new DistributionMongoDBObject(
+					url.toString());
+			if (dist.getFormat() == null || dist.getFormat() == ""
+					|| dist.getFormat().equals(""))
 				RDFFormat = getExtension();
 			else
-				RDFFormat= dist.getFormat();
+				RDFFormat = dist.getFormat();
 		}
 		StreamDistribution();
 
@@ -115,7 +123,9 @@ public class StreamAndCompareDistribution extends Stream {
 		inputStream.close();
 	}
 
-	private void StreamDistribution() throws InterruptedException, DynamicLODGeneralException, RDFHandlerException, RDFParseException, DynamicLODFormatNotAcceptedException  {
+	private void StreamDistribution() throws InterruptedException,
+			DynamicLODGeneralException, 
+			DynamicLODFormatNotAcceptedException {
 
 		// SplitAndStoreThread splitThread = new SplitAndStoreThread(
 		// bufferQueue, subjectQueue, objectQueue, getFileName());
@@ -123,16 +133,14 @@ public class StreamAndCompareDistribution extends Stream {
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
 				objectQueue, FileUtils.stringToHash(url.toString()));
 
-		getDomainFromObjectsThread = new MakeLinksets(
-				objectQueue, countObjectDomainsHashMap, uri);
+		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
+				countObjectDomainsHashMap, uri);
 		getDomainFromObjectsThread.setName("getDomainFromObjectsThread");
-		getDomainFromObjectsThread.start();
 
-		getDomainFromSubjectsThread = new MakeLinksets(
-				subjectQueue, countSubjectDomainsHashMap, uri);
+		getDomainFromSubjectsThread = new MakeLinksetsMasterThread(subjectQueue,
+				countSubjectDomainsHashMap, uri);
 		getDomainFromSubjectsThread.isSubject = true;
 		getDomainFromSubjectsThread.setName("getDomainFromSubjectsThread");
-		getDomainFromSubjectsThread.start();
 
 		try {
 
@@ -142,7 +150,7 @@ public class StreamAndCompareDistribution extends Stream {
 				rdfParser = new TurtleParser();
 				logger.info("==== Turtle Parser loaded ====");
 			} else if (RDFFormat.equals(Formats.DEFAULT_NTRIPLES)) {
-//				rdfParser = new NTriplesParser();
+				// rdfParser = new NTriplesParser();
 				rdfParser = new NTriplesDynLODParser();
 				logger.info("==== NTriples Parser loaded ====");
 			} else if (RDFFormat.equals(Formats.DEFAULT_RDFXML)) {
@@ -158,9 +166,11 @@ public class StreamAndCompareDistribution extends Stream {
 				httpConn.disconnect();
 				inputStream.close();
 				logger.info("RDF format not supported: " + RDFFormat);
-				throw new DynamicLODFormatNotAcceptedException("RDF format not supported: "
-						+ RDFFormat);
+				throw new DynamicLODFormatNotAcceptedException(
+						"RDF format not supported: " + RDFFormat);
 			}
+			getDomainFromSubjectsThread.start();
+			getDomainFromObjectsThread.start();
 
 			rdfParser.setRDFHandler(splitThread);
 			ParserConfig config = new ParserConfig();
@@ -184,15 +194,15 @@ public class StreamAndCompareDistribution extends Stream {
 						logger.info(++nf + " zip file uncompressed.");
 						logger.info("File name: " + entry.getName());
 
-//						byte[] content = new byte[(int) entry.getSize()];
+						// byte[] content = new byte[(int) entry.getSize()];
 
-//						zip.read(content, 0, (int) entry.getSize());
+						// zip.read(content, 0, (int) entry.getSize());
 
-							rdfParser.parse(zip, url
-									.toString());
-							
-//							BufferedReader in=new BufferedReader(new InputStreamReader(entry));
-						
+						rdfParser.parse(zip, url.toString());
+
+						// BufferedReader in=new BufferedReader(new
+						// InputStreamReader(entry));
+
 					}
 
 					entry = zip.getNextEntry();
@@ -217,8 +227,7 @@ public class StreamAndCompareDistribution extends Stream {
 
 						tar.read(content, 0, (int) entry.getSize());
 
-							rdfParser.parse(tar, url
-									.toString());
+						rdfParser.parse(tar, url.toString());
 
 					}
 
@@ -229,22 +238,19 @@ public class StreamAndCompareDistribution extends Stream {
 			}
 
 			else {
-					rdfParser.parse(inputStream, url.toString());
-			
+				rdfParser.parse(inputStream, url.toString());
+
 			}
 
+		} catch (RDFHandlerException | IOException | RDFParseException e) {
+
 		}
-	catch (RDFHandlerException | IOException | RDFParseException e){
-
-
-	}
-	
 
 		doneReadingFile = true;
 
 		// telling thread that we are done streaming
-		
-//		splitThread.setDoneReadingFile(true);
+
+		// splitThread.setDoneReadingFile(true);
 
 		// fileName = splitThread.getFileName();
 		objectLines = splitThread.getObjectLines();
@@ -263,10 +269,9 @@ public class StreamAndCompareDistribution extends Stream {
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 			if ((Integer) pair.getValue() > 50) {
-				if (((String) pair.getKey()).length() < 1000990) {
-					objectDomains.put((String) pair.getKey(),
-							(Integer) pair.getValue());
-				}
+				objectDomains.put((String) pair.getKey(),
+						(Integer) pair.getValue());
+
 			}
 			it.remove();
 		}
@@ -275,12 +280,39 @@ public class StreamAndCompareDistribution extends Stream {
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 			if ((Integer) pair.getValue() > 50) {
-				if (((String) pair.getKey()).length() < 1000000) {
-					subjectDomains.put((String) pair.getKey(),
-							(Integer) pair.getValue());
-				}
+				subjectDomains.put((String) pair.getKey(),
+						(Integer) pair.getValue());
+
 			}
 			it.remove();
+		}
+		
+		logger.info("Saving predicates...");
+		// save predicates
+		Iterator<String> i = splitThread.predicates.iterator();
+		while(i.hasNext()){
+			String predicate = i.next();
+			PredicateMongoDBObject p = new PredicateMongoDBObject(predicate);
+			p.updateObject(true);
+			PredicateResourceMongoDBObject pr = new PredicateResourceMongoDBObject(p.getDynLodID()+"-"+distribution.getDynLodID()+"-"+distribution.getTopDataset());
+			pr.setDatasetID(distribution.getTopDataset());
+			pr.setDistributionID(distribution.getDynLodID());
+			pr.setPredicateID(p.getDynLodID());
+			pr.updateObject(true);
+		}
+		
+		logger.info("Saving OWL classes...");
+		// save predicates
+		i = splitThread.classes.iterator();
+		while(i.hasNext()){
+			String owlclass = i.next();
+			ClassMongoDBObject p = new ClassMongoDBObject(owlclass);
+			p.updateObject(true);
+			ClassResourceMongoDBObject pr = new ClassResourceMongoDBObject(p.getDynLodID()+"-"+distribution.getDynLodID()+"-"+distribution.getTopDataset());
+			pr.setDatasetID(distribution.getTopDataset());
+			pr.setDistributionID(distribution.getDynLodID());
+			pr.setClassID(p.getDynLodID()); 
+			pr.updateObject(true);
 		}
 	}
 

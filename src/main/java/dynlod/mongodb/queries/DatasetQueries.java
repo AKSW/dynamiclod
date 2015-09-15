@@ -140,7 +140,10 @@ public class DatasetQueries {
 					new BasicDBObject(DatasetMongoDBObject.TITLE, 1));
 
 			for (DBObject instance : instances) {
-				list.add(new DatasetMongoDBObject(instance));
+				if(((ArrayList<String>) instance.get(DatasetMongoDBObject.PARENT_DATASETS)).size()==1){
+					list.add(new DatasetMongoDBObject(instance));
+					
+				}
 			}
 
 		} catch (Exception e) {

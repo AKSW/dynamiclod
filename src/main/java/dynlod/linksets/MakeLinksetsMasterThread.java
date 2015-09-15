@@ -14,14 +14,14 @@ import dynlod.threads.DataModelThread;
 import dynlod.threads.GetFQDNFromTriplesThread;
 import dynlod.threads.JobThread;
 
-public class MakeLinksets extends GetFQDNFromTriplesThread {
+public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 
-	public MakeLinksets(ConcurrentLinkedQueue<String> resourceQueue,
+	public MakeLinksetsMasterThread(ConcurrentLinkedQueue<String> resourceQueue,
 			ConcurrentHashMap<String, Integer> countHashMap, String uri) {
 		super(resourceQueue, countHashMap, uri);
 	}
 
-	final static Logger logger = Logger.getLogger(MakeLinksets.class);
+	final static Logger logger = Logger.getLogger(MakeLinksetsMasterThread.class);
 
 	ArrayList<DistributionMongoDBObject> disributionsToCompare;
 	ArrayList<String> resourcesToBeProcessedQueueCopy;
@@ -66,7 +66,7 @@ public class MakeLinksets extends GetFQDNFromTriplesThread {
 					
 
 					for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
-						if (!listOfDataThreads
+						if (!listOfWorkerThreads
 								.containsKey(distributionToCompare.getDynLodID()))
 							try {
 
@@ -74,17 +74,17 @@ public class MakeLinksets extends GetFQDNFromTriplesThread {
 								// compared
 								if (!distributionToCompare.getUri().equals(
 										distribution.getUri())) {
-									DataModelThread dataThread = new DataModelThread(
+									DataModelThread workerThread = new DataModelThread(
 											distribution,
 											distributionToCompare, 
 											fqdnPerDistribution.get(distributionToCompare.getDynLodID()),
 											isSubject);
-									if (dataThread.datasetID != 0) {
-										listOfDataThreads.putIfAbsent(
+									if (workerThread.datasetID != 0) {
+										listOfWorkerThreads.putIfAbsent(
 												distributionToCompare.getDynLodID(),
-												dataThread);
-										dataThread = listOfDataThreads.get(distributionToCompare.getDynLodID());
-										dataThread.startFilter();
+												workerThread);
+										workerThread = listOfWorkerThreads.get(distributionToCompare.getDynLodID());
+										workerThread.startFilter();
 										
 									}
 								}
@@ -104,7 +104,7 @@ public class MakeLinksets extends GetFQDNFromTriplesThread {
 									while(keepTrying){
 										try{
 											if(! (dFqdn.distribution == distribution.getDynLodID())){
-												listOfDataThreads.get(dFqdn.distribution).active = true;
+												listOfWorkerThreads.get(dFqdn.distribution).active = true;
 											}
 											keepTrying = false;
 										}
@@ -127,7 +127,7 @@ public class MakeLinksets extends GetFQDNFromTriplesThread {
 									while(keepTrying){
 										try{
 											if(!(dFqdn.distribution == distribution.getDynLodID()))
-												listOfDataThreads.get(dFqdn.distribution).active = true;
+												listOfWorkerThreads.get(dFqdn.distribution).active = true;
 											
 											keepTrying = false;
 										}
@@ -149,12 +149,12 @@ public class MakeLinksets extends GetFQDNFromTriplesThread {
 
 					String[] buffer = new String[bufferSize];
 
-					if (listOfDataThreads.size() > 0) {
+					if (listOfWorkerThreads.size() > 0) {
 
 						int threadIndex = 0;
 
-						Thread[] threads = new Thread[listOfDataThreads.size()];
-						for (DataModelThread dataThread2 : listOfDataThreads
+						Thread[] threads = new Thread[listOfWorkerThreads.size()];
+						for (DataModelThread dataThread2 : listOfWorkerThreads
 								.values()) {
 							if (dataThread2.active) {
 								threads[threadIndex] = new Thread(
@@ -183,7 +183,7 @@ public class MakeLinksets extends GetFQDNFromTriplesThread {
 					}
 
 					// save linksets into mongodb
-					for (DataModelThread dataThread : listOfDataThreads
+					for (DataModelThread dataThread : listOfWorkerThreads
 							.values()) {
 
 						dataThread.active = false;

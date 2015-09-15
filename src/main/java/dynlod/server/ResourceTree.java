@@ -55,11 +55,16 @@ public class ResourceTree extends HttpServlet {
 			datasetArray.add(jsonparent);
 			
 			for (DatasetMongoDBObject parent : parent_list) {
-				jsonparent = new JsonObject();
-				jsonparent.put("parent", parent.getParentDatasetID().get(0));					
-				jsonparent.put("id", parent.getDynLodID());
-				jsonparent.put("text", parent.getTitle());
-				datasetArray.add(jsonparent);
+				for(int p: parent.getParentDatasetID()){
+					if(p>0){
+						jsonparent = new JsonObject();
+						jsonparent.put("parent", p);					
+						jsonparent.put("id", parent.getDynLodID());
+						jsonparent.put("text", parent.getTitle());
+						datasetArray.add(jsonparent);
+						break;
+					}
+				}
 				
 			}
 			

@@ -1,5 +1,8 @@
 package dynlod.API.diagram;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import org.json.JSONObject;
 
 public class Link {
@@ -8,23 +11,25 @@ public class Link {
 
 	Bubble target;
 
-	int links;
+	double links;
 	
 
-	public Link(Bubble source, Bubble target, int links) {
+	public Link(Bubble source, Bubble target, double links) {
 		this.source = source;
 		this.target = target;
 		this.links = links;
 	}
 	
 	public JSONObject getJSON(){
+		NumberFormat formatter = new DecimalFormat("0.00000000");     
+	
 		JSONObject link = new JSONObject();
 		
 		link.put("target", target
 				.getID());
 		link.put("source", source
 				.getID());
-		link.put("value", links);
+		link.put("value", formatter.format(links));
 		
 		return link;
 	}
@@ -45,7 +50,7 @@ public class Link {
 		this.target = target;
 	}
 
-	public int getLinks() {
+	public double getLinks() {
 		return links;
 	}
 

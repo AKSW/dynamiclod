@@ -87,9 +87,7 @@ public class Manager {
 
 					// now we need to download the distribution
 					StreamAndCompareDistribution downloadedFile = new StreamAndCompareDistribution(
-							distributionMongoDBObj.getDownloadUrl(),
-							distributionMongoDBObj.getFormat(),
-							distributionMongoDBObj.getUri());
+							distributionMongoDBObj);
 
 					logger.info("Streaming distribution.");
 

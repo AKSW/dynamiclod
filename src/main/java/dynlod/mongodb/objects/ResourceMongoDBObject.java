@@ -1,6 +1,5 @@
 package dynlod.mongodb.objects;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
@@ -28,32 +27,7 @@ public class ResourceMongoDBObject extends DBSuperClass {
 	
 	protected int dynLodID = 0;
 	
-//	
-//	@Override
-//	protected DBObject searchByID(int id) {
-//		try {
-//			this.dynLodID = id;
-//			mongoDBObject.put(DYN_LOD_ID,  id);
-//
-//			// adding object URI
-////			if (uri == null)
-////				return null;
-//
-//			DBCursor d = objectCollection.find(mongoDBObject);
-//			if (d.hasNext()){
-//				DBObject o = d.next();
-//				this.uri = o.get(URI).toString();
-//				return o;
-//			}
-//
-//			throw new DynamicLODGeneralException("We coild not find dataset with id: "+ id);
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-//		
+
 	protected DBObject search(int id) {
 
 		mongoDBObject.put(DYN_LOD_ID,  id);

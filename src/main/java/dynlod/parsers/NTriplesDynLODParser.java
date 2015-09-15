@@ -49,10 +49,10 @@ public class NTriplesDynLODParser extends RDFParserBase{
 		                		
 		                		while(bufferQueue.size()>450){
 		                			Thread.sleep(1);
-		                		sleeping++; 
-		                		if(sleeping%25000==0)
-		                			System.out.println("Streaming thread is sleeping for a long time...");
-		                		}
+		                			sleeping++; 
+		                			if(sleeping%25000==0)
+		                				System.out.println("Streaming thread is sleeping for a long time...");
+		                			}
 		                	}
 		                	doneReading = true;
 		                }
@@ -86,9 +86,7 @@ public class NTriplesDynLODParser extends RDFParserBase{
 			String propertyStmt= "";
 			String objectStmt= "";
 			
-
 			String lastLine = "";
-			String tmpLastSubject = "";
 
 			int showMsgInterval = 1000;
 			int bufferCount = 0;
@@ -114,10 +112,8 @@ public class NTriplesDynLODParser extends RDFParserBase{
 						// case buffer starts with an incomplete triple, 
 						// concatenate with the last line of the previous buffer
 						if (!lastLine.equals("")) {
-//							System.out.println(lastLine);
 							triples[0] = lastLine.concat(triples[0]);
 							lastLine = "";
-//							System.exit(1);
 						}
 
 						// for each triple, separate s, p, o
@@ -140,7 +136,7 @@ public class NTriplesDynLODParser extends RDFParserBase{
 
 									Matcher matcher = pattern.matcher(triple);
 									
-									// case it is an incomplete line, 
+									// case it is an incomplete line means it is the end of the buffer
 									// handle in the catch statement
 									if (!matcher.matches()) {
 										throw new ArrayIndexOutOfBoundsException();

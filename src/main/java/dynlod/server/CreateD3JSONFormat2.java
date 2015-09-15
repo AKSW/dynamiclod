@@ -1,6 +1,8 @@
 package dynlod.server;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -19,14 +21,11 @@ import dynlod.API.diagram.Link;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.queries.FQDNQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 
 public class CreateD3JSONFormat2 extends HttpServlet {
 
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7213269624452749676L;
 
 	boolean showDistribution = true;
@@ -34,6 +33,10 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 	boolean showOntologies = false;
 	
 	boolean showInvalidLinks = false;
+	
+	double linkFrom = 0;
+	
+	double linkTo = 1;
 	
 
 	protected void doPost(HttpServletRequest request,
@@ -89,6 +92,11 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 		else
 			showInvalidLinks = false;
 		
+		if (parameters.containsKey("linkFrom")) 
+			linkFrom = Double.parseDouble(parameters.get("linkFrom")[0]);
+		
+		if (parameters.containsKey("linkTo")) 
+			linkTo = Double.parseDouble(parameters.get("linkTo")[0]);
 		
 		if (parameters.containsKey("getAllDistributions")) {
 
@@ -177,7 +185,7 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 		
 		
 		for (DatasetMongoDBObject subset : dataset.getSubsetsAsMongoDBObject()) {
-			makeLink0(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
+			makeLink(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
 					diagram.addBubble(new Bubble(subset, true,parentDataset)), diagram, 0);				
 			iterateDataset(subset, diagram, parentDataset, --currentLevel);
 		}
@@ -185,7 +193,7 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 		for (DistributionMongoDBObject distribution : dataset.getDistributionsAsMongoDBObjects()) {
 			
 
-			makeLink0(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
+			makeLink(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
 					diagram.addBubble(new Bubble(distribution, true,parentDataset)), diagram, 0);
 
 			// get indegree and outdegree for a distribution
@@ -196,8 +204,8 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 			
 
 			for (LinksetMongoDBObject linkset : in) {
-				DistributionMongoDBObject a =  new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject b =  new DistributionMongoDBObject(linkset.getDistributionTarget());
+				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
 				
 				int links = 0;
 				if(showInvalidLinks)
@@ -205,17 +213,17 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 				else
 					links = linkset.getLinks();
 				
-				if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )
-					makeLink0(diagram.addBubble(new Bubble(a, showDistribution,parentDataset)),
-							diagram.addBubble(new Bubble(b, showDistribution,parentDataset)), diagram, links);
+				if(source.getIsVocabulary() == false && target.getIsVocabulary() == false)
+					makeLink(diagram.addBubble(new Bubble(source, showDistribution,parentDataset)),
+							diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 					
 //				makeLink0(new Bubble(a, showDistribution,parentDataset),
 //						new Bubble(b, showDistribution,parentDataset), diagram, linkset.getLinks());
 
 			}
 			for (LinksetMongoDBObject linkset : out) {
-				DistributionMongoDBObject a =  new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject b =  new DistributionMongoDBObject(linkset.getDistributionTarget());
+				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
 				
 				
 				int links = 0;
@@ -225,28 +233,41 @@ public class CreateD3JSONFormat2 extends HttpServlet {
 					links = linkset.getLinks();
 				
 				if(!showOntologies){
-					if(a.getIsVocabulary() == false && b.getIsVocabulary() == false  )				
-						makeLink0(diagram.addBubble(new Bubble(a, showDistribution,parentDataset)),
-								diagram.addBubble(new Bubble(b, showDistribution,parentDataset)), diagram, links);
+					if(source.getIsVocabulary() == false && target.getIsVocabulary() == false  )				
+						makeLink(diagram.addBubble(new Bubble(source, showDistribution,parentDataset)),
+								diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 				}
 				else
-					makeLink0(diagram.addBubble(new Bubble(a, showDistribution,parentDataset)),
-							diagram.addBubble(new Bubble(b, showDistribution,parentDataset)), diagram, links);
+					makeLink(diagram.addBubble(new Bubble(source, showDistribution,parentDataset)),
+							diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 				
 			}
 
 		}
 
 	}
+	
 
-	private void makeLink0(Bubble source, Bubble target, Diagram diagram, int nLinks){
+	private void makeLink(Bubble source, Bubble target, Diagram diagram, double nLinks){
+		
+		// get number of described fqdn
+		int numberOfSourceFQDN = new FQDNQueries().getNumberOfObjectResources(source.getID());
+		
+		if (numberOfSourceFQDN>0)
+			nLinks = 1.0*nLinks/numberOfSourceFQDN;
+		
+		// compare range
+		if(nLinks<=linkTo && nLinks>=linkFrom){
 		
 		Link link = new Link(source, target, nLinks);
 
 		diagram.addBubble(target);
 		diagram.addBubble(source);
-
+		
 		diagram.addLink(link);
+		}
+		
+		
 	}
 	
 }

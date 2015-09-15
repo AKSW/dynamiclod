@@ -43,7 +43,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 	private ConcurrentLinkedQueue<String> resourceQueue = null;
 	protected ArrayList<String> resourcesToBeProcessedQueue = new  ArrayList<String>();
 	public DistributionMongoDBObject distribution;
-	protected ConcurrentHashMap<Integer, DataModelThread> listOfDataThreads = new ConcurrentHashMap<Integer, DataModelThread>(); 
+	protected ConcurrentHashMap<Integer, DataModelThread> listOfWorkerThreads = new ConcurrentHashMap<Integer, DataModelThread>(); 
 	public ConcurrentHashMap<String, Integer> listLoadedFQDN = new ConcurrentHashMap<String, Integer>();
 	
 
@@ -132,7 +132,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 		}
 
 		saveDomains();
-		listOfDataThreads  = new ConcurrentHashMap<Integer, DataModelThread>(); 
+		listOfWorkerThreads  = new ConcurrentHashMap<Integer, DataModelThread>(); 
 		
 		logger.debug("Ending GetDomainsFromTriplesThread class.");
 	}
@@ -159,6 +159,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 							.toString());
 					d2.setSubjectFQDN(d);
 					d2.setDistributionID(distributionMongoDBObject.getDynLodID());
+					d2.setNumberOfResources(count);
 					
 					try {
 						d2.updateObject(true);
@@ -173,6 +174,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 					d2 = new DistributionObjectDomainsMongoDBObject(id.get()
 							.toString());
 					d2.setObjectFQDN(d);
+					d2.setNumberOfResources(count);
 					d2.setDistributionID(distributionMongoDBObject.getDynLodID());
 
 					try {

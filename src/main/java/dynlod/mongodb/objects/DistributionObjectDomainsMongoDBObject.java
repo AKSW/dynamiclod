@@ -18,10 +18,15 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 	
 	public static final String OBJECT_FQDN = "objectFqdn";	
 	
+	public static final String NUMBER_OF_RESOURCES = "numberOfResources";	
+	
 	
 	private int distributionID;
 
 	private String objectFqdn;
+
+	private int numberOfResources;
+
 	
 	
 	public DistributionObjectDomainsMongoDBObject(String uri) {
@@ -43,6 +48,11 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 			// updating objectsTarget on mongodb
 			mongoDBObject.put(OBJECT_FQDN, objectFqdn);
 			mongoDBObject2.put(OBJECT_FQDN, objectFqdn);
+			
+			// updating number of resources on mongodb
+			mongoDBObject.put(NUMBER_OF_RESOURCES, numberOfResources);
+			mongoDBObject2.put(NUMBER_OF_RESOURCES, numberOfResources);
+
 			
 			DBCursor d = objectCollection.find(mongoDBObject2);
 			if (d.hasNext())
@@ -76,17 +86,12 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 
 			objectFqdn = (String) obj.get(OBJECT_FQDN);
 
+			numberOfResources = ((Number) obj.get(NUMBER_OF_RESOURCES)).intValue();
+
+
 			return true;
 		}
 		return false;
-	}
-	
-	public boolean remove(){
-		BasicDBObject tmp = new BasicDBObject();
-		tmp.put(DISTRIBUTION_ID, distributionID);
-		DBCursor d = objectCollection.find(tmp);
-		objectCollection.remove(tmp);
-		return true;
 	}
 
 	public int getDistributionID() {
@@ -103,6 +108,14 @@ public class DistributionObjectDomainsMongoDBObject extends DBSuperClass {
 
 	public void setObjectFQDN(String objectFqdn) {
 		this.objectFqdn = objectFqdn;
+	}
+
+	public int getNumberOfResources() {
+		return numberOfResources;
+	}
+
+	public void setNumberOfResources(int numberOfResources) {
+		this.numberOfResources = numberOfResources;
 	}
 	
 	

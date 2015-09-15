@@ -51,6 +51,12 @@ abstract public class DBSuperClass {
 
 	// collectionName is mandatory since we need to know where to save the rdf
 	// entry
+	/**
+	 * @param collectionName
+	 * The collection name
+	 * @param uri
+	 * The resource URI
+	 */
 	public DBSuperClass(String collectionName, String uri) {
 
 		try {

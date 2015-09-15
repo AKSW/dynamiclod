@@ -1,7 +1,5 @@
 package dynlod.mongodb.objects;
 
-import java.util.Date;
-
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
