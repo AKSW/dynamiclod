@@ -1,6 +1,7 @@
 package dynlod.mongodb.objects;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.mongodb.BasicDBList;
@@ -91,6 +92,9 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 			mongoDBObject.put(PARENT_DATASETS, parentDatasetsIDs);
 			
 			mongoDBObject.put(ACCESS_URL, access_url);
+
+			// adding timestamp value
+			mongoDBObject.put(MODIFIED_TIMESTAMP, new Date());
 			
 			
 			insert(checkBeforeInsert);

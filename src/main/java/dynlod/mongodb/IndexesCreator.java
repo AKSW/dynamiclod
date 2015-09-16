@@ -3,8 +3,8 @@ package dynlod.mongodb;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-import dynlod.mongodb.objects.ClassMongoDBObject;
-import dynlod.mongodb.objects.ClassResourceMongoDBObject;
+import dynlod.mongodb.objects.OWLClassMongoDBObject;
+import dynlod.mongodb.objects.OWLClassResourceMongoDBObject;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
@@ -55,12 +55,12 @@ public class IndexesCreator {
 		addIndex(PredicateResourceMongoDBObject.COLLECTION_NAME, PredicateResourceMongoDBObject.DATASET_ID, 1);	
 		
 		// indexes for classes
-		addIndex(ClassMongoDBObject.COLLECTION_NAME, PredicateMongoDBObject.DYN_LOD_ID, 1);
+		addIndex(OWLClassMongoDBObject.COLLECTION_NAME, PredicateMongoDBObject.DYN_LOD_ID, 1);
 		
 		// indexes for predicatesresources
-		addIndex(ClassResourceMongoDBObject.COLLECTION_NAME, ClassResourceMongoDBObject.CLASS_ID, 1);
-		addIndex(ClassResourceMongoDBObject.COLLECTION_NAME, ClassResourceMongoDBObject.DISTRIBUTION_ID, 1);
-		addIndex(ClassResourceMongoDBObject.COLLECTION_NAME, ClassResourceMongoDBObject.DATASET_ID, 1);
+		addIndex(OWLClassResourceMongoDBObject.COLLECTION_NAME, OWLClassResourceMongoDBObject.CLASS_ID, 1);
+		addIndex(OWLClassResourceMongoDBObject.COLLECTION_NAME, OWLClassResourceMongoDBObject.DISTRIBUTION_ID, 1);
+		addIndex(OWLClassResourceMongoDBObject.COLLECTION_NAME, OWLClassResourceMongoDBObject.DATASET_ID, 1);
 		
 	}
 	

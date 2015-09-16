@@ -31,12 +31,15 @@ import dynlod.DynlodGeneralProperties;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.linksets.MakeLinksetsMasterThread;
-import dynlod.mongodb.objects.ClassMongoDBObject;
-import dynlod.mongodb.objects.ClassResourceMongoDBObject;
+import dynlod.mongodb.objects.OWLClassMongoDBObject;
+import dynlod.mongodb.objects.OWLClassResourceMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.PredicateMongoDBObject;
 import dynlod.mongodb.objects.PredicateResourceMongoDBObject;
+import dynlod.mongodb.queries.OWLClassQueries;
+import dynlod.mongodb.queries.PredicatesQueries;
 import dynlod.parsers.NTriplesDynLODParser;
+import dynlod.similarity.jaccard.CalculateJaccardSimilarity;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
@@ -56,10 +59,10 @@ public class StreamAndCompareDistribution extends Stream {
 	public Integer objectLines = 0;
 	public Integer totalTriples;
 
-	public ConcurrentHashMap<String, Integer> objectDomains = new ConcurrentHashMap<String, Integer>();
-	public ConcurrentHashMap<String, Integer> subjectDomains = new ConcurrentHashMap<String, Integer>();
-	public ConcurrentHashMap<String, Integer> countObjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
-	public ConcurrentHashMap<String, Integer> countSubjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
+//	public ConcurrentHashMap<String, Integer> objectDomains = new ConcurrentHashMap<String, Integer>();
+//	public ConcurrentHashMap<String, Integer> subjectDomains = new ConcurrentHashMap<String, Integer>();
+//	public ConcurrentHashMap<String, Integer> countObjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
+//	public ConcurrentHashMap<String, Integer> countSubjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
 
 	ConcurrentLinkedQueue<String> bufferQueue = new ConcurrentLinkedQueue<String>();
 	ConcurrentLinkedQueue<String> objectQueue = new ConcurrentLinkedQueue<String>();
@@ -133,12 +136,18 @@ public class StreamAndCompareDistribution extends Stream {
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
 				objectQueue, FileUtils.stringToHash(url.toString()));
 
-		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
-				countObjectDomainsHashMap, uri);
-		getDomainFromObjectsThread.setName("getDomainFromObjectsThread");
+//		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
+//				countObjectDomainsHashMap, uri);
+//		getDomainFromSubjectsThread = new MakeLinksetsMasterThread(subjectQueue,
+//				countSubjectDomainsHashMap, uri);
 
+		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
+				uri);
 		getDomainFromSubjectsThread = new MakeLinksetsMasterThread(subjectQueue,
-				countSubjectDomainsHashMap, uri);
+				uri);
+
+		
+		getDomainFromObjectsThread.setName("getDomainFromObjectsThread");		
 		getDomainFromSubjectsThread.isSubject = true;
 		getDomainFromSubjectsThread.setName("getDomainFromSubjectsThread");
 
@@ -265,55 +274,39 @@ public class StreamAndCompareDistribution extends Stream {
 
 		splitThread.closeQueues();
 
-		Iterator it = countObjectDomainsHashMap.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pair = (Map.Entry) it.next();
-			if ((Integer) pair.getValue() > 50) {
-				objectDomains.put((String) pair.getKey(),
-						(Integer) pair.getValue());
-
-			}
-			it.remove();
-		}
-
-		it = countSubjectDomainsHashMap.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pair = (Map.Entry) it.next();
-			if ((Integer) pair.getValue() > 50) {
-				subjectDomains.put((String) pair.getKey(),
-						(Integer) pair.getValue());
-
-			}
-			it.remove();
-		}
+//		Iterator it = countObjectDomainsHashMap.entrySet().iterator();
+//		while (it.hasNext()) {
+//			Map.Entry pair = (Map.Entry) it.next();
+//			if ((Integer) pair.getValue() > 50) {
+//				objectDomains.put((String) pair.getKey(),
+//						(Integer) pair.getValue());
+//
+//			}
+//			it.remove();
+//		}
+//
+//		it = countSubjectDomainsHashMap.entrySet().iterator();
+//		while (it.hasNext()) {
+//			Map.Entry pair = (Map.Entry) it.next();
+//			if ((Integer) pair.getValue() > 50) {
+//				subjectDomains.put((String) pair.getKey(),
+//						(Integer) pair.getValue());
+//
+//			}
+//			it.remove();
+//		}
 		
 		logger.info("Saving predicates...");
 		// save predicates
-		Iterator<String> i = splitThread.predicates.iterator();
-		while(i.hasNext()){
-			String predicate = i.next();
-			PredicateMongoDBObject p = new PredicateMongoDBObject(predicate);
-			p.updateObject(true);
-			PredicateResourceMongoDBObject pr = new PredicateResourceMongoDBObject(p.getDynLodID()+"-"+distribution.getDynLodID()+"-"+distribution.getTopDataset());
-			pr.setDatasetID(distribution.getTopDataset());
-			pr.setDistributionID(distribution.getDynLodID());
-			pr.setPredicateID(p.getDynLodID());
-			pr.updateObject(true);
-		}
+		new PredicatesQueries().insertPredicates(splitThread.predicates, distribution.getDynLodID(), distribution.getTopDataset());
 		
 		logger.info("Saving OWL classes...");
-		// save predicates
-		i = splitThread.classes.iterator();
-		while(i.hasNext()){
-			String owlclass = i.next();
-			ClassMongoDBObject p = new ClassMongoDBObject(owlclass);
-			p.updateObject(true);
-			ClassResourceMongoDBObject pr = new ClassResourceMongoDBObject(p.getDynLodID()+"-"+distribution.getDynLodID()+"-"+distribution.getTopDataset());
-			pr.setDatasetID(distribution.getTopDataset());
-			pr.setDistributionID(distribution.getDynLodID());
-			pr.setClassID(p.getDynLodID()); 
-			pr.updateObject(true);
-		}
+		// Saving OWL classes
+		new OWLClassQueries().insertOWLClasses(splitThread.owlClasses,  distribution.getDynLodID(), distribution.getTopDataset());
+
+		logger.info("Checking distributions similarities...");
+		// Saving OWL classes
+		new CalculateJaccardSimilarity().updateLinks(distribution);
 	}
 
 }

@@ -160,10 +160,10 @@ public class LinksetQueries {
 			
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, id);  
 			DBObject clause2;
-			if(invalidLinks)
-				clause2 = new BasicDBObject(LinksetMongoDBObject.INVALID_LINKS,
-						new BasicDBObject("$gt", 50));   
-			else
+//			if(invalidLinks)
+//				clause2 = new BasicDBObject(LinksetMongoDBObject.INVALID_LINKS,
+//						new BasicDBObject("$gt", 50));   
+//			else
 				clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 					new BasicDBObject("$gt", 50));   
 
@@ -198,10 +198,10 @@ public class LinksetQueries {
 			DBObject clause1 = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, id);  
 			DBObject clause2;
 			
-			if(invalidLinks)
-				clause2 = new BasicDBObject(LinksetMongoDBObject.INVALID_LINKS,
-						new BasicDBObject("$gt", 50));   
-			else
+//			if(invalidLinks)
+//				clause2 = new BasicDBObject(LinksetMongoDBObject.INVALID_LINKS,
+//						new BasicDBObject("$gt", 50));   
+//			else
 				clause2 = new BasicDBObject(LinksetMongoDBObject.LINKS,
 						new BasicDBObject("$gt", 50));   
 

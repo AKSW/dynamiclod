@@ -33,9 +33,6 @@ abstract public class DBSuperClass {
 	protected BasicDBObject mongoDBObject = new BasicDBObject();
 
 	// defining mongodb keys -> RDF properties
-	public final String CREATED_TIMESTAMP = "createdTimestamp";
-
-	public final String MODIFIED_TIMESTAMP = "modifiedTimestamp";
 
 	public static final String URI = "_id";
 
@@ -176,8 +173,6 @@ abstract public class DBSuperClass {
 						+ ". Object already exists.");
 		}
 
-		// adding timestamp value
-		mongoDBObject.put(CREATED_TIMESTAMP, new Date());
 
 		// saving object to mongodb
 		objectCollection.insert(mongoDBObject);
@@ -187,9 +182,6 @@ abstract public class DBSuperClass {
 
 		if (uri == null)
 			return false;
-
-		// adding timestamp value
-		mongoDBObject.put(MODIFIED_TIMESTAMP, new Date());
 
 		BasicDBObject query = new BasicDBObject();
 		query.put(URI, uri);

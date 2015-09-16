@@ -56,9 +56,9 @@ public class GetFQDNFromTriplesThread extends Thread {
 
 	public GetFQDNFromTriplesThread(
 			ConcurrentLinkedQueue<String> resourceQueue,
-			ConcurrentHashMap<String, Integer> countHashMap, String uri) {
+			String uri) {
 		this.resourceQueue = resourceQueue;
-		this.countTotalFQDN = countHashMap;
+		this.countTotalFQDN = new ConcurrentHashMap<String, Integer>();
 		this.uri = uri;
 		this.distribution = new DistributionMongoDBObject(uri);
 

@@ -5,7 +5,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class ClassMongoDBObject extends DBSuperClass {
+public class OWLClassMongoDBObject extends DBSuperClass {
 
 	public static final String COLLECTION_NAME = "Class";
 
@@ -13,12 +13,12 @@ public class ClassMongoDBObject extends DBSuperClass {
 
 	private int dynLodID = 0;
 
-	public ClassMongoDBObject(int id) {
+	public OWLClassMongoDBObject(int id) {
 		super(COLLECTION_NAME, id);
 		loadObject();
 	}
 
-	public ClassMongoDBObject(String URI) {
+	public OWLClassMongoDBObject(String URI) {
 		super(COLLECTION_NAME, URI);
 		loadObject();
 	}

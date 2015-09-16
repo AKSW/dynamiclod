@@ -1,17 +1,19 @@
-package dynlod.lov;
+package dynlod.lovvocabularies;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
@@ -21,7 +23,6 @@ import org.junit.Test;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -33,18 +34,21 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.DatasetGraph;
 
 import dynlod.DynlodGeneralProperties;
-import dynlod.Manager;
 import dynlod.download.Stream;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
+import dynlod.linksets.MakeLinksetsMasterThread;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
+import dynlod.mongodb.queries.OWLClassQueries;
+import dynlod.mongodb.queries.PredicatesQueries;
+import dynlod.similarity.jaccard.CalculateJaccardSimilarity;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
 
-public class LOV extends Stream {
-	final static Logger logger = Logger.getLogger(LOV.class);
+public class LOVVocabularies extends Stream {
+	final static Logger logger = Logger.getLogger(LOVVocabularies.class);
 
 	DistributionMongoDBObject distribution = null;
 
@@ -137,32 +141,66 @@ public class LOV extends Stream {
 
 			StmtIterator triples = m.listStatements(null, null, (RDFNode) null);
 
+			ConcurrentLinkedQueue<String> subjectsQueue = new ConcurrentLinkedQueue<String>();
+			ConcurrentLinkedQueue<String> objectsQueue = new ConcurrentLinkedQueue<String>();
 			ArrayList<String> subjects = new ArrayList<String>();
 			ArrayList<String> objects = new ArrayList<String>();
+			TreeSet<String> predicates = new TreeSet<String>();
+			TreeSet<String> owlClasses = new TreeSet<String>();
+			
+			ConcurrentLinkedQueue<String> resourceQueue = new ConcurrentLinkedQueue<String>();
 
 			while (triples.hasNext()) {
 
 				Statement triple = triples.next();
-
+				
 				subjects.add(triple.getSubject().toString() );
-				if (triple.getObject().isResource())
+				subjectsQueue.add(triple.getSubject().toString() );
+				if (triple.getObject().isResource()){
 					objects.add(triple.getObject().toString());
+					objectsQueue.add(triple.getObject().toString());
+				
+					if(triple.getObject().toString().equals("http://www.w3.org/2002/07/owl#Class")){
+						owlClasses.add(triple.getSubject().toString());
+					}
+				}
+				predicates.add(triple.getPredicate().toString());
 
 			}
 			distribution = new DistributionMongoDBObject(node.getNameSpace());
+			distribution.setTopDataset(d.getDynLodID());
+			distribution.updateObject(true);
+//			
+			MakeLinksetsMasterThread makeLinksets = new MakeLinksetsMasterThread(subjectsQueue, node.getNameSpace());
+			MakeLinksetsMasterThread makeLinksets2 = new MakeLinksetsMasterThread(objectsQueue, node.getNameSpace());
+			makeLinksets2.isSubject = false;
+			makeLinksets.isSubject = true;
+			makeLinksets.start();
+			makeLinksets2.start();
+			
+			Thread.sleep(10);
+
+			makeLinksets.setDoneSplittingString(true);
+			makeLinksets2.setDoneSplittingString(true);
+			makeLinksets.join();
+			makeLinksets2.join();
+			
+			System.out.println();
+			
+			
 			if (d.getTitle() != null)
 				distribution.setTitle(d.getTitle());
 			else if (d.getLabel() != null)
 				distribution.setTitle(d.getLabel());
-
-			SaveDist(node.getNameSpace(), subjects, objects, d.getDynLodID());
+			
+			SaveDist(node.getNameSpace(), subjects, predicates, objects, owlClasses, d.getDynLodID());
 
 		}
 
 	}
 
-	public void SaveDist(String nameSpace, ArrayList<String> subjects,
-			ArrayList<String> objects, int parentDynID) throws Exception {
+	public void SaveDist(String nameSpace, ArrayList<String> subjects, Set<String> predicates,
+			ArrayList<String> objects,Set<String> owlClasses, int parentDynID) throws Exception {
 		
 	
 		
@@ -256,7 +294,7 @@ public class LOV extends Stream {
 		
 		distribution.setDownloadUrl(nameSpace);
 		distribution.setDefaultDatasets(parentDataset);
-		distribution.setTopDataset(parentDynID);
+//		distribution.setTopDataset(parentDynID);
 		distribution.setTriples(subjects.size() + objects.size());
 		distribution.setTimeToCreateSubjectFilter(timer);
 		distribution.setTimeToCreateObjectFilter(timer2);
@@ -291,6 +329,20 @@ public class LOV extends Stream {
 		ds.setDistributionID(distribution.getDynLodID());
 		ds.setSubjectFQDN(obj);
 		ds.updateObject(true);
+		
+		logger.info("Saving predicates...");
+		// save predicates
+		new PredicatesQueries().insertPredicates(predicates, distribution.getDynLodID(), distribution.getTopDataset());
+
+		
+		logger.info("Saving OWL classes...");
+		// Saving OWL classes
+		new OWLClassQueries().insertOWLClasses(owlClasses,  distribution.getDynLodID(), distribution.getTopDataset());
+		
+		logger.info("Checking Jaccard Similarities...");
+		// Checking Jaccard Similarities...
+		new CalculateJaccardSimilarity().updateLinks(distribution);
+		
 	}
 
 }

@@ -19,7 +19,9 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 	public static final String DATASET_SOURCE = "datasetSource";
 
-	public static final String INVALID_LINKS = "invalidLinks";
+//	public static final String INVALID_LINKS = "invalidLinks";
+
+	public static final String JACCARD_SIMILARITY = "jaccardSimilarity";
 
 	public static final String LINKS = "links";
 
@@ -30,6 +32,8 @@ public class LinksetMongoDBObject extends DBSuperClass {
 	private int datasetTarget;
 
 	private int datasetSource;
+
+	private double jaccardSimilarity;
 
 	private int links = 0;
 
@@ -61,8 +65,12 @@ public class LinksetMongoDBObject extends DBSuperClass {
 			// updating links on mongodb
 			mongoDBObject.put(LINKS, links);
 
-			// updating links on mongodb
-			mongoDBObject.put(INVALID_LINKS, invalidLinks);
+			// updating invalid links on mongodb
+//			mongoDBObject.put(INVALID_LINKS, invalidLinks);
+			
+
+			// updating Jaccard similarity on mongodb
+			mongoDBObject.put(JACCARD_SIMILARITY, jaccardSimilarity);
 
 			insert(checkBeforeInsert);
 		} catch (Exception e2) {
@@ -97,7 +105,9 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 			datasetTarget =  ((Number) obj.get(DATASET_TARGET)).intValue();
 
-			invalidLinks = Integer.valueOf(obj.get(INVALID_LINKS).toString());
+			jaccardSimilarity =  ((Number) obj.get(JACCARD_SIMILARITY)).doubleValue();
+
+//			invalidLinks = Integer.valueOf(obj.get(INVALID_LINKS).toString());
 
 			links = Integer.valueOf(obj.get(LINKS).toString());
 
@@ -141,6 +151,10 @@ public class LinksetMongoDBObject extends DBSuperClass {
 	public int getLinks() {
 		return links;
 	}
+	
+	public String getLinksAsString(){
+		return String.valueOf(links);
+	}
 
 	public void setLinks(int links) {
 		this.links = links;
@@ -149,9 +163,25 @@ public class LinksetMongoDBObject extends DBSuperClass {
 	public int getInvalidLinks() {
 		return invalidLinks;
 	}
+	
+	public String getInvalidLinksAsString() {
+		return String.valueOf(invalidLinks);
+	}
 
 	public void setInvalidLinks(int invalidLinks) {
 		this.invalidLinks = invalidLinks;
+	}
+
+	public double getJaccardSimilarity() {
+		return jaccardSimilarity;
+	}
+	
+	public String getJaccardSimilarityAsString() {
+		return String.valueOf(jaccardSimilarity);
+	}
+
+	public void setJaccardSimilarity(double jaccardSimilarity) {
+		this.jaccardSimilarity = jaccardSimilarity;
 	}
 
 	

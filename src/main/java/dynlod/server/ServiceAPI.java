@@ -22,7 +22,7 @@ import dynlod.API.services.APIStatus;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoParametersFoundExceiption;
-import dynlod.lov.LOV;
+import dynlod.lovvocabularies.LOVVocabularies;
 
 public class ServiceAPI extends HttpServlet {
 	

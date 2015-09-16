@@ -16,14 +16,19 @@ import dynlod.threads.JobThread;
 
 public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 
+	/**
+	 * Create linksets for a distribution
+	 * @param resourceQueue string queue of objects or subjects resources
+	 * @param uri of the distribution (usually the distribution URL)
+	 */
 	public MakeLinksetsMasterThread(ConcurrentLinkedQueue<String> resourceQueue,
-			ConcurrentHashMap<String, Integer> countHashMap, String uri) {
-		super(resourceQueue, countHashMap, uri);
+			String uri) {
+		super(resourceQueue, uri);
 	}
 
 	final static Logger logger = Logger.getLogger(MakeLinksetsMasterThread.class);
 
-	ArrayList<DistributionMongoDBObject> disributionsToCompare;
+	ArrayList<DistributionMongoDBObject> distributionsToCompare;
 	ArrayList<String> resourcesToBeProcessedQueueCopy;
 
 	public HashMap<String, Integer> localFQDNCopy = new HashMap<String, Integer>();
@@ -56,16 +61,16 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 					// get which distributions describe which FQDN and save in a
 					// list  (so we don't have to query again)
 					if (!isSubject)
-						disributionsToCompare = new DistributionQueries()
+						distributionsToCompare = new DistributionQueries()
 								.getDistributionsByOutdegree(fqdnToSearch,
 										fqdnPerDistribution);
 					else
-						disributionsToCompare = new DistributionQueries()
+						distributionsToCompare = new DistributionQueries()
 								.getDistributionsByIndegree(fqdnToSearch,
 										fqdnPerDistribution);
 					
 
-					for (DistributionMongoDBObject distributionToCompare : disributionsToCompare) {
+					for (DistributionMongoDBObject distributionToCompare : distributionsToCompare) {
 						if (!listOfWorkerThreads
 								.containsKey(distributionToCompare.getDynLodID()))
 							try {
@@ -89,8 +94,9 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 									}
 								}
 							} catch (Exception e) {
-								logger.error("Error while loading bloom filter: "
+								logger.error("Error: "
 										+ e.getMessage());
+//								System.out.println(distributionToCompare);
 								e.printStackTrace();
 							}
 					}

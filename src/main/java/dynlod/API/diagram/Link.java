@@ -11,10 +11,10 @@ public class Link {
 
 	Bubble target;
 
-	double links;
+	String links;
 	
 
-	public Link(Bubble source, Bubble target, double links) {
+	public Link(Bubble source, Bubble target, String links) {
 		this.source = source;
 		this.target = target;
 		this.links = links;
@@ -29,7 +29,12 @@ public class Link {
 				.getID());
 		link.put("source", source
 				.getID());
-		link.put("value", formatter.format(links));
+		if(!links.equals("S")){
+			double l = Double.valueOf(links);
+			link.put("value", formatter.format(l));
+		}
+		else
+			link.put("value", links);			
 		
 		return link;
 	}
@@ -50,11 +55,11 @@ public class Link {
 		this.target = target;
 	}
 
-	public double getLinks() {
+	public String getLinks() {
 		return links;
 	}
 
-	public void setLinks(int links) {
+	public void setLinks(String links) {
 		this.links = links;
 	}
 

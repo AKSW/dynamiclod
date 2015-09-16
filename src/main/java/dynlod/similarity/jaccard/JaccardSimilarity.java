@@ -1,4 +1,4 @@
-package dynlod.setsimilarity.jaccard;
+package dynlod.similarity.jaccard;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class JaccardSimilarity{
       i.addAll(s1);
       i.retainAll(s2);
       
-      System.out.println((double) i.size() / (double) u.size());
+//      System.out.println((double) i.size() / (double) u.size());
       return (double) i.size() / (double) u.size();
   }
 

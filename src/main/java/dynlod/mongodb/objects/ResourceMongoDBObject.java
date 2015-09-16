@@ -8,6 +8,7 @@ import dynlod.mongodb.DBSuperClass;
 
 public class ResourceMongoDBObject extends DBSuperClass {
 	
+	public final String MODIFIED_TIMESTAMP = "modifiedTimestamp";
 
 	public static final String DYN_LOD_ID = "dynLodID";
 	

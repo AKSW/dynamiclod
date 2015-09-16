@@ -1,6 +1,7 @@
 package dynlod.mongodb.objects;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
@@ -31,6 +32,8 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 	public static final String STATUS_ERROR = "ERROR";
 	
 	public static final String STATUS_DONE = "DONE";
+	
+	public static final String STATUS_CREATING_JACCARD_SIMILARITY = "CREATING_JACCARD_SIMILARITY";
 	
 	
 	// collection properties
@@ -173,6 +176,9 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 			mongoDBObject.put(SUCCESSFULLY_DOWNLOADED, successfullyDownloaded);
 			mongoDBObject.put(IS_VOCABULARY, isVocabulary);
 			mongoDBObject.put(LAST_MSG, lastMsg);
+
+			// adding timestamp value
+			mongoDBObject.put(MODIFIED_TIMESTAMP, new Date());
 			
 			
 			if(dynLodID == 0)

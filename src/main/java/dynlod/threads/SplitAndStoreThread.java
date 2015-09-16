@@ -46,7 +46,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	public HashSet<String> predicates = new HashSet<String>();
 
 	// saving all classes
-	public HashSet<String> classes = new HashSet<String>();
+	public HashSet<String> owlClasses = new HashSet<String>();
 
 	public SplitAndStoreThread(ConcurrentLinkedQueue<String> subjectQueue,
 			ConcurrentLinkedQueue<String> objectQueue, String fileName) {
@@ -125,7 +125,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 		boolean isClass = false;
 		if(stObject.equals("<http://www.w3.org/2002/07/owl#Class>")){
 			isClass = true;
-			classes.add(stSubject);
+			owlClasses.add(stSubject);
 		}
 		
 		// save predicate

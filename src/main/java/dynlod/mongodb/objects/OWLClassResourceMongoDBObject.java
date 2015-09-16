@@ -5,7 +5,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class ClassResourceMongoDBObject extends DBSuperClass{
+public class OWLClassResourceMongoDBObject extends DBSuperClass{
 
 	public static final String COLLECTION_NAME = "ClassResource";
 
@@ -22,12 +22,12 @@ public class ClassResourceMongoDBObject extends DBSuperClass{
 
 	private int distributionID = 0;
 
-	public ClassResourceMongoDBObject(int id) {
+	public OWLClassResourceMongoDBObject(int id) {
 		super(COLLECTION_NAME, id);
 		loadObject();
 	}
 
-	public ClassResourceMongoDBObject(String URI) {
+	public OWLClassResourceMongoDBObject(String URI) {
 		super(COLLECTION_NAME, URI);
 		loadObject();
 	}

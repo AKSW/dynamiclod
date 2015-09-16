@@ -29,7 +29,7 @@
 	</servlet>	
 	<servlet>
 		<servlet-name>CreateD3JSONFormat2</servlet-name>
-		<servlet-class>dynlod.server.CreateD3JSONFormat2</servlet-class>
+		<servlet-class>dynlod.server.CreateD3JSONFormat</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>API</servlet-name>

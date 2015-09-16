@@ -1,6 +1,5 @@
 package dynlod;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,8 +12,6 @@ import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.log4j.Logger;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
 
 import dynlod.download.CheckWhetherToStream;
 import dynlod.download.StreamAndCompareDistribution;
@@ -24,9 +21,10 @@ import dynlod.exceptions.DynamicLODNoDistributionFoundException;
 import dynlod.exceptions.DynamicLODNoDownloadURLFoundException;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
-import dynlod.lov.LOV;
+import dynlod.lovvocabularies.LOVVocabularies;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
+import dynlod.similarity.jaccard.CalculateJaccardSimilarity;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
 
@@ -134,7 +132,13 @@ public class Manager {
 
 					distributionMongoDBObj.setSuccessfullyDownloaded(true);
 					distributionMongoDBObj.updateObject(true);
-					// bean.updateDistributionList = true;
+					
+					logger.info("Checking Jaccard Similarity among distributions...");
+					distributionMongoDBObj
+						.setStatus(DistributionMongoDBObject.STATUS_CREATING_JACCARD_SIMILARITY);
+					distributionMongoDBObj.updateObject(true);
+					new CalculateJaccardSimilarity().updateLinks(distributionMongoDBObj);
+					
 
 					logger.info("Done streaming mongodb distribution object.");
 
@@ -215,21 +219,12 @@ public class Manager {
 			// try to load distributions and make filters
 			streamAndCreateFilters();
 
-		} catch (DynamicLODFileNotAcceptedException e1) {
+		} catch (DynamicLODFileNotAcceptedException | DynamicLODNoDatasetFoundException | DynamicLODNoDownloadURLFoundException
+				| DynamicLODNoDistributionFoundException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e1) {
+			e1.printStackTrace();
 			logger.error(e1.getMessage());
-
-		} catch (DynamicLODNoDatasetFoundException e2) {
-			logger.error(e2.getMessage());
-
-		} catch (DynamicLODNoDownloadURLFoundException e3) {
-			logger.error(e3.getMessage());
-
-		} catch (DynamicLODNoDistributionFoundException e4) {
-			logger.error(e4.getMessage());
-
-		} catch (Exception e5) {
-			e5.printStackTrace();
-			logger.error(e5.getMessage());
 		}
 
 		logger.info("END");
@@ -241,7 +236,7 @@ public class Manager {
 		if (g.getDownloadedLOV() == null || !g.getDownloadedLOV()) {
 			logger.info("LOV vocabularies still not lodaded! Loading now...");
 			try {
-				new LOV().loadLOVVocabularies();
+				new LOVVocabularies().loadLOVVocabularies();
 				g.setDownloadedLOV(true);
 				g.updateObject(true);
 				logger.info("LOV vocabularies loaded!");

@@ -23,7 +23,7 @@ public class APIStatistics{
 		
 		int vocabularies = new DatasetQueries().getDatasetsVocab().size(); 
 		
-		int triples = DistributionQueries.getNumberOfTriples();
+		int triples = new DistributionQueries().getNumberOfTriples();
 		
 		jsonMsg.put("numberOfDatasets", datasets);
 		
@@ -43,7 +43,7 @@ public class APIStatistics{
 		JSONObject msg = new JSONObject();
 
 		// get how many vocabs and datasets are in the database
-		ArrayList<DistributionMongoDBObject> distributions = DistributionQueries.getDistributions(skip, limit, getOntologies);
+		ArrayList<DistributionMongoDBObject> distributions = new DistributionQueries().getDistributions(skip, limit, getOntologies);
 		
 		for (DistributionMongoDBObject d : distributions){
 			JSONArray jsonObj = new JSONArray();
@@ -55,7 +55,7 @@ public class APIStatistics{
 		}
 		
 		msg.put("distributions", jsonArr);
-		msg.put("totalDistributions", DistributionQueries.countDistributionsByVocabularies(getOntologies));
+		msg.put("totalDistributions", new DistributionQueries().countDistributions(getOntologies));
 
 		apimessage.addListMsg(msg); 
 		
