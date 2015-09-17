@@ -227,15 +227,17 @@ public class CreateD3JSONFormat extends HttpServlet {
 	private void makeLink(Bubble source, Bubble target, Diagram diagram, String link){
 		
 		if(showLinksStrength || showSimilarity){
-			double linkV = Double.valueOf(link);
-			if(linkV<=linkTo && linkV>=linkFrom){
+			if(!link.equals("S")){
+				double linkV = Double.valueOf(link);
+				if(linkV<=linkTo && linkV>=linkFrom){
 			
-			Link l = new Link(source, target, link);
+					Link l = new Link(source, target, link);
 
-			diagram.addBubble(target);
-			diagram.addBubble(source);
-			
-			diagram.addLink(l);
+					diagram.addBubble(target);
+					diagram.addBubble(source);
+					
+					diagram.addLink(l);
+				}
 			}
 		}
 		else if(showLinks){
