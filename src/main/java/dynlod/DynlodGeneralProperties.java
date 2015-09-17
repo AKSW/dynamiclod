@@ -129,6 +129,7 @@ public class DynlodGeneralProperties {
 	// fpp equation
 	public static String FPP_EQUATION = null;
 	
+	
 	// other properties
 	public static String USE_MULTITHREAD;
 	public static String LOV_URL;

@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import dynlod.DynlodGeneralProperties;
 import dynlod.API.core.API;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
@@ -69,7 +70,7 @@ public class APIStatus extends API {
 			
 			
 			// indegrees
-			ArrayList<LinksetMongoDBObject> indegrees = new  LinksetQueries().getLinksetsInDegreeByDistribution(distribution.getDynLodID(), false);
+			ArrayList<LinksetMongoDBObject> indegrees = new  LinksetQueries().getLinksetsInDegreeByDistribution(distribution.getDynLodID(), LinksetMongoDBObject.LINK_NUMBER_LINKS,50,-1);
 			int indegreeCount = 0;
 			JSONArray inegreeArray = new JSONArray();
 			
@@ -103,7 +104,7 @@ public class APIStatus extends API {
 //			datasetMessage.put("indegreeLinksCount", indegreeCount);
 			
 			// outdegrees
-			ArrayList<LinksetMongoDBObject> outdegrees = new LinksetQueries().getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), false);
+			ArrayList<LinksetMongoDBObject> outdegrees = new LinksetQueries().getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LinksetMongoDBObject.LINK_NUMBER_LINKS,50,-1);
 			int outdegreeCount = 0;
 			JSONArray outdegreeArray = new JSONArray();
 			for(LinksetMongoDBObject linkset : outdegrees){

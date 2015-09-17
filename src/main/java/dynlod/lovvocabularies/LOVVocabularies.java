@@ -37,13 +37,15 @@ import dynlod.DynlodGeneralProperties;
 import dynlod.download.Stream;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
+import dynlod.links.similarity.JaccardSimilarity;
+import dynlod.links.similarity.LinkSimilarity;
+import dynlod.links.strength.LinkStrength;
 import dynlod.linksets.MakeLinksetsMasterThread;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
 import dynlod.mongodb.queries.OWLClassQueries;
 import dynlod.mongodb.queries.PredicatesQueries;
-import dynlod.similarity.jaccard.CalculateJaccardSimilarity;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
 
@@ -341,7 +343,13 @@ public class LOVVocabularies extends Stream {
 		
 		logger.info("Checking Jaccard Similarities...");
 		// Checking Jaccard Similarities...
-		new CalculateJaccardSimilarity().updateLinks(distribution);
+		LinkSimilarity linkSimilarity = new JaccardSimilarity();
+		linkSimilarity.updateLinks(distribution);
+		
+		logger.info("Updating link strength among distributions...");
+		// Saving link similarities
+		LinkStrength linkStrength = new LinkStrength();
+		linkStrength.updateLinks(distribution);
 		
 	}
 

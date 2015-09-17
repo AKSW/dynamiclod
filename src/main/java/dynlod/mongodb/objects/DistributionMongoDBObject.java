@@ -35,6 +35,8 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 	
 	public static final String STATUS_CREATING_JACCARD_SIMILARITY = "CREATING_JACCARD_SIMILARITY";
 	
+	public static final String STATUS_UPDATING_LINK_STRENGTH = "UPDATING_LINK_STRENGTH";
+	
 	
 	// collection properties
 	public static final String DOWNLOAD_URL = "downloadUrl";

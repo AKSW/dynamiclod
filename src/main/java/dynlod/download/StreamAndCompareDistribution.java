@@ -30,6 +30,8 @@ import org.openrdf.rio.turtle.TurtleParser;
 import dynlod.DynlodGeneralProperties;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
+import dynlod.links.similarity.JaccardSimilarity;
+import dynlod.links.similarity.LinkSimilarity;
 import dynlod.linksets.MakeLinksetsMasterThread;
 import dynlod.mongodb.objects.OWLClassMongoDBObject;
 import dynlod.mongodb.objects.OWLClassResourceMongoDBObject;
@@ -39,7 +41,6 @@ import dynlod.mongodb.objects.PredicateResourceMongoDBObject;
 import dynlod.mongodb.queries.OWLClassQueries;
 import dynlod.mongodb.queries.PredicatesQueries;
 import dynlod.parsers.NTriplesDynLODParser;
-import dynlod.similarity.jaccard.CalculateJaccardSimilarity;
 import dynlod.threads.SplitAndStoreThread;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
@@ -304,9 +305,10 @@ public class StreamAndCompareDistribution extends Stream {
 		// Saving OWL classes
 		new OWLClassQueries().insertOWLClasses(splitThread.owlClasses,  distribution.getDynLodID(), distribution.getTopDataset());
 
-		logger.info("Checking distributions similarities...");
-		// Saving OWL classes
-		new CalculateJaccardSimilarity().updateLinks(distribution);
+//		logger.info("Checking distributions similarities...");
+//		// Saving link similarities
+//		LinkSimilarity linkSimilarity = new JaccardSimilarity();
+//		linkSimilarity.updateLinks(distribution);
 	}
 
 }

@@ -1,5 +1,6 @@
 package dynlod.API.diagram;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -21,7 +22,8 @@ public class Link {
 	}
 	
 	public JSONObject getJSON(){
-		NumberFormat formatter = new DecimalFormat("0.00000000");     
+		NumberFormat formatter = new DecimalFormat("#.#######");  
+		formatter.setRoundingMode(RoundingMode.CEILING);
 	
 		JSONObject link = new JSONObject();
 		

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import dynlod.DynlodGeneralProperties;
 import dynlod.API.diagram.Bubble;
 import dynlod.API.diagram.Diagram;
 import dynlod.API.diagram.Link;
@@ -26,21 +27,17 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 	private static final long serialVersionUID = -7213269624452749676L;
 
+	String LINK_TYPE;
+
 	boolean showDistribution = true;
 	
 	boolean showOntologies = false;
 	
 	boolean showInvalidLinks = false;
 	
-	boolean showLinks = false;
+	double min = 0;
 	
-	boolean showLinksStrength = false;
-	
-	boolean showSimilarity = false;
-	
-	double linkFrom = 0;
-	
-	double linkTo = 1;
+	double max = 1;
 	
 
 	protected void doPost(HttpServletRequest request,
@@ -81,6 +78,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 		showDistribution = checkParamenter(parameters, "showDistributions");
 		showOntologies = checkParamenter(parameters, "showOntologies");
+		checkRange(parameters);
 		checkLinkTypes(parameters);
 		
 		
@@ -123,30 +121,6 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 				iterateDataset(d, diagramTemp, d.getDynLodID(), currentLevel);				
 			}
-			
-//			for (Bubble bubble : diagramTemp.getBubbles()) {
-//				if(bubble.isVisible())
-//					diagram.addBubble(bubble);
-//			}
-			
-//			for (Link link : diagramTemp.getLinks()) {
-//				
-//				if(link.getSource().isVisible() && link.getTarget().isVisible()){
-//					makeLink0(link.getSource(), link.getTarget(), diagram, diagramTemp.getPathWeight(link.getSource().getName(), link.getTarget().getName())); 
-//				}
-//				else
-//				for(String s: link.getSource().getParentDataset()){
-//					for(String t: link.getTarget().getParentDataset()){			
-//					makeLink0(new Bubble(new DatasetMongoDBObject(s)), 
-//							new Bubble(new DatasetMongoDBObject(t)), diagram, 
-//							diagramTemp.getPathWeight(s, t)); 
-//					System.out.println(diagramTemp.getPathWeight(s, t));
-//					}
-//				}
-//				
-//			}
-
-			
 
 			int[] results = new int[parameters.get("dataset").length];
 
@@ -184,9 +158,9 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 			// get indegree and outdegree for a distribution
 			ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
-					.getLinksetsInDegreeByDistribution(distribution.getDynLodID(), showInvalidLinks);
+					.getLinksetsInDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
 			ArrayList<LinksetMongoDBObject> out = new LinksetQueries()
-					.getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), showInvalidLinks);
+					.getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
 			
 
 			for (LinksetMongoDBObject linkset : in) {
@@ -195,12 +169,14 @@ public class CreateD3JSONFormat extends HttpServlet {
 				
 				String links = getLinksCorrectFormat(linkset);
 				
+				if(!showOntologies){
 				if(source.getIsVocabulary() == false && target.getIsVocabulary() == false)
 					makeLink(diagram.addBubble(new Bubble(source, showDistribution,parentDataset)),
 							diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
-					
-//				makeLink0(new Bubble(a, showDistribution,parentDataset),
-//						new Bubble(b, showDistribution,parentDataset), diagram, linkset.getLinks());
+				}
+				else
+					makeLink(diagram.addBubble(new Bubble(source, showDistribution,parentDataset)),
+							diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 
 			}
 			for (LinksetMongoDBObject linkset : out) {
@@ -216,8 +192,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 								diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 				}
 				else
-					makeLink(diagram.addBubble(new Bubble(source, showDistribution,parentDataset)),
-							diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
+						makeLink(diagram.addBubble(new Bubble(source, showDistribution,parentDataset)),
+								diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 				
 			}
 		}
@@ -226,10 +202,10 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 	private void makeLink(Bubble source, Bubble target, Diagram diagram, String link){
 		
-		if(showLinksStrength || showSimilarity){
+		if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_STRENGHT) || LINK_TYPE.equals(LinksetMongoDBObject.LINK_SIMILARITY)){
 			if(!link.equals("S")){
 				double linkV = Double.valueOf(link);
-				if(linkV<=linkTo && linkV>=linkFrom){
+				if(linkV<=max && linkV>=min){
 			
 					Link l = new Link(source, target, link);
 
@@ -239,8 +215,16 @@ public class CreateD3JSONFormat extends HttpServlet {
 					diagram.addLink(l);
 				}
 			}
+			else{
+				Link l = new Link(source, target, link);
+
+				diagram.addBubble(target);
+				diagram.addBubble(source);
+				
+				diagram.addLink(l);
+			}
 		}
-		else if(showLinks){
+		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_NUMBER_LINKS)){
 			Link l = new Link(source, target, link);
 
 			diagram.addBubble(target);
@@ -249,55 +233,17 @@ public class CreateD3JSONFormat extends HttpServlet {
 			diagram.addLink(l);
 		}
 		
-//		double nLinks = 0.0;
-		
-		// check if link refer to a subset or a number of links
-//		if(!link.equals("S")){
-//			nLinks = Double.parseDouble(link);
-//			
-//			
-//		}
-//		else{
-//			
-//		}
-		
-		// get number of described fqdn
-//		int numberOfSourceFQDN = new FQDNQueries().getNumberOfObjectResources(source.getID());
-		
-//		if (numberOfSourceFQDN>0)
-//			nLinks = 1.0*nLinks/numberOfSourceFQDN;
-		
-
-//		System.out.println(nLinks);
-		
-		// compare range
-//		if(link<=linkTo && link>=linkFrom){
-		
-//		Link l = new Link(source, target, link);
-//
-//		diagram.addBubble(target);
-//		diagram.addBubble(source);
-//		
-//		diagram.addLink(l);
-//		}
-		
-		
 	}
 	
 	protected String getLinksCorrectFormat(LinksetMongoDBObject linkset){
 		String links;
 		if(showInvalidLinks)
 			links = linkset.getInvalidLinksAsString();
-		else if(showSimilarity)
-			links = linkset.getJaccardSimilarityAsString();
-		else if(showLinksStrength){
-			double nLinks = 0.0;
-			// get number of described fqdn
-			int numberOfSourceFQDN = new FQDNQueries().getNumberOfObjectResources(linkset.getDistributionSource());
+		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_SIMILARITY))
+			links = linkset.getSimilarityAsString();
+		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_STRENGHT)){
+			links = linkset.getStrengthAsString();
 			
-			if (numberOfSourceFQDN>0)
-				nLinks = 1.0*linkset.getLinks()/numberOfSourceFQDN;
-			links = String.valueOf(nLinks);
 		}
 		else
 			links = linkset.getLinksAsString();
@@ -314,10 +260,10 @@ public class CreateD3JSONFormat extends HttpServlet {
 	
 	protected void checkRange(Map<String, String[]> parameters){
 		if (parameters.containsKey("linkFrom")) 
-			linkFrom = Double.parseDouble(parameters.get("linkFrom")[0]);
+			min = Double.parseDouble(parameters.get("linkFrom")[0]);
 		
 		if (parameters.containsKey("linkTo")) 
-			linkTo = Double.parseDouble(parameters.get("linkTo")[0]);
+			max = Double.parseDouble(parameters.get("linkTo")[0]);
 	}
 	
 	protected void checkLinkTypes(Map<String, String[]> parameters){
@@ -326,11 +272,14 @@ public class CreateD3JSONFormat extends HttpServlet {
 //				showInvalidLinks = true;
 			
 			if(parameters.get("linkType")[0].equals("showLinksStrength"))
-				showLinksStrength = true;
+				LINK_TYPE = LinksetMongoDBObject.LINK_STRENGHT;
 			else if(parameters.get("linkType")[0].equals("showSimilarity"))
-				showSimilarity = true;
-			else if(parameters.get("linkType")[0].equals("showLinks"))
-				showLinks = true;
+				LINK_TYPE = LinksetMongoDBObject.LINK_SIMILARITY;
+			else if(parameters.get("linkType")[0].equals("showLinks")){
+				LINK_TYPE = LinksetMongoDBObject.LINK_NUMBER_LINKS;
+				min = 50;
+				max = -1;
+			}
 				
 		}
 	}

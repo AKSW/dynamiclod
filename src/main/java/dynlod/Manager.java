@@ -21,10 +21,12 @@ import dynlod.exceptions.DynamicLODNoDistributionFoundException;
 import dynlod.exceptions.DynamicLODNoDownloadURLFoundException;
 import dynlod.filters.FileToFilter;
 import dynlod.filters.GoogleBloomFilter;
+import dynlod.links.similarity.JaccardSimilarity;
+import dynlod.links.similarity.LinkSimilarity;
+import dynlod.links.strength.LinkStrength;
 import dynlod.lovvocabularies.LOVVocabularies;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
-import dynlod.similarity.jaccard.CalculateJaccardSimilarity;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
 
@@ -133,12 +135,23 @@ public class Manager {
 					distributionMongoDBObj.setSuccessfullyDownloaded(true);
 					distributionMongoDBObj.updateObject(true);
 					
-					logger.info("Checking Jaccard Similarity among distributions...");
+					logger.info("Checking Similarity among distributions...");
 					distributionMongoDBObj
 						.setStatus(DistributionMongoDBObject.STATUS_CREATING_JACCARD_SIMILARITY);
 					distributionMongoDBObj.updateObject(true);
-					new CalculateJaccardSimilarity().updateLinks(distributionMongoDBObj);
+					// Saving link similarities
+					LinkSimilarity linkSimilarity = new JaccardSimilarity();
+					linkSimilarity.updateLinks(distributionMongoDBObj);
+
 					
+					logger.info("Updating link strength among distributions...");
+					distributionMongoDBObj
+						.setStatus(DistributionMongoDBObject.STATUS_UPDATING_LINK_STRENGTH);
+					distributionMongoDBObj.updateObject(true);
+					// Saving link similarities
+					LinkStrength linkStrength = new LinkStrength();
+					linkStrength.updateLinks(distributionMongoDBObj);
+
 
 					logger.info("Done streaming mongodb distribution object.");
 

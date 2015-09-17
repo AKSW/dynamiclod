@@ -21,9 +21,11 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 //	public static final String INVALID_LINKS = "invalidLinks";
 
-	public static final String JACCARD_SIMILARITY = "jaccardSimilarity";
+	public static final String LINK_SIMILARITY = "similarity";
 
-	public static final String LINKS = "links";
+	public static final String LINK_STRENGHT = "strength";
+
+	public static final String LINK_NUMBER_LINKS = "links";
 
 	private int distributionTarget;
 
@@ -33,7 +35,9 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 	private int datasetSource;
 
-	private double jaccardSimilarity;
+	private double similarity;
+
+	private double strength;
 
 	private int links = 0;
 
@@ -63,14 +67,17 @@ public class LinksetMongoDBObject extends DBSuperClass {
 			mongoDBObject.put(DATASET_SOURCE, datasetSource);
 
 			// updating links on mongodb
-			mongoDBObject.put(LINKS, links);
+			mongoDBObject.put(LINK_NUMBER_LINKS, links);
 
 			// updating invalid links on mongodb
 //			mongoDBObject.put(INVALID_LINKS, invalidLinks);
 			
 
-			// updating Jaccard similarity on mongodb
-			mongoDBObject.put(JACCARD_SIMILARITY, jaccardSimilarity);
+			// updating similarity on mongodb
+			mongoDBObject.put(LINK_SIMILARITY, similarity);
+
+			// updating link strength on mongodb
+			mongoDBObject.put(LINK_STRENGHT, strength);
 
 			insert(checkBeforeInsert);
 		} catch (Exception e2) {
@@ -105,11 +112,13 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 			datasetTarget =  ((Number) obj.get(DATASET_TARGET)).intValue();
 
-			jaccardSimilarity =  ((Number) obj.get(JACCARD_SIMILARITY)).doubleValue();
+			similarity =  ((Number) obj.get(LINK_SIMILARITY)).doubleValue();
+
+			strength =  ((Number) obj.get(LINK_STRENGHT)).doubleValue();
 
 //			invalidLinks = Integer.valueOf(obj.get(INVALID_LINKS).toString());
 
-			links = Integer.valueOf(obj.get(LINKS).toString());
+			links = Integer.valueOf(obj.get(LINK_NUMBER_LINKS).toString());
 
 			return true;
 		}
@@ -173,15 +182,27 @@ public class LinksetMongoDBObject extends DBSuperClass {
 	}
 
 	public double getJaccardSimilarity() {
-		return jaccardSimilarity;
+		return similarity;
 	}
 	
-	public String getJaccardSimilarityAsString() {
-		return String.valueOf(jaccardSimilarity);
+	public String getSimilarityAsString() {
+		return String.valueOf(similarity);
 	}
 
-	public void setJaccardSimilarity(double jaccardSimilarity) {
-		this.jaccardSimilarity = jaccardSimilarity;
+	public void setSimilarity(double similarity) {
+		this.similarity = similarity;
+	}
+
+	public double getStrength() {
+		return strength;
+	}
+
+	public String getStrengthAsString() {
+		return String.valueOf(strength);
+	}
+
+	public void setStrength(double strength) {
+		this.strength = strength;
 	}
 
 	

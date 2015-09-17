@@ -185,7 +185,7 @@ public class DatasetQueries {
 		try {
 			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
-			BasicDBObject query = new BasicDBObject(LinksetMongoDBObject.LINKS,
+			BasicDBObject query = new BasicDBObject(LinksetMongoDBObject.LINK_NUMBER_LINKS,
 					new BasicDBObject("$gt", 50));
 			List<Integer> out = collection.distinct(
 					LinksetMongoDBObject.DATASET_TARGET, query);

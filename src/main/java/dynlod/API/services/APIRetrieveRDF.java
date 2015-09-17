@@ -9,6 +9,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
+import dynlod.DynlodGeneralProperties;
 import dynlod.API.core.API;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
@@ -99,9 +100,9 @@ public class APIRetrieveRDF extends API {
 		DistributionMongoDBObject dis = new DistributionMongoDBObject(distributionURI);
 		
 		ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
-				.getLinksetsInDegreeByDistribution(dis.getDynLodID(), false);
+				.getLinksetsInDegreeByDistribution(dis.getDynLodID(), LinksetMongoDBObject.LINK_NUMBER_LINKS, 50,-1);
 		ArrayList<LinksetMongoDBObject> out = new LinksetQueries()
-				.getLinksetsOutDegreeByDistribution(dis.getDynLodID(), false);
+				.getLinksetsOutDegreeByDistribution(dis.getDynLodID(), LinksetMongoDBObject.LINK_NUMBER_LINKS,50,-1);
 
 		// add choosen distribution to jena
 		// addDistributionToModel(new
