@@ -299,12 +299,15 @@ public class CreateD3JSONFormat extends HttpServlet {
 	
 	protected void checkLinkTypes(Map<String, String[]> parameters){
 		if(checkParamenter(parameters, "linkType")){
-			if(parameters.get("linkType")[0].equals("showInvalidLinks"))
-				showInvalidLinks = true;
-			else if(parameters.get("linkType")[0].equals("showLinksStrength"))
+//			if(parameters.get("linkType")[0].equals("showInvalidLinks"))
+//				showInvalidLinks = true;
+			
+			if(parameters.get("linkType")[0].equals("showLinksStrength"))
 				showLinksStrength = true;
 			else if(parameters.get("linkType")[0].equals("showSimilarity"))
 				showSimilarity = true;
+			else if(parameters.get("linkType")[0].equals("showLinks"))
+				showLinks = true;
 				
 		}
 	}
