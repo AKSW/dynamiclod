@@ -29,7 +29,7 @@ public class Link {
 				.getID());
 		link.put("source", source
 				.getID());
-		if(!links.equals("S")){
+		if(!links.equals("S") && Double.valueOf(links) <= 1){
 			double l = Double.valueOf(links);
 			link.put("value", formatter.format(l));
 		}

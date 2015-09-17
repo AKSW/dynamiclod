@@ -226,6 +226,27 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 	private void makeLink(Bubble source, Bubble target, Diagram diagram, String link){
 		
+		if(showLinksStrength || showSimilarity){
+			double linkV = Double.valueOf(link);
+			if(linkV<=linkTo && linkV>=linkFrom){
+			
+			Link l = new Link(source, target, link);
+
+			diagram.addBubble(target);
+			diagram.addBubble(source);
+			
+			diagram.addLink(l);
+			}
+		}
+		else if(showLinks){
+			Link l = new Link(source, target, link);
+
+			diagram.addBubble(target);
+			diagram.addBubble(source);
+			
+			diagram.addLink(l);
+		}
+		
 //		double nLinks = 0.0;
 		
 		// check if link refer to a subset or a number of links
@@ -250,12 +271,12 @@ public class CreateD3JSONFormat extends HttpServlet {
 		// compare range
 //		if(link<=linkTo && link>=linkFrom){
 		
-		Link l = new Link(source, target, link);
-
-		diagram.addBubble(target);
-		diagram.addBubble(source);
-		
-		diagram.addLink(l);
+//		Link l = new Link(source, target, link);
+//
+//		diagram.addBubble(target);
+//		diagram.addBubble(source);
+//		
+//		diagram.addLink(l);
 //		}
 		
 		
