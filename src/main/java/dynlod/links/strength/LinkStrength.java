@@ -2,12 +2,23 @@ package dynlod.links.strength;
 
 import java.util.ArrayList;
 
+import org.junit.Test;
+
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.FQDNQueries;
 
 public class LinkStrength {
+	
+	@Test
+	public void Go(){
+		//8996-31170
+		DistributionMongoDBObject d = new DistributionMongoDBObject(49);
+//		System.out.println(d.getUri());
+		updateLinks(d);
+//		System.out.println(new FQDNQueries().getNumberOfObjectResources(66));
+	}
 	
 	/**
 	 * Update values of distribution similarities 
@@ -21,7 +32,6 @@ public class LinkStrength {
 		
 		for(DistributionMongoDBObject d: distributions){
 			if(d.getDynLodID() != distribution.getDynLodID()){
-				
 				makeLink(distribution, d);
 				makeLink(d, distribution);
 				
@@ -35,16 +45,20 @@ public class LinkStrength {
 	 * @param value similarity value
 	 */
 	private void makeLink(DistributionMongoDBObject dist1, DistributionMongoDBObject dist2){
-		String id = String.valueOf(dist1.getDynLodID()) + "-2-" + String.valueOf(dist2.getDynLodID());
+		String id = String.valueOf(dist1.getDynLodID()) + "-" + String.valueOf(dist2.getDynLodID());
 		
+//		if(dist2.getDynLodID() == 31170){ 66
+			
 		
 		double nLinks = 0.0;
 		int numberOfSourceFQDN = new FQDNQueries().getNumberOfObjectResources(dist1.getDynLodID());
 		LinksetMongoDBObject link = new LinksetMongoDBObject(id);
 		
-		if (numberOfSourceFQDN>0)
-			nLinks = 1.0*link.getLinks()/numberOfSourceFQDN;
+					
 		
+		if (numberOfSourceFQDN>0){
+			nLinks = 1.0*link.getLinks()/numberOfSourceFQDN;
+		}
 		
 		link.setStrength(nLinks);
 		if(link.getDatasetSource()==0)
@@ -58,7 +72,9 @@ public class LinkStrength {
 			link.setDistributionTarget(dist2.getDynLodID());		
 		
 		link.updateObject(true);
+//		}
 	}
+	
 
 	
 	

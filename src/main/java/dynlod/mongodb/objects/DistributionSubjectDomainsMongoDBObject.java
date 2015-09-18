@@ -37,7 +37,7 @@ public class DistributionSubjectDomainsMongoDBObject extends DBSuperClass {
 
 			BasicDBObject mongoDBObject2 = new BasicDBObject();
 			
-			// save object case it doens't exists
+			// save object case it doesn't exists
 			try {
 				// updating subjectsTarget on mongodb
 				mongoDBObject.put(DISTRIBUTION_ID, distributionID);

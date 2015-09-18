@@ -175,6 +175,8 @@ public class LOVVocabularies extends Stream {
 //			
 			MakeLinksetsMasterThread makeLinksets = new MakeLinksetsMasterThread(subjectsQueue, node.getNameSpace());
 			MakeLinksetsMasterThread makeLinksets2 = new MakeLinksetsMasterThread(objectsQueue, node.getNameSpace());
+			makeLinksets.threshold = 0;
+			makeLinksets2.threshold = 0;
 			makeLinksets2.isSubject = false;
 			makeLinksets.isSubject = true;
 			makeLinksets.start();
@@ -187,7 +189,6 @@ public class LOVVocabularies extends Stream {
 			makeLinksets.join();
 			makeLinksets2.join();
 			
-			System.out.println();
 			
 			
 			if (d.getTitle() != null)
@@ -231,19 +232,19 @@ public class LOVVocabularies extends Stream {
 		}
 		bw.close();
 
-		String obj = nameSpace;
-		String[] ar = obj.split("/");
-//		if (ar.length > 5)
-//			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/"+ ar[5] + "/";
-//		if (ar.length > 4)
-//			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/";
-		if (ar.length > 3)
-			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/";
-		else if (ar.length > 2)
-			obj = ar[0] + "//" + ar[2] + "/";
-		else {
-			obj = "";
-		}
+//		String obj = nameSpace;
+//		String[] ar = obj.split("/");
+////		if (ar.length > 5)
+////			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/"+ ar[5] + "/";
+////		if (ar.length > 4)
+////			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/";
+//		if (ar.length > 3)
+//			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/";
+//		else if (ar.length > 2)
+//			obj = ar[0] + "//" + ar[2] + "/";
+//		else {
+//			obj = "";
+//		}
 
 
 
@@ -325,12 +326,12 @@ public class LOVVocabularies extends Stream {
 
 		distribution.updateObject(true);
 
-		ObjectId id = new ObjectId();
-		DistributionSubjectDomainsMongoDBObject ds = new DistributionSubjectDomainsMongoDBObject(
-				id.get().toString());
-		ds.setDistributionID(distribution.getDynLodID());
-		ds.setSubjectFQDN(obj);
-		ds.updateObject(true);
+//		ObjectId id = new ObjectId();
+//		DistributionSubjectDomainsMongoDBObject ds = new DistributionSubjectDomainsMongoDBObject(
+//				id.get().toString());
+//		ds.setDistributionID(distribution.getDynLodID());
+//		ds.setSubjectFQDN(obj);
+//		ds.updateObject(true);
 		
 		logger.info("Saving predicates...");
 		// save predicates

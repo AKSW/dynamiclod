@@ -48,7 +48,7 @@ public abstract class LinkSimilarity {
 	 * @param value similarity value
 	 */
 	private void makeLink(DistributionMongoDBObject dist1, DistributionMongoDBObject dist2, double value){
-		String id = String.valueOf(dist1.getDynLodID()) + "-2-" + String.valueOf(dist2.getDynLodID());
+		String id = String.valueOf(dist1.getDynLodID()) + "-" + String.valueOf(dist2.getDynLodID());
 		LinksetMongoDBObject link = new LinksetMongoDBObject(id);
 		link.setSimilarity(value);
 		if(link.getDatasetSource()==0)

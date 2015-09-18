@@ -23,6 +23,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 
 	public boolean isSubject = false;
 	
+	public int threshold = 50;
+	
 	// contains all FQDN described by distribution
 	// <FQDN, <list of distribution that describes this fqdn>> 
 	public ConcurrentHashMap<Integer, DistributionFQDN>  fqdnPerDistribution = 
@@ -152,7 +154,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 			int count = (Integer) pair.getValue();
 			// distributionMongoDBObj.addAuthorityObjects(d);
 
-			if (count > 50) {
+			if (count > threshold) {
 				id = new ObjectId();
 				if (isSubject) {
 					DistributionSubjectDomainsMongoDBObject d2 = new DistributionSubjectDomainsMongoDBObject(id.get()

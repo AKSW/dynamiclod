@@ -213,7 +213,7 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 							
 						}
 						else{
-							 mongoDBURL = dataThread.distributionID + "-2-"
+							 mongoDBURL = dataThread.distributionID + "-"
 										+ dataThread.targetDistributionID;
 							 l = new LinksetMongoDBObject(
 										mongoDBURL);

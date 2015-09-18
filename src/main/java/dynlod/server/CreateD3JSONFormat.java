@@ -35,7 +35,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 	
 	boolean showInvalidLinks = false;
 	
-	double min = 0;
+	double min = 0.001;
 	
 	double max = 1;
 	
@@ -259,9 +259,11 @@ public class CreateD3JSONFormat extends HttpServlet {
 	}
 	
 	protected void checkRange(Map<String, String[]> parameters){
-		if (parameters.containsKey("linkFrom")) 
+		if (parameters.containsKey("linkFrom")) {
 			min = Double.parseDouble(parameters.get("linkFrom")[0]);
-		
+			if (min==0)
+				min=0.001;
+		}
 		if (parameters.containsKey("linkTo")) 
 			max = Double.parseDouble(parameters.get("linkTo")[0]);
 	}

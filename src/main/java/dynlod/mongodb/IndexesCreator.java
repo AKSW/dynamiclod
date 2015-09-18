@@ -45,6 +45,9 @@ public class IndexesCreator {
 		addIndex(LinksetMongoDBObject.COLLECTION_NAME, LinksetMongoDBObject.DATASET_TARGET, 1);
 		addIndex(LinksetMongoDBObject.COLLECTION_NAME, LinksetMongoDBObject.DISTRIBUTION_SOURCE, 1);
 		addIndex(LinksetMongoDBObject.COLLECTION_NAME, LinksetMongoDBObject.DISTRIBUTION_TARGET, 1);
+		addIndex(LinksetMongoDBObject.COLLECTION_NAME, LinksetMongoDBObject.LINK_NUMBER_LINKS, 1);
+		addIndex(LinksetMongoDBObject.COLLECTION_NAME, LinksetMongoDBObject.LINK_SIMILARITY, 1);
+		addIndex(LinksetMongoDBObject.COLLECTION_NAME, LinksetMongoDBObject.LINK_STRENGHT, 1);
 		
 		// indexes for predicates
 		addIndex(PredicateMongoDBObject.COLLECTION_NAME, PredicateMongoDBObject.DYN_LOD_ID, 1);

@@ -1,5 +1,7 @@
 package dynlod.API.services;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -25,11 +27,13 @@ public class APIStatistics{
 		
 		int triples = new DistributionQueries().getNumberOfTriples();
 		
+		NumberFormat formatter = new DecimalFormat("###,###,###,###");
+
 		jsonMsg.put("numberOfDatasets", datasets);
 		
-		jsonMsg.put("numberOfVocabularies", vocabularies);
+		jsonMsg.put("numberOfVocabularies", formatter.format(vocabularies));		
 		
-		jsonMsg.put("numberOfTriples", triples);
+		jsonMsg.put("numberOfTriples", formatter.format(triples));
 
 		apimessage.addStatisticsMsg(jsonMsg);
 		

@@ -118,7 +118,7 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 //			invalidLinks = Integer.valueOf(obj.get(INVALID_LINKS).toString());
 
-			links = Integer.valueOf(obj.get(LINK_NUMBER_LINKS).toString());
+			links = ((Number) obj.get(LINK_NUMBER_LINKS)).intValue();
 
 			return true;
 		}
