@@ -48,8 +48,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 	HashMap<Integer, DistributionMongoDBObject> loadedDistributions = new HashMap<Integer, DistributionMongoDBObject>();
 	
 
-	HashMap<Integer, ArrayList<LinksetMongoDBObject>> indegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
-	HashMap<Integer, ArrayList<LinksetMongoDBObject>> outdegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
+	public static HashMap<Integer, ArrayList<LinksetMongoDBObject>> indegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
+	public static HashMap<Integer, ArrayList<LinksetMongoDBObject>> outdegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -94,11 +94,14 @@ public class CreateD3JSONFormat extends HttpServlet {
 		checkLinkTypes(parameters);
 		
 		
+		new LinksetQueries()
+		.getLinksetsInDegreeByDistribution(LINK_TYPE, min, max);
+		
 		// get indegree and outdegree for a distribution
-		indegreeLinks = new LinksetQueries()
-				.getLinksetsInDegreeByDistribution(LINK_TYPE, min, max);
-		outdegreeLinks = new LinksetQueries()
-				.getLinksetsOutDegreeByDistribution(LINK_TYPE, min, max);
+//		indegreeLinks = new LinksetQueries()
+//				.getLinksetsInDegreeByDistribution(LINK_TYPE, min, max);
+//		outdegreeLinks = new LinksetQueries()
+//				.getLinksetsOutDegreeByDistribution(LINK_TYPE, min, max);
 		
 		
 	
@@ -323,8 +326,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 	protected void checkRange(Map<String, String[]> parameters){
 		if (parameters.containsKey("linkFrom")) {
 			min = Double.parseDouble(parameters.get("linkFrom")[0]);
-			if (min==0)
-				min=0.001;
+			if (min<0.2)
+				min=0.2;
 		}
 		if (parameters.containsKey("linkTo")) 
 			max = Double.parseDouble(parameters.get("linkTo")[0]);

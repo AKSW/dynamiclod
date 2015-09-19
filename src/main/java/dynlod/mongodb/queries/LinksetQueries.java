@@ -228,23 +228,57 @@ public class LinksetQueries {
 			
 			while (d.hasNext()) {
 				LinksetMongoDBObject linkset = new LinksetMongoDBObject(d.next());
-				if(lastDistributionId != linkset.getDistributionTarget()){
-					if(listOfLinksets!=null)
-						list.put(lastDistributionId, listOfLinksets);
-					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
-					lastDistributionId = linkset.getDistributionTarget();
-					listOfLinksets.add(linkset);
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
-
+				
+				if(CreateD3JSONFormat.indegreeLinks.get(linkset.getDistributionTarget()) == null){
+					CreateD3JSONFormat.indegreeLinks.put(linkset.getDistributionTarget(), new ArrayList<LinksetMongoDBObject>());
+					CreateD3JSONFormat.indegreeLinks.get(linkset.getDistributionTarget()).add(linkset);
 				}
 				else{
-					listOfLinksets.add(linkset);
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
+					CreateD3JSONFormat.indegreeLinks.get(linkset.getDistributionTarget()).add(linkset);					
 				}
 				
+				if(CreateD3JSONFormat.outdegreeLinks.get(linkset.getDistributionSource()) == null){
+					CreateD3JSONFormat.outdegreeLinks.put(linkset.getDistributionSource(), new ArrayList<LinksetMongoDBObject>());
+					CreateD3JSONFormat.outdegreeLinks.get(linkset.getDistributionSource()).add(linkset);
+				}
+				else{
+					CreateD3JSONFormat.outdegreeLinks.get(linkset.getDistributionSource()).add(linkset);					
+				}
+			
+
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
+				
+				
 			}
+			
+			
+			
+			
+			
+			
+//			while (d.hasNext()) {
+//				LinksetMongoDBObject linkset = new LinksetMongoDBObject(d.next());
+//				
+//				
+//				
+//				if(lastDistributionId != linkset.getDistributionTarget()){
+//					if(listOfLinksets!=null)
+//						list.put(lastDistributionId, listOfLinksets);
+//					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
+//					lastDistributionId = linkset.getDistributionTarget();
+//					listOfLinksets.add(linkset);
+//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
+//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
+//
+//				}
+//				else{
+//					listOfLinksets.add(linkset);
+//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
+//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
+//				}
+//				
+//			}
 		
 			return list;
 		} catch (Exception e) {
