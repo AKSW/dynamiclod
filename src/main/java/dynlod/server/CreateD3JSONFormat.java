@@ -184,7 +184,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 			if(in!=null)
 			for (LinksetMongoDBObject linkset : in) {
 				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
+//				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
+				DistributionMongoDBObject target =  distribution;
 				
 				String links = getLinksCorrectFormat(linkset);
 				
@@ -200,7 +201,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 			}
 			if(out!=null)
 			for (LinksetMongoDBObject linkset : out) {
-				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
+//				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject source =  distribution;
 				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
 				
 				
@@ -222,36 +224,40 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 	private void makeLink(Bubble source, Bubble target, Diagram diagram, String link){
 		
-		if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_STRENGHT) || LINK_TYPE.equals(LinksetMongoDBObject.LINK_SIMILARITY)){
-			if(!link.equals("S")){
-				double linkV = Double.valueOf(link);
-				if(linkV<=max && linkV>=min){
-			
-					Link l = new Link(source, target, link);
+		
+		Link l = new Link(source, target, link);
 
-					diagram.addBubble(target);
-					diagram.addBubble(source);
-					
-					diagram.addLink(l);
-				}
-			}
-			else{
-				Link l = new Link(source, target, link);
-
-				diagram.addBubble(target);
-				diagram.addBubble(source);
-				
-				diagram.addLink(l);
-			}
-		}
-		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_NUMBER_LINKS)){
-			Link l = new Link(source, target, link);
-
-			diagram.addBubble(target);
-			diagram.addBubble(source);
-			
-			diagram.addLink(l);
-		}
+		diagram.addBubble(target);
+		diagram.addBubble(source);
+		
+		diagram.addLink(l);
+		
+//		if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_STRENGHT) || LINK_TYPE.equals(LinksetMongoDBObject.LINK_SIMILARITY)){
+//			if(!link.equals("S")){
+//			
+//					Link l = new Link(source, target, link);
+//					diagram.addBubble(target);
+//					diagram.addBubble(source);
+//					
+//					diagram.addLink(l);
+//			}
+//			else{
+//				Link l = new Link(source, target, link);
+//
+//				diagram.addBubble(target);
+//				diagram.addBubble(source);
+//				
+//				diagram.addLink(l);
+//			}
+//		}
+//		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_NUMBER_LINKS)){
+//			Link l = new Link(source, target, link);
+//
+//			diagram.addBubble(target);
+//			diagram.addBubble(source);
+//			
+//			diagram.addLink(l);
+//		}
 		
 	}
 	
