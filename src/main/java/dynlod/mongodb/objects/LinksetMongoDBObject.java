@@ -43,7 +43,7 @@ public class LinksetMongoDBObject extends DBSuperClass {
 	private int links = 0;
 
 	private int invalidLinks = 0;
-
+	
 	public LinksetMongoDBObject(String uri) {
 		super(COLLECTION_NAME, uri);
 		loadObject();

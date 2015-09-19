@@ -25,6 +25,8 @@ public class Bubble {
 	
 	boolean isVocab = false;
 
+	
+	
 	public JSONObject getJSON() {
 		JSONObject node = new JSONObject();
 

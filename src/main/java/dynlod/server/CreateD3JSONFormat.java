@@ -22,6 +22,7 @@ import dynlod.API.diagram.Link;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.FQDNQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 
@@ -40,6 +41,11 @@ public class CreateD3JSONFormat extends HttpServlet {
 	double min = 0.001;
 	
 	double max = 1;
+	
+	// load all distributions
+	public static HashSet<Integer> distributionsID = new HashSet<Integer>();
+	
+	HashMap<Integer, DistributionMongoDBObject> loadedDistributions = new HashMap<Integer, DistributionMongoDBObject>();
 	
 
 	HashMap<Integer, ArrayList<LinksetMongoDBObject>> indegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
@@ -94,6 +100,26 @@ public class CreateD3JSONFormat extends HttpServlet {
 		outdegreeLinks = new LinksetQueries()
 				.getLinksetsOutDegreeByDistribution(LINK_TYPE, min, max);
 		
+		
+	
+		// load distributions buffer
+//		for (int distribution : indegreeLinks.keySet()) {
+//				distributionsID.add(distribution);
+//		}
+//		
+//		for (int distribution : outdegreeLinks.keySet()) {
+//			if(!loadedDistributions.containsKey(distribution)){
+//				distributionsID.add(distribution);
+//			}
+//		}
+		ArrayList<DistributionMongoDBObject> dis = new DistributionQueries().getSetOfDistributions(distributionsID);
+		for (DistributionMongoDBObject distributionMongoDBObject : dis) {
+			loadedDistributions.put(distributionMongoDBObject.getDynLodID(), distributionMongoDBObject);
+		}
+		
+		System.out.println("KI:" +loadedDistributions.size());
+		
+		
 		if (parameters.containsKey("getAllDistributions")) {
 
 			Diagram diagram = new Diagram();
@@ -106,6 +132,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 						linkset.getDistributionTarget()));
 				Bubble source = new Bubble( new DistributionMongoDBObject(
 						linkset.getDistributionSource()));
+			
 
 				Link link = new Link(source, target, linkset.getLinksAsString());
 
@@ -181,9 +208,16 @@ public class CreateD3JSONFormat extends HttpServlet {
 			ArrayList<LinksetMongoDBObject> out = outdegreeLinks.get(distribution.getDynLodID());
 			
 
-			if(in!=null)
+			if(in!=null){
+				
 			for (LinksetMongoDBObject linkset : in) {
-				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
+				// get all distribution objects
+				
+				
+//				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
+				DistributionMongoDBObject source = loadedDistributions.get(linkset.getDistributionSource());
+				
+				
 //				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
 				DistributionMongoDBObject target =  distribution;
 				
@@ -199,11 +233,13 @@ public class CreateD3JSONFormat extends HttpServlet {
 							diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 
 			}
+		}
 			if(out!=null)
 			for (LinksetMongoDBObject linkset : out) {
 //				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
 				DistributionMongoDBObject source =  distribution;
-				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
+//				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
+				DistributionMongoDBObject target =  loadedDistributions.get(linkset.getDistributionTarget());
 				
 				
 				String links = getLinksCorrectFormat(linkset);

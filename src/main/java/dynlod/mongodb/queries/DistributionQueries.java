@@ -2,6 +2,7 @@ package dynlod.mongodb.queries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +22,6 @@ import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
 import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
 import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
 
 public class DistributionQueries {
 
@@ -315,6 +315,38 @@ public class DistributionQueries {
 			DBCursor instances = collection.find(new BasicDBObject(
 					DistributionMongoDBObject.DEFAULT_DATASETS,
 					new BasicDBObject("$in", datasetList)));
+
+			for (DBObject instance : instances) {
+				distributionList.add(new DistributionMongoDBObject(instance));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return distributionList;
+	}
+
+
+	
+	
+	// return all distributions
+	public ArrayList<DistributionMongoDBObject> getSetOfDistributions(
+			HashSet<Integer> set) {
+
+		ArrayList<DistributionMongoDBObject> distributionList = new ArrayList<DistributionMongoDBObject>();
+
+
+		DBCollection collection = DBSuperClass.getInstance().getCollection(
+				DatasetMongoDBObject.COLLECTION_NAME);
+	
+	
+
+		try {
+			collection = DBSuperClass.getInstance().getCollection(
+					DistributionMongoDBObject.COLLECTION_NAME);
+			DBCursor instances = collection.find(new BasicDBObject(
+					DistributionMongoDBObject.DYN_LOD_ID,
+					new BasicDBObject("$in", set)));
 
 			for (DBObject instance : instances) {
 				distributionList.add(new DistributionMongoDBObject(instance));

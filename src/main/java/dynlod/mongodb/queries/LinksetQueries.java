@@ -19,6 +19,7 @@ import com.mongodb.DBObject;
 import dynlod.DynlodGeneralProperties;
 import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.server.CreateD3JSONFormat;
 
 public class LinksetQueries {
 
@@ -236,6 +237,8 @@ public class LinksetQueries {
 				}
 				else{
 					listOfLinksets.add(linkset);
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
 				}
 				
 			}
@@ -288,6 +291,8 @@ public class LinksetQueries {
 				}
 				else{
 					listOfLinksets.add(linkset);
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
 				}
 				
 			}
