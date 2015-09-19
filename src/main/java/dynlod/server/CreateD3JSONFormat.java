@@ -43,7 +43,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 	
 	double max = 1;
 	
-	DiagramData diagramData = new DiagramData();
+	DiagramData diagramData = null;
 	
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -87,7 +87,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 		checkRange(parameters);
 		checkLinkTypes(parameters);
 		
-		
+		diagramData = new DiagramData();
 		new LinksetQueries()
 		.getLinksetsInDegreeByDistribution(diagramData, LINK_TYPE, min, max);
 		
