@@ -218,7 +218,6 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 	}
 	
 	protected void load(DBObject obj){
-		
 
 		if (obj != null) {
 			downloadUrl = (String) obj.get(DOWNLOAD_URL);

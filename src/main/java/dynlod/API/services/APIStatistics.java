@@ -65,5 +65,33 @@ public class APIStatistics{
 		
 		return apimessage;
 	}
+
+	public APIMessage getLinks(int skip, int limit, boolean getOntologies){
+		APIMessage apimessage = new APIMessage(); 
+		
+		JSONArray jsonArr = new JSONArray();
+		JSONObject msg = new JSONObject();
+
+		// get how many vocabs and datasets are in the database
+		ArrayList<DistributionMongoDBObject> distributions = new DistributionQueries().getDistributions(skip, limit, getOntologies);
+		
+		for (DistributionMongoDBObject d : distributions){
+			JSONArray jsonObj = new JSONArray();
+			jsonObj.put(new DatasetMongoDBObject(d.getDefaultDatasets().get(0)).getUri());
+			jsonObj.put(d.getDownloadUrl());
+			jsonObj.put(d.getStatus());
+			jsonObj.put(d.getLastTimeStreamed());
+			jsonArr.put(jsonObj);
+		}
+		
+		msg.put("distributions", jsonArr);
+		msg.put("totalDistributions", new DistributionQueries().countDistributions(getOntologies));
+
+		apimessage.addListMsg(msg); 
+		
+		return apimessage;
+	}
+
+	
 	
 }

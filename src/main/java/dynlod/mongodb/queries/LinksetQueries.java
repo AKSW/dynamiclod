@@ -184,8 +184,7 @@ public class LinksetQueries {
 			DBCursor d = collection.find(query);
 
 			while (d.hasNext()) {
-				list.add(new LinksetMongoDBObject(d.next().get(DBSuperClass.URI)
-						.toString()));
+				list.add(new LinksetMongoDBObject(d.next()));
 			}
 
 		
@@ -229,8 +228,7 @@ public class LinksetQueries {
 			DBCursor d = collection.find(query);
 
 			while (d.hasNext()) {
-				list.add(new LinksetMongoDBObject(d.next().get(DBSuperClass.URI)
-						.toString()));
+				list.add(new LinksetMongoDBObject(d.next()));
 			}
 
 			return list;

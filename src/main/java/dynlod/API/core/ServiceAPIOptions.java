@@ -6,21 +6,23 @@ public class ServiceAPIOptions extends ArrayList<APIOption>{
 	
 	private static final long serialVersionUID = -7797640635790893518L;
 
-	public String ADD_DATASET = "addDataset";
+	public static final String ADD_DATASET = "addDataset";
 	
-	public String DATASET_STATUS = "datasetStatus";
+	public static final String DATASET_STATUS = "datasetStatus";
 	
-	public String RETRIEVE_DATASET = "retrieveDataset"; 
+	public static final String RETRIEVE_DATASET = "retrieveDataset"; 
 	
-	public String RDF_FORMAT = "rdfFormat"; 
+	public static final String RDF_FORMAT = "rdfFormat"; 
 	
-	public String SERVER_STATISTICS = "statistics"; 
+	public static final String SERVER_STATISTICS = "statistics"; 
 	
-	public String LIST_DISTRIBUTIONS = "listDistributions"; 
+	public static final String LIST_LINKS = "links"; 
 	
-	public String LIST_SKIP = "skip"; 
+	public static final String LIST_DISTRIBUTIONS = "listDistributions"; 
 	
-	public String LIST_LIMIT = "limit"; 
+	public static final String LIST_SKIP = "skip"; 
+	
+	public static final String LIST_LIMIT = "limit"; 
 	
 	{
 		add(new APIOption(ADD_DATASET, "link for your dataset description to be streamed. Might be a list of links."));

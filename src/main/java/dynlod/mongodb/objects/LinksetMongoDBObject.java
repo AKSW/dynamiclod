@@ -1,5 +1,6 @@
 package dynlod.mongodb.objects;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
@@ -48,6 +49,42 @@ public class LinksetMongoDBObject extends DBSuperClass {
 		loadObject();
 	}
 
+	public LinksetMongoDBObject(DBObject object) {
+		super(COLLECTION_NAME, object);
+		load(object);
+	}
+	
+	
+	
+	
+	protected void load(DBObject obj){
+
+		if (obj != null) {
+
+			distributionTarget = ((Number) obj
+					.get(DISTRIBUTION_TARGET)).intValue();
+
+			distributionSource =  ((Number) obj
+					.get(DISTRIBUTION_SOURCE)).intValue();
+
+			datasetSource =  ((Number) obj.get(DATASET_SOURCE)).intValue();
+
+			datasetTarget =  ((Number) obj.get(DATASET_TARGET)).intValue();
+
+			similarity =  ((Number) obj.get(LINK_SIMILARITY)).doubleValue();
+
+			strength =  ((Number) obj.get(LINK_STRENGHT)).doubleValue();
+
+//			invalidLinks = Integer.valueOf(obj.get(INVALID_LINKS).toString());
+
+			links = ((Number) obj.get(LINK_NUMBER_LINKS)).intValue();
+
+		}
+	}
+
+	
+	
+	
 	public boolean updateObject(boolean checkBeforeInsert) {
 
 		// save object case it doens't exists
