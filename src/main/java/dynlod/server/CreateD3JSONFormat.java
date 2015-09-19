@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import dynlod.DynlodGeneralProperties;
 import dynlod.API.diagram.Bubble;
 import dynlod.API.diagram.Diagram;
+import dynlod.API.diagram.DiagramData;
 import dynlod.API.diagram.Link;
 import dynlod.mongodb.objects.DatasetMongoDBObject;
 import dynlod.mongodb.objects.DistributionMongoDBObject;
@@ -42,15 +43,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 	
 	double max = 1;
 	
-	// load all distributions
-	public static HashSet<Integer> distributionsID = new HashSet<Integer>();
+	DiagramData diagramData = new DiagramData();
 	
-	HashMap<Integer, DistributionMongoDBObject> loadedDistributions = new HashMap<Integer, DistributionMongoDBObject>();
-	
-
-	public static HashMap<Integer, ArrayList<LinksetMongoDBObject>> indegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
-	public static HashMap<Integer, ArrayList<LinksetMongoDBObject>> outdegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
-
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		manageRequest(request, response);
@@ -95,7 +89,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 		
 		
 		new LinksetQueries()
-		.getLinksetsInDegreeByDistribution(LINK_TYPE, min, max);
+		.getLinksetsInDegreeByDistribution(diagramData, LINK_TYPE, min, max);
 		
 		// get indegree and outdegree for a distribution
 //		indegreeLinks = new LinksetQueries()
@@ -115,12 +109,12 @@ public class CreateD3JSONFormat extends HttpServlet {
 //				distributionsID.add(distribution);
 //			}
 //		}
-		ArrayList<DistributionMongoDBObject> dis = new DistributionQueries().getSetOfDistributions(distributionsID);
+		ArrayList<DistributionMongoDBObject> dis = new DistributionQueries().getSetOfDistributions(diagramData.distributionsID);
 		for (DistributionMongoDBObject distributionMongoDBObject : dis) {
-			loadedDistributions.put(distributionMongoDBObject.getDynLodID(), distributionMongoDBObject);
+			diagramData.loadedDistributions.put(distributionMongoDBObject.getDynLodID(), distributionMongoDBObject);
 		}
 		
-		System.out.println("KI:" +loadedDistributions.size());
+		System.out.println("KI:" +diagramData.loadedDistributions.size());
 		
 		
 		if (parameters.containsKey("getAllDistributions")) {
@@ -207,8 +201,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 //					.getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
 			
 			// get indegree and outdegree for a distribution
-			ArrayList<LinksetMongoDBObject> in = indegreeLinks.get(distribution.getDynLodID());
-			ArrayList<LinksetMongoDBObject> out = outdegreeLinks.get(distribution.getDynLodID());
+			ArrayList<LinksetMongoDBObject> in = diagramData.indegreeLinks.get(distribution.getDynLodID());
+			ArrayList<LinksetMongoDBObject> out = diagramData.outdegreeLinks.get(distribution.getDynLodID());
 			
 
 			if(in!=null){
@@ -218,7 +212,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 				
 				
 //				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject source = loadedDistributions.get(linkset.getDistributionSource());
+				DistributionMongoDBObject source = diagramData.loadedDistributions.get(linkset.getDistributionSource());
 				
 				
 //				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
@@ -242,7 +236,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 //				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
 				DistributionMongoDBObject source =  distribution;
 //				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
-				DistributionMongoDBObject target =  loadedDistributions.get(linkset.getDistributionTarget());
+				DistributionMongoDBObject target =  diagramData.loadedDistributions.get(linkset.getDistributionTarget());
 				
 				
 				String links = getLinksCorrectFormat(linkset);

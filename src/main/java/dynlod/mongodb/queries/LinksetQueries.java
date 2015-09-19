@@ -17,6 +17,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import dynlod.DynlodGeneralProperties;
+import dynlod.API.diagram.DiagramData;
 import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.objects.LinksetMongoDBObject;
 import dynlod.server.CreateD3JSONFormat;
@@ -196,8 +197,8 @@ public class LinksetQueries {
 		return null;
 	}
 	
-	public HashMap<Integer, ArrayList<LinksetMongoDBObject>> getLinksetsInDegreeByDistribution(
-			String linkType, double min, double max) {
+	public void getLinksetsInDegreeByDistribution(
+			DiagramData diagramData, String linkType, double min, double max) {
 		
 		HashMap<Integer, ArrayList<LinksetMongoDBObject>> list = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
 		try {
@@ -229,121 +230,32 @@ public class LinksetQueries {
 			while (d.hasNext()) {
 				LinksetMongoDBObject linkset = new LinksetMongoDBObject(d.next());
 				
-				if(CreateD3JSONFormat.indegreeLinks.get(linkset.getDistributionTarget()) == null){
-					CreateD3JSONFormat.indegreeLinks.put(linkset.getDistributionTarget(), new ArrayList<LinksetMongoDBObject>());
-					CreateD3JSONFormat.indegreeLinks.get(linkset.getDistributionTarget()).add(linkset);
+				if(diagramData.indegreeLinks.get(linkset.getDistributionTarget()) == null){
+					diagramData.indegreeLinks.put(linkset.getDistributionTarget(), new ArrayList<LinksetMongoDBObject>());
+					diagramData.indegreeLinks.get(linkset.getDistributionTarget()).add(linkset);
 				}
 				else{
-					CreateD3JSONFormat.indegreeLinks.get(linkset.getDistributionTarget()).add(linkset);					
+					diagramData.indegreeLinks.get(linkset.getDistributionTarget()).add(linkset);					
 				}
 				
-				if(CreateD3JSONFormat.outdegreeLinks.get(linkset.getDistributionSource()) == null){
-					CreateD3JSONFormat.outdegreeLinks.put(linkset.getDistributionSource(), new ArrayList<LinksetMongoDBObject>());
-					CreateD3JSONFormat.outdegreeLinks.get(linkset.getDistributionSource()).add(linkset);
+				if(diagramData.outdegreeLinks.get(linkset.getDistributionSource()) == null){
+					diagramData.outdegreeLinks.put(linkset.getDistributionSource(), new ArrayList<LinksetMongoDBObject>());
+					diagramData.outdegreeLinks.get(linkset.getDistributionSource()).add(linkset);
 				}
 				else{
-					CreateD3JSONFormat.outdegreeLinks.get(linkset.getDistributionSource()).add(linkset);					
+					diagramData.outdegreeLinks.get(linkset.getDistributionSource()).add(linkset);					
 				}
 			
 
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
-				
-				
+				diagramData.distributionsID.add(linkset.getDistributionSource());
+				diagramData.distributionsID.add(linkset.getDistributionTarget());
+					
 			}
 			
-			
-			
-			
-			
-			
-//			while (d.hasNext()) {
-//				LinksetMongoDBObject linkset = new LinksetMongoDBObject(d.next());
-//				
-//				
-//				
-//				if(lastDistributionId != linkset.getDistributionTarget()){
-//					if(listOfLinksets!=null)
-//						list.put(lastDistributionId, listOfLinksets);
-//					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
-//					lastDistributionId = linkset.getDistributionTarget();
-//					listOfLinksets.add(linkset);
-//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
-//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
-//
-//				}
-//				else{
-//					listOfLinksets.add(linkset);
-//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
-//					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
-//				}
-//				
-//			}
-		
-			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
-	}
-
-	public  HashMap<Integer, ArrayList<LinksetMongoDBObject>> getLinksetsOutDegreeByDistribution(
-			String linkType, double min, double max) {
-		
-		HashMap<Integer, ArrayList<LinksetMongoDBObject>> list = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
-		try {
-			DBCollection collection = DBSuperClass.getInstance().getCollection(
-					LinksetMongoDBObject.COLLECTION_NAME);
-			
-			BasicDBList and = new BasicDBList();
-			DBObject clause2;
-			DBObject clause3;
-			
-			if(min>0){
-			clause2 = new BasicDBObject(linkType,
-					new BasicDBObject("$gt", min)); 
-			and.add(clause2);
-			}
-			if(max>0){
-			clause3 = new BasicDBObject(linkType,
-					new BasicDBObject("$lt", max)); 
-			and.add(clause3);
-			}
-			DBObject orderBy = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, 1);
-			DBObject query = new BasicDBObject("$and", and);
-			
-			DBCursor d = collection.find(query).sort(orderBy);
-
-			int lastDistributionId = 0;
-			ArrayList<LinksetMongoDBObject> listOfLinksets = null;
-			
-			while (d.hasNext()) {
-				LinksetMongoDBObject linkset = new LinksetMongoDBObject(d.next());
-				if(lastDistributionId != linkset.getDistributionSource()){
-					if(listOfLinksets!=null)
-						list.put(lastDistributionId, listOfLinksets);
-					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
-					lastDistributionId = linkset.getDistributionSource();
-					listOfLinksets.add(linkset);
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
-
-				}
-				else{
-					listOfLinksets.add(linkset);
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
-					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
-				}
-				
-			}
-		
-			return list;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
+	}	
 
 	public ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDistribution(
 			int id, String linkType, double min, double max) {
