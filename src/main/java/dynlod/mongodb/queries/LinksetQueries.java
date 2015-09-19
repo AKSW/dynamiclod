@@ -234,6 +234,9 @@ public class LinksetQueries {
 					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
 					lastDistributionId = linkset.getDistributionTarget();
 					listOfLinksets.add(linkset);
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
+
 				}
 				else{
 					listOfLinksets.add(linkset);
@@ -288,6 +291,9 @@ public class LinksetQueries {
 					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
 					lastDistributionId = linkset.getDistributionSource();
 					listOfLinksets.add(linkset);
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionSource());
+					CreateD3JSONFormat.distributionsID.add(linkset.getDistributionTarget());
+
 				}
 				else{
 					listOfLinksets.add(linkset);
