@@ -2,6 +2,8 @@ package dynlod.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -40,6 +42,9 @@ public class CreateD3JSONFormat extends HttpServlet {
 	double max = 1;
 	
 
+	HashMap<Integer, ArrayList<LinksetMongoDBObject>> indegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
+	HashMap<Integer, ArrayList<LinksetMongoDBObject>> outdegreeLinks = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
+
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		manageRequest(request, response);
@@ -75,12 +80,19 @@ public class CreateD3JSONFormat extends HttpServlet {
 		JSONArray links = new JSONArray();
 
 		Map<String, String[]> parameters = request.getParameterMap();
+		
 
 		showDistribution = checkParamenter(parameters, "showDistributions");
 		showOntologies = checkParamenter(parameters, "showOntologies");
 		checkRange(parameters);
 		checkLinkTypes(parameters);
 		
+		
+		// get indegree and outdegree for a distribution
+		indegreeLinks = new LinksetQueries()
+				.getLinksetsInDegreeByDistribution(LINK_TYPE, min, max);
+		outdegreeLinks = new LinksetQueries()
+				.getLinksetsOutDegreeByDistribution(LINK_TYPE, min, max);
 		
 		if (parameters.containsKey("getAllDistributions")) {
 
@@ -110,6 +122,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 		if (parameters.containsKey("dataset")) {
 			Diagram diagramTemp = new Diagram();
+			
+			
 			for (String datasetID : parameters.get("dataset")) {
 
 				int currentLevel = 1;
@@ -156,13 +170,18 @@ public class CreateD3JSONFormat extends HttpServlet {
 			makeLink(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
 					diagram.addBubble(new Bubble(distribution, true,parentDataset)), diagram, "S");
 
+//			// get indegree and outdegree for a distribution
+//			ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
+//					.getLinksetsInDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
+//			ArrayList<LinksetMongoDBObject> out = new LinksetQueries()
+//					.getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
+			
 			// get indegree and outdegree for a distribution
-			ArrayList<LinksetMongoDBObject> in = new LinksetQueries()
-					.getLinksetsInDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
-			ArrayList<LinksetMongoDBObject> out = new LinksetQueries()
-					.getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
+			ArrayList<LinksetMongoDBObject> in = indegreeLinks.get(distribution.getDynLodID());
+			ArrayList<LinksetMongoDBObject> out = outdegreeLinks.get(distribution.getDynLodID());
 			
 
+			if(in!=null)
 			for (LinksetMongoDBObject linkset : in) {
 				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
 				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
@@ -179,6 +198,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 							diagram.addBubble(new Bubble(target, showDistribution,parentDataset)), diagram, links);
 
 			}
+			if(out!=null)
 			for (LinksetMongoDBObject linkset : out) {
 				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
 				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());

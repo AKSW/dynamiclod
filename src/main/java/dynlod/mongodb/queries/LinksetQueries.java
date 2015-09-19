@@ -2,7 +2,12 @@ package dynlod.mongodb.queries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.bson.BSONObject;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBList;
@@ -156,8 +161,6 @@ public class LinksetQueries {
 		
 		ArrayList<LinksetMongoDBObject> list = new ArrayList<LinksetMongoDBObject>();
 		try {
-			
-
 			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					LinksetMongoDBObject.COLLECTION_NAME);
 			
@@ -171,13 +174,11 @@ public class LinksetQueries {
 			clause2 = new BasicDBObject(linkType,
 					new BasicDBObject("$gt", min)); 
 			and.add(clause2);
-			
 			}
 			if(max>0){
 			clause3 = new BasicDBObject(linkType,
 					new BasicDBObject("$lt", max)); 
 			and.add(clause3);
-			
 			}
 			
 			DBObject query = new BasicDBObject("$and", and);
@@ -186,15 +187,118 @@ public class LinksetQueries {
 			while (d.hasNext()) {
 				list.add(new LinksetMongoDBObject(d.next()));
 			}
-
 		
 			return list;
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
+	public HashMap<Integer, ArrayList<LinksetMongoDBObject>> getLinksetsInDegreeByDistribution(
+			String linkType, double min, double max) {
+		
+		HashMap<Integer, ArrayList<LinksetMongoDBObject>> list = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
+		try {
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
+					LinksetMongoDBObject.COLLECTION_NAME);
+			
+			BasicDBList and = new BasicDBList();
+			DBObject clause2;
+			DBObject clause3;
+			
+			if(min>0){
+			clause2 = new BasicDBObject(linkType,
+					new BasicDBObject("$gt", min)); 
+			and.add(clause2);
+			}
+			if(max>0){
+			clause3 = new BasicDBObject(linkType,
+					new BasicDBObject("$lt", max)); 
+			and.add(clause3);
+			}
+			DBObject orderBy = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_TARGET, 1);
+			DBObject query = new BasicDBObject("$and", and);
+			
+			DBCursor d = collection.find(query).sort(orderBy);
+
+			int lastDistributionId = 0;
+			ArrayList<LinksetMongoDBObject> listOfLinksets = null;
+			
+			while (d.hasNext()) {
+				LinksetMongoDBObject linkset = new LinksetMongoDBObject(d.next());
+				if(lastDistributionId != linkset.getDistributionTarget()){
+					if(listOfLinksets!=null)
+						list.put(lastDistributionId, listOfLinksets);
+					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
+					lastDistributionId = linkset.getDistributionTarget();
+					listOfLinksets.add(linkset);
+				}
+				else{
+					listOfLinksets.add(linkset);
+				}
+				
+			}
+		
+			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public  HashMap<Integer, ArrayList<LinksetMongoDBObject>> getLinksetsOutDegreeByDistribution(
+			String linkType, double min, double max) {
+		
+		HashMap<Integer, ArrayList<LinksetMongoDBObject>> list = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();
+		try {
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
+					LinksetMongoDBObject.COLLECTION_NAME);
+			
+			BasicDBList and = new BasicDBList();
+			DBObject clause2;
+			DBObject clause3;
+			
+			if(min>0){
+			clause2 = new BasicDBObject(linkType,
+					new BasicDBObject("$gt", min)); 
+			and.add(clause2);
+			}
+			if(max>0){
+			clause3 = new BasicDBObject(linkType,
+					new BasicDBObject("$lt", max)); 
+			and.add(clause3);
+			}
+			DBObject orderBy = new BasicDBObject(LinksetMongoDBObject.DISTRIBUTION_SOURCE, 1);
+			DBObject query = new BasicDBObject("$and", and);
+			
+			DBCursor d = collection.find(query).sort(orderBy);
+
+			int lastDistributionId = 0;
+			ArrayList<LinksetMongoDBObject> listOfLinksets = null;
+			
+			while (d.hasNext()) {
+				LinksetMongoDBObject linkset = new LinksetMongoDBObject(d.next());
+				if(lastDistributionId != linkset.getDistributionSource()){
+					if(listOfLinksets!=null)
+						list.put(lastDistributionId, listOfLinksets);
+					listOfLinksets = new ArrayList<LinksetMongoDBObject>();
+					lastDistributionId = linkset.getDistributionSource();
+					listOfLinksets.add(linkset);
+				}
+				else{
+					listOfLinksets.add(linkset);
+				}
+				
+			}
+		
+			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 
 	public ArrayList<LinksetMongoDBObject> getLinksetsOutDegreeByDistribution(
 			int id, String linkType, double min, double max) {
@@ -214,25 +318,20 @@ public class LinksetQueries {
 			if(min>0){
 			clause2 = new BasicDBObject(linkType,
 					new BasicDBObject("$gt", min)); 
-			and.add(clause2);
-			
+			and.add(clause2);			
 			}
 			if(max>0){
 			clause3 = new BasicDBObject(linkType,
 					new BasicDBObject("$lt", max)); 
-			and.add(clause3);
-			
+			and.add(clause3);			
 			}
-			
+		
 			DBObject query = new BasicDBObject("$and", and);
 			DBCursor d = collection.find(query);
-
 			while (d.hasNext()) {
 				list.add(new LinksetMongoDBObject(d.next()));
 			}
-
 			return list;
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
