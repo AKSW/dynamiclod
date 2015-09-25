@@ -46,8 +46,9 @@ abstract public class DBSuperClass {
 
 	abstract protected boolean loadObject();
 
-	// collectionName is mandatory since we need to know where to save the rdf
-	// entry
+	public DBSuperClass(){
+		
+	}
 	/**
 	 * @param collectionName
 	 * The collection name

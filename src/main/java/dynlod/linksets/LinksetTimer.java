@@ -2,7 +2,7 @@ package dynlod.linksets;
 
 import javax.servlet.http.HttpServlet;
 
-import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
+import dynlod.mongodb.collections.SystemPropertiesMongoDBObject;
 
 public class LinksetTimer extends HttpServlet implements Runnable {
 

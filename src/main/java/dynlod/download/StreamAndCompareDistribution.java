@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -30,15 +27,16 @@ import org.openrdf.rio.turtle.TurtleParser;
 import dynlod.DynlodGeneralProperties;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
-import dynlod.links.similarity.JaccardSimilarity;
-import dynlod.links.similarity.LinkSimilarity;
 import dynlod.linksets.MakeLinksetsMasterThread;
-import dynlod.mongodb.objects.OWLClassMongoDBObject;
-import dynlod.mongodb.objects.OWLClassResourceMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.PredicateMongoDBObject;
-import dynlod.mongodb.objects.PredicateResourceMongoDBObject;
-import dynlod.mongodb.queries.OWLClassQueries;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesDB;
+import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
+import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassDB;
+import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassRelationDB;
+import dynlod.mongodb.collections.RDFResources.rdfSubClassOf.RDFSubClassOfDB;
+import dynlod.mongodb.collections.RDFResources.rdfSubClassOf.RDFSubClassOfRelationDB;
+import dynlod.mongodb.collections.RDFResources.rdfType.RDFTypeObjectDB;
+import dynlod.mongodb.collections.RDFResources.rdfType.RDFTypeObjectRelationDB;
 import dynlod.mongodb.queries.PredicatesQueries;
 import dynlod.parsers.NTriplesDynLODParser;
 import dynlod.threads.SplitAndStoreThread;
@@ -258,10 +256,6 @@ public class StreamAndCompareDistribution extends Stream {
 
 		doneReadingFile = true;
 
-		// telling thread that we are done streaming
-
-		// splitThread.setDoneReadingFile(true);
-
 		// fileName = splitThread.getFileName();
 		objectLines = splitThread.getObjectLines();
 		subjectLines = splitThread.getSubjectLines();
@@ -275,36 +269,26 @@ public class StreamAndCompareDistribution extends Stream {
 
 		splitThread.closeQueues();
 
-//		Iterator it = countObjectDomainsHashMap.entrySet().iterator();
-//		while (it.hasNext()) {
-//			Map.Entry pair = (Map.Entry) it.next();
-//			if ((Integer) pair.getValue() > 50) {
-//				objectDomains.put((String) pair.getKey(),
-//						(Integer) pair.getValue());
-//
-//			}
-//			it.remove();
-//		}
-//
-//		it = countSubjectDomainsHashMap.entrySet().iterator();
-//		while (it.hasNext()) {
-//			Map.Entry pair = (Map.Entry) it.next();
-//			if ((Integer) pair.getValue() > 50) {
-//				subjectDomains.put((String) pair.getKey(),
-//						(Integer) pair.getValue());
-//
-//			}
-//			it.remove();
-//		}
 		
 		logger.info("Saving predicates...");
 		// save predicates
-		new PredicatesQueries().insertPredicates(splitThread.predicates, distribution.getDynLodID(), distribution.getTopDataset());
+//		new PredicatesQueries().insertPredicates(splitThread.predicates, distribution.getDynLodID(), distribution.getTopDataset());
+		new AllPredicatesDB().insertSet(splitThread.allPredicates.keySet());
+		new AllPredicatesRelationDB().insertSet(splitThread.allPredicates, distribution.getDynLodID(), distribution.getTopDataset());
 		
-		logger.info("Saving OWL classes...");
-		// Saving OWL classes
-		new OWLClassQueries().insertOWLClasses(splitThread.owlClasses,  distribution.getDynLodID(), distribution.getTopDataset());
+		logger.info("Saving RDF TYPE objects...");
+		// Saving RDF Type classes
+		new RDFTypeObjectDB().insertSet(splitThread.rdfTypeObjects.keySet());
+		new RDFTypeObjectRelationDB().insertSet(splitThread.rdfTypeObjects,  distribution.getDynLodID(), distribution.getTopDataset());
 
+		new RDFSubClassOfDB().insertSet(splitThread.rdfSubClassOf.keySet());
+		new RDFSubClassOfRelationDB().insertSet(splitThread.rdfSubClassOf, distribution.getDynLodID(), distribution.getTopDataset());
+		
+		new OwlClassDB().insertSet(splitThread.owlClasses.keySet());
+		new OwlClassRelationDB().insertSet(splitThread.owlClasses, distribution.getDynLodID(), distribution.getTopDataset());
+			
+		
+		
 //		logger.info("Checking distributions similarities...");
 //		// Saving link similarities
 //		LinkSimilarity linkSimilarity = new JaccardSimilarity();

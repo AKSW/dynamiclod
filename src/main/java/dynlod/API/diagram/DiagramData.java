@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 
 public class DiagramData {
 	

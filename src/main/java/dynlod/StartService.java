@@ -8,11 +8,17 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import dynlod.mongodb.IndexesCreator;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
 import dynlod.mongodb.queries.Queries;
 import dynlod.utils.FileUtils;
 
-// start service properly case service was killed in the middle of streaming
+/**
+ * start service properly. This class checks whether the application have
+ * to keep streaming files (means that app was killed before finish their work),
+ * and whether have to create MongoDB indexes
+ * @author ciro
+ *
+ */
 public class StartService extends HttpServlet {
 
 	private static final long serialVersionUID = 9131804335500741880L;
@@ -56,7 +62,7 @@ public class StartService extends HttpServlet {
 									s);
 							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
 							dist.updateObject(true);
-							distributions.add(dist);
+//							distributions.add(dist);
 						}
 
 						// new

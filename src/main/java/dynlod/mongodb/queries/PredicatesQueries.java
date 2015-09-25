@@ -10,8 +10,8 @@ import com.mongodb.DBCursor;
 
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
-import dynlod.mongodb.objects.PredicateMongoDBObject;
-import dynlod.mongodb.objects.PredicateResourceMongoDBObject;
+import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesDB;
+import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
 
 public class PredicatesQueries {
 
@@ -27,18 +27,18 @@ public class PredicatesQueries {
 		try {
 
 			DBCollection collection = DBSuperClass.getInstance().getCollection(
-					PredicateResourceMongoDBObject.COLLECTION_NAME);
+					AllPredicatesRelationDB.COLLECTION_NAME);
 
 			// get all objects domain of a distribution
 			BasicDBObject query = new BasicDBObject(
-					PredicateResourceMongoDBObject.DISTRIBUTION_ID,
+					AllPredicatesRelationDB.DISTRIBUTION_ID,
 					distributionID);
 
 			DBCursor cursor = collection.find(query);
 
 			while (cursor.hasNext()) {
 				result.add(((Number) cursor.next().get(
-						PredicateResourceMongoDBObject.PREDICATE_ID)).toString());
+						AllPredicatesRelationDB.PREDICATE_ID)).toString());
 			}
 			
 		} catch (Exception e) {
@@ -58,10 +58,10 @@ public class PredicatesQueries {
 		Iterator<String> i = predicates.iterator();
 		while(i.hasNext()){
 			String predicate = i.next();
-			PredicateMongoDBObject p = new PredicateMongoDBObject(predicate);
+			AllPredicatesDB p = new AllPredicatesDB(predicate);
 			try {
 				p.updateObject(true);
-				PredicateResourceMongoDBObject pr = new PredicateResourceMongoDBObject(p.getDynLodID()+"-"+distributionDynLodID+"-"+topDatasetDynLodID);
+				AllPredicatesRelationDB pr = new AllPredicatesRelationDB(p.getDynLodID()+"-"+distributionDynLodID+"-"+topDatasetDynLodID);
 				pr.setDatasetID(topDatasetDynLodID);
 				pr.setDistributionID(distributionDynLodID);
 				pr.setPredicateID(p.getDynLodID());

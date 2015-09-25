@@ -1,48 +1,62 @@
-package dynlod.mongodb.objects;
+package dynlod.mongodb.collections.RDFResources;
+
+import java.util.HashMap;
+import java.util.Set;
 
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class PredicateResourceMongoDBObject extends DBSuperClass{
+public abstract class GeneralRDFResourceRelationDB extends DBSuperClass{
 	
-	public static final String COLLECTION_NAME = "PredicateResource";
-
 	public static final String PREDICATE_ID = "predicateID";
 
 	public static final String DATASET_ID = "datasetID";
 
 	public static final String DISTRIBUTION_ID = "distributionID";
-
+	
+	public static final String AMOUNT = "amount";
+	
 	
 	private int predicateID = 0;
 
 	private int datasetID = 0;
 
 	private int distributionID = 0;
+	
+	private int amount = 0;
+	
 
-	public PredicateResourceMongoDBObject(int id) {
-		super(COLLECTION_NAME, id);
-		loadObject();
+	public GeneralRDFResourceRelationDB(String collectionName, int dynLodID) {
+		super(collectionName, dynLodID);
 	}
 
-	public PredicateResourceMongoDBObject(String URI) {
-		super(COLLECTION_NAME, URI);
-		loadObject();
+	public GeneralRDFResourceRelationDB(String collectionName, String id) {
+		super(collectionName, id);
 	}
-
+	
+	public GeneralRDFResourceRelationDB() {
+		super();
+	}
+	
+	
 	@Override
 	public boolean updateObject(boolean checkBeforeInsert)
 			throws DynamicLODGeneralException {
-
 		// save object case it doens't exists
 		try {
-
+		
 			mongoDBObject.put(PREDICATE_ID, predicateID);
+
 			mongoDBObject.put(DATASET_ID, datasetID);
+
 			mongoDBObject.put(DISTRIBUTION_ID, distributionID);
 
+			mongoDBObject.put(AMOUNT, amount);
+
+			updateLocalVariables();
+			
 			insert(checkBeforeInsert);
 			return true;
 
@@ -65,16 +79,25 @@ public class PredicateResourceMongoDBObject extends DBSuperClass{
 		if (obj != null) {
 			// mongoDBObject = (BasicDBObject) obj;
 			uri = (String) obj.get(URI);
-			
 			predicateID = (Integer) obj.get(PREDICATE_ID);
-			distributionID = (Integer) obj.get(DISTRIBUTION_ID);
+
 			datasetID = (Integer) obj.get(DATASET_ID);
+
+			distributionID = (Integer) obj.get(DISTRIBUTION_ID);
+
+			amount = (Integer) obj.get(AMOUNT);
+
+			loadLocalVariables();
 			
 			return true;
 		}
 		else
 			return false;
-	}
+	}	
+
+	abstract public void loadLocalVariables();
+	
+	abstract public void updateLocalVariables();
 
 	public int getPredicateID() {
 		return predicateID;
@@ -100,5 +123,21 @@ public class PredicateResourceMongoDBObject extends DBSuperClass{
 		this.distributionID = distributionID;
 	}
 	
+	
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	/**
+	 * Store a set of rdf:type values
+	 * @param set
+	 */
+	abstract public void insertSet(HashMap<String, Integer> set, int distributionID, int datasetID);
+	
+	public abstract Set<String> getSetOfPredicates(int distributionDynLODID);
 	
 }

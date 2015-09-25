@@ -1,37 +1,33 @@
-package dynlod.mongodb.objects;
+package dynlod.mongodb.collections;
+
+import java.util.Date;
 
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class DynamicLODCounterMongoDBObject extends DBSuperClass {
+public class SystemPropertiesMongoDBObject extends DBSuperClass {
 
 	// Collection name
-	public static final String COLLECTION_NAME = "DynamicLodCounter";
+	public static final String COLLECTION_NAME = "SystemProperties";
 
-	public static final String COUNTER = "counter";
+	public static final String DOWNLOADED_LOV = "downloadedLOV";
+
 
 	// class properties
 
-	
-	private Integer counter = 0;
-	
+	private Boolean downloadedLOV;	
 
-	public DynamicLODCounterMongoDBObject() {
+	public SystemPropertiesMongoDBObject() {
 		super(COLLECTION_NAME, COLLECTION_NAME);
 		loadObject();
 	}
 
 	public boolean updateObject(boolean checkBeforeInsert) {
-		return false;
-	}
-	private boolean updateObject() {
 		try {
-
-			mongoDBObject.put(COUNTER, counter);
-
-			insert(true);
+			mongoDBObject.put(DOWNLOADED_LOV, downloadedLOV);
+			insert(checkBeforeInsert);
 			return true;
 		} catch (Exception e2) {
 			// e2.printStackTrace();
@@ -52,20 +48,20 @@ public class DynamicLODCounterMongoDBObject extends DBSuperClass {
 		DBObject obj = search();
 
 		if (obj != null) {
-			
-			counter = (Integer) obj.get(COUNTER);
+
+			downloadedLOV = (Boolean) obj.get(DOWNLOADED_LOV);
 			
 			return true;
 		}
 		return false;
 	}
 
-	
-	public synchronized int incrementAndGetID(){
-		loadObject(); 
-		counter++;
-		updateObject();
-		return counter.intValue(); 
+	public Boolean getDownloadedLOV() {
+		return downloadedLOV;
+	}
+
+	public void setDownloadedLOV(Boolean downloadedLOV) {
+		this.downloadedLOV = downloadedLOV;
 	}
 
 }

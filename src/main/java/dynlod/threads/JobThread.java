@@ -18,6 +18,7 @@ public class JobThread implements Runnable {
 	}
 
 	public void run() {
+//		System.out.println(dataThread.distributionTitle+" aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		try {
 			for (String resource: listOfResources) {
 				if (dataThread.filter.compare(resource)) {
@@ -45,35 +46,35 @@ public class JobThread implements Runnable {
 //					}
 
 				}
-				else{
-					if(!dataThread.isSubject){
-					String obj;
-					// get FQDN of value to compare
-					String[] ar = resource.split("/");
-//					if (ar.length > 5)
-//						obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/" + ar[4] + "/"+ ar[5] + "/";
-//					if (ar.length > 4)
-//						obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/" + ar[4] + "/";
-					if (ar.length > 3)
-						obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/";
-					else if (ar.length > 2)
-						obj = ar[0] + "//" + ar[2] + "/";
-					else {
-						obj = null;
-					}
-					
-					if(obj!=null){
-						// compare with tree
-						if(dataThread.targetFQDNTree.contains(obj)){
-							// case math with tree values, add invalid link by 1
-							dataThread.invalidLinks.addAndGet(1);
-//							if(!dataThread.isSubject)
-						}
-							
-					}
-					
-				}
-				}
+//				else{
+//					if(!dataThread.isSubject){
+//					String obj;
+//					// get FQDN of value to compare
+//					String[] ar = resource.split("/");
+////					if (ar.length > 5)
+////						obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/" + ar[4] + "/"+ ar[5] + "/";
+////					if (ar.length > 4)
+////						obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/" + ar[4] + "/";
+//					if (ar.length > 3)
+//						obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/";
+//					else if (ar.length > 2)
+//						obj = ar[0] + "//" + ar[2] + "/";
+//					else {
+//						obj = null;
+//					}
+//					
+//					if(obj!=null){
+//						// compare with tree
+//						if(dataThread.targetFQDNTree.contains(obj)){
+//							// case math with tree values, add invalid link by 1
+//							dataThread.invalidLinks.addAndGet(1);
+////							if(!dataThread.isSubject)
+//						}
+//							
+//					}
+//					
+//				}
+//				}
 			}
 
 		} catch (Exception e) {

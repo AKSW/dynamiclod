@@ -9,16 +9,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.junit.Test;
 
 import com.hp.hpl.jena.graph.Graph;
@@ -41,11 +38,16 @@ import dynlod.links.similarity.JaccardSimilarity;
 import dynlod.links.similarity.LinkSimilarity;
 import dynlod.links.strength.LinkStrength;
 import dynlod.linksets.MakeLinksetsMasterThread;
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
-import dynlod.mongodb.queries.OWLClassQueries;
-import dynlod.mongodb.queries.PredicatesQueries;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesDB;
+import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
+import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassDB;
+import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassRelationDB;
+import dynlod.mongodb.collections.RDFResources.rdfSubClassOf.RDFSubClassOfDB;
+import dynlod.mongodb.collections.RDFResources.rdfSubClassOf.RDFSubClassOfRelationDB;
+import dynlod.mongodb.collections.RDFResources.rdfType.RDFTypeObjectDB;
+import dynlod.mongodb.collections.RDFResources.rdfType.RDFTypeObjectRelationDB;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
 
@@ -53,6 +55,21 @@ public class LOVVocabularies extends Stream {
 	final static Logger logger = Logger.getLogger(LOVVocabularies.class);
 
 	DistributionMongoDBObject distribution = null;
+	
+	
+	// saving all predicates
+	HashMap<String, Integer> allPredicates = new  HashMap<String, Integer>();
+
+	HashMap<String, Integer> owlClasses = new  HashMap<String, Integer>();
+
+	// saving all rdf type
+//	HashMap<String, Integer> rdfTypeSubjects = new HashMap<String, Integer>();
+	HashMap<String, Integer> rdfTypeObjects = new HashMap<String, Integer>();
+
+	HashMap<String, Integer> rdfSubClassOf= new HashMap<String, Integer>();
+	
+	
+	
 
 	@Test
 	public void loadLOVVocabularies() throws Exception {
@@ -147,14 +164,21 @@ public class LOVVocabularies extends Stream {
 			ConcurrentLinkedQueue<String> objectsQueue = new ConcurrentLinkedQueue<String>();
 			ArrayList<String> subjects = new ArrayList<String>();
 			ArrayList<String> objects = new ArrayList<String>();
-			TreeSet<String> predicates = new TreeSet<String>();
-			TreeSet<String> owlClasses = new TreeSet<String>();
 			
-			ConcurrentLinkedQueue<String> resourceQueue = new ConcurrentLinkedQueue<String>();
+			// saving all predicates
+			allPredicates = new  HashMap<String, Integer>();
+
+			// saving all rdf type
+//			rdfTypeSubjects = new HashMap<String, Integer>();
+			rdfTypeObjects = new HashMap<String, Integer>();
+			rdfSubClassOf = new HashMap<String, Integer>();
+			owlClasses = new HashMap<String, Integer>();
 
 			while (triples.hasNext()) {
 
 				Statement triple = triples.next();
+				
+				
 				
 				subjects.add(triple.getSubject().toString() );
 				subjectsQueue.add(triple.getSubject().toString() );
@@ -163,10 +187,18 @@ public class LOVVocabularies extends Stream {
 					objectsQueue.add(triple.getObject().toString());
 				
 					if(triple.getObject().toString().equals("http://www.w3.org/2002/07/owl#Class")){
-						owlClasses.add(triple.getSubject().toString());
+						addToMap(owlClasses, triple.getSubject().toString());
+					}
+					else if(triple.getPredicate().toString().equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")){
+						addToMap(rdfSubClassOf, triple.getObject().toString());
+					}
+					else if(triple.getPredicate().toString().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")){
+//						addToMap(rdfTypeSubjects, triple.getSubject().toString());
+						addToMap(rdfTypeObjects, triple.getObject().toString());
 					}
 				}
-				predicates.add(triple.getPredicate().toString());
+				addToMap(allPredicates, triple.getPredicate().toString());
+//				predicates.add(triple.getPredicate().toString());
 
 			}
 			distribution = new DistributionMongoDBObject(node.getNameSpace());
@@ -182,7 +214,7 @@ public class LOVVocabularies extends Stream {
 			makeLinksets.start();
 			makeLinksets2.start();
 			
-			Thread.sleep(10);
+			Thread.sleep(50);
 
 			makeLinksets.setDoneSplittingString(true);
 			makeLinksets2.setDoneSplittingString(true);
@@ -196,14 +228,14 @@ public class LOVVocabularies extends Stream {
 			else if (d.getLabel() != null)
 				distribution.setTitle(d.getLabel());
 			
-			SaveDist(node.getNameSpace(), subjects, predicates, objects, owlClasses, d.getDynLodID());
+			SaveDist(node.getNameSpace(), subjects, objects, d.getDynLodID());
 
 		}
 
 	}
 
-	public void SaveDist(String nameSpace, ArrayList<String> subjects, Set<String> predicates,
-			ArrayList<String> objects,Set<String> owlClasses, int parentDynID) throws Exception {
+	public void SaveDist(String nameSpace, ArrayList<String> subjects,
+			ArrayList<String> objects, int parentDynID) throws Exception {
 		
 	
 		
@@ -231,22 +263,6 @@ public class LOVVocabularies extends Stream {
 			bw.newLine();
 		}
 		bw.close();
-
-//		String obj = nameSpace;
-//		String[] ar = obj.split("/");
-////		if (ar.length > 5)
-////			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/"+ ar[5] + "/";
-////		if (ar.length > 4)
-////			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/"+ ar[4] + "/";
-//		if (ar.length > 3)
-//			obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/";
-//		else if (ar.length > 2)
-//			obj = ar[0] + "//" + ar[2] + "/";
-//		else {
-//			obj = "";
-//		}
-
-
 
 		// make a filter with subjects and objects
 		GoogleBloomFilter subjectFilter;
@@ -335,23 +351,48 @@ public class LOVVocabularies extends Stream {
 		
 		logger.info("Saving predicates...");
 		// save predicates
-		new PredicatesQueries().insertPredicates(predicates, distribution.getDynLodID(), distribution.getTopDataset());
+//		new PredicatesQueries().insertPredicates(predicates, distribution.getDynLodID(), distribution.getTopDataset());
+//		new AllPredicatesDB().insertSet(predicates.allPredicates.keySet());
+//		new AllPredicatesRelationDB().insertSet(splitThread.allPredicates, distribution.getDynLodID(), distribution.getTopDataset());
 
+		new AllPredicatesDB().insertSet(allPredicates.keySet());
+		new AllPredicatesRelationDB().insertSet(allPredicates, distribution.getDynLodID(), distribution.getTopDataset());
+		
+		new RDFTypeObjectDB().insertSet(rdfTypeObjects.keySet());
+		new RDFSubClassOfDB().insertSet(rdfSubClassOf.keySet());
+//		new RDFTypeSubjectDB().insertSet(rdfTypeSubjects.keySet());
+		
+		new RDFTypeObjectRelationDB().insertSet(rdfTypeObjects, distribution.getDynLodID(), distribution.getTopDataset());
+		new RDFSubClassOfRelationDB().insertSet(rdfSubClassOf, distribution.getDynLodID(), distribution.getTopDataset());
+//		new RDFTypeSubjectRelationDB().insertSet(rdfTypeSubjects, distribution.getDynLodID(), distribution.getTopDataset());
 		
 		logger.info("Saving OWL classes...");
 		// Saving OWL classes
-		new OWLClassQueries().insertOWLClasses(owlClasses,  distribution.getDynLodID(), distribution.getTopDataset());
+		new OwlClassDB().insertSet(owlClasses.keySet());
+		new OwlClassRelationDB().insertSet(owlClasses, distribution.getDynLodID(), distribution.getTopDataset());
+		
+//		new OWLClassQueries().insertOWLClasses(owlClasses,  distribution.getDynLodID(), distribution.getTopDataset());
 		
 		logger.info("Checking Jaccard Similarities...");
 		// Checking Jaccard Similarities...
 		LinkSimilarity linkSimilarity = new JaccardSimilarity();
-		linkSimilarity.updateLinks(distribution);
+		linkSimilarity.updateLinks(distribution, new AllPredicatesRelationDB());
+		linkSimilarity.updateLinks(distribution, new RDFTypeObjectRelationDB());
+		linkSimilarity.updateLinks(distribution, new RDFSubClassOfRelationDB());
+		linkSimilarity.updateLinks(distribution, new OwlClassRelationDB());
 		
 		logger.info("Updating link strength among distributions...");
 		// Saving link similarities
 		LinkStrength linkStrength = new LinkStrength();
 		linkStrength.updateLinks(distribution);
 		
+	}
+	
+	private void addToMap(HashMap<String, Integer> map, String value){
+		int n=0;
+		if(map.get(value)!=null)
+			n=map.get(value);
+		map.put(value, n+1);
 	}
 
 }

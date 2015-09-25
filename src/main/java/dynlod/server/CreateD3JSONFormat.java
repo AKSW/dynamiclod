@@ -20,9 +20,9 @@ import dynlod.API.diagram.Bubble;
 import dynlod.API.diagram.Diagram;
 import dynlod.API.diagram.DiagramData;
 import dynlod.API.diagram.Link;
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.FQDNQueries;
 import dynlod.mongodb.queries.LinksetQueries;
@@ -89,7 +89,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 		
 		diagramData = new DiagramData();
 		new LinksetQueries()
-		.getLinksetsInDegreeByDistribution(diagramData, LINK_TYPE, min, max);
+		.getLinksetsDegrees(diagramData, LINK_TYPE, min, max);
 		
 		// get indegree and outdegree for a distribution
 //		indegreeLinks = new LinksetQueries()
@@ -298,8 +298,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 		String links;
 		if(showInvalidLinks)
 			links = linkset.getInvalidLinksAsString();
-		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_SIMILARITY))
-			links = linkset.getSimilarityAsString();
+		else if(LINK_TYPE.equals(LinksetMongoDBObject.PREDICATE_SIMILARITY))
+			links = linkset.getPredicatesSimilarityAsString();
 		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_STRENGHT)){
 			links = linkset.getStrengthAsString();
 			
@@ -335,7 +335,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 			if(parameters.get("linkType")[0].equals("showLinksStrength"))
 				LINK_TYPE = LinksetMongoDBObject.LINK_STRENGHT;
 			else if(parameters.get("linkType")[0].equals("showSimilarity"))
-				LINK_TYPE = LinksetMongoDBObject.LINK_SIMILARITY;
+				LINK_TYPE = LinksetMongoDBObject.PREDICATE_SIMILARITY;
 			else if(parameters.get("linkType")[0].equals("showLinks")){
 				LINK_TYPE = LinksetMongoDBObject.LINK_NUMBER_LINKS;
 				min = 50;

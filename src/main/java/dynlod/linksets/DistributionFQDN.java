@@ -2,7 +2,7 @@ package dynlod.linksets;
 
 import java.util.TreeSet;
 
-import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
 
 public class DistributionFQDN {
 	

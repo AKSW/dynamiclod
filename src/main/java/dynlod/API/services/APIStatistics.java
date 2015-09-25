@@ -8,8 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import dynlod.API.core.APIMessage;
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
 import dynlod.mongodb.queries.DatasetQueries;
 import dynlod.mongodb.queries.DistributionQueries;
 

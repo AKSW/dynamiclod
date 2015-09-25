@@ -5,11 +5,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * General properties of the application. Most of them are 
+ * set in the config file.
+ * @author ciro
+ *
+ */
 public class DynlodGeneralProperties {
 
-	public void DataIDGeneralProperties() {
-	}
-
+	/**
+	 * Load properties from file
+	 */
 	public void loadProperties() {
 		Properties prop = new Properties();
 		InputStream inputStream = null;

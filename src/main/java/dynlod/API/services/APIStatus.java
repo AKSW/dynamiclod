@@ -9,9 +9,9 @@ import org.json.JSONObject;
 
 import dynlod.DynlodGeneralProperties;
 import dynlod.API.core.API;
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 

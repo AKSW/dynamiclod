@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 
 public class ResourceAvailability extends Thread {
 

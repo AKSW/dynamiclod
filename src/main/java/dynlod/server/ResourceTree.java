@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
-import dynlod.mongodb.objects.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
 import dynlod.mongodb.queries.DatasetQueries;
 
 public class ResourceTree extends HttpServlet {

@@ -25,8 +25,12 @@ import dynlod.links.similarity.JaccardSimilarity;
 import dynlod.links.similarity.LinkSimilarity;
 import dynlod.links.strength.LinkStrength;
 import dynlod.lovvocabularies.LOVVocabularies;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.SystemPropertiesMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.SystemPropertiesMongoDBObject;
+import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
+import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassRelationDB;
+import dynlod.mongodb.collections.RDFResources.rdfSubClassOf.RDFSubClassOfRelationDB;
+import dynlod.mongodb.collections.RDFResources.rdfType.RDFTypeObjectRelationDB;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Timer;
 
@@ -140,8 +144,14 @@ public class Manager {
 						.setStatus(DistributionMongoDBObject.STATUS_CREATING_JACCARD_SIMILARITY);
 					distributionMongoDBObj.updateObject(true);
 					// Saving link similarities
+					
+					logger.info("Checking Jaccard Similarities...");
+					// Checking Jaccard Similarities...
 					LinkSimilarity linkSimilarity = new JaccardSimilarity();
-					linkSimilarity.updateLinks(distributionMongoDBObj);
+					linkSimilarity.updateLinks(distributionMongoDBObj, new AllPredicatesRelationDB());
+					linkSimilarity.updateLinks(distributionMongoDBObj, new RDFTypeObjectRelationDB());
+					linkSimilarity.updateLinks(distributionMongoDBObj, new RDFSubClassOfRelationDB());
+					linkSimilarity.updateLinks(distributionMongoDBObj, new OwlClassRelationDB());
 
 					
 					logger.info("Updating link strength among distributions...");

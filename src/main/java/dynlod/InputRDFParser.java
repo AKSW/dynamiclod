@@ -25,13 +25,19 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
 import dynlod.ontology.NS;
 import dynlod.ontology.RDFProperties;
 import dynlod.utils.FileUtils;
 import dynlod.utils.Formats;
 
+/**
+ * 
+ * @author ciro
+ * parser for DataID, VoID and DCAT files
+ * 
+ */
 public class InputRDFParser {
 
 	final static Logger logger = Logger.getLogger(InputRDFParser.class);
@@ -48,6 +54,10 @@ public class InputRDFParser {
 	boolean isVoid = false;
 	boolean isDataid = false;
 
+	/**
+	 * Get the first statement (described as primary topic) of an RDF file
+	 * @return
+	 */
 	public StmtIterator getFirstStmt() {
 		// select dataset
 		StmtIterator datasetsStmt = null;
@@ -78,9 +88,17 @@ public class InputRDFParser {
 		return datasetsStmt;
 	}
 
+	/**
+	 * Method that will parse all distributions from a description file
+	 * @return list of distribution objects
+	 * @throws DynamicLODNoDatasetFoundException
+	 * @throws DynamicLODFormatNotAcceptedException
+	 * @throws DynamicLODGeneralException
+	 */
 	public List<DistributionMongoDBObject> parseDistributions()
 			throws DynamicLODNoDatasetFoundException,
 			DynamicLODFormatNotAcceptedException, DynamicLODGeneralException {
+		
 		// select dataset
 		StmtIterator datasetsStmt = getFirstStmt();
 
@@ -93,7 +111,16 @@ public class InputRDFParser {
 		return distributionsLinks;
 	}
 
-	// iterating over the subsets (recursive method)
+	/**
+	 * iterating over the subsets (recursive method)
+	 * 
+	 * @param stmtDatasets
+	 * @param parentDataset
+	 * @param topDatasetID
+	 * @param isTopDataset
+	 * @throws DynamicLODGeneralException
+	 * @throws DynamicLODFormatNotAcceptedException
+	 */
 	private void iterateSubsetsNew(StmtIterator stmtDatasets,
 			int parentDataset, int topDatasetID, boolean isTopDataset)
 			throws DynamicLODGeneralException,
@@ -436,17 +463,11 @@ public class InputRDFParser {
 			logger.info("Jena model created. ");
 			logger.info("Looks that this is a valid VoID/DCAT/DataID file! "
 					+ someDatasetURI);
-//			apiStatus
-//					.setMessage("Looks that this is a valid VoID/DCAT/DataID file! "
-//							+ someDatasetURI);
 
 			fileURLHash = FileUtils.stringToHash(URL);
 			inModel.write(new FileOutputStream(new File(
 					DynlodGeneralProperties.FILE_URL_PATH + fileURLHash)));
 		} else {
-//			apiStatus
-//					.setMessage("It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
-//			apiStatus.setHasError(true);
 			throw new DynamicLODNoDatasetFoundException(
 					"It's not possible to find a dataset.  Perhaps that's not a valid VoID, DCAT or DataID file.");
 		}
@@ -454,13 +475,19 @@ public class InputRDFParser {
 		return someDatasetURI;
 	}
 
+	/**
+	 * Get serialization format for Jena processing
+	 * @param format
+	 * @return
+	 */
 	public String getJenaFormat(String format) {
 		format = Formats.getEquivalentFormat(format);
 		if (format.equals(Formats.DEFAULT_NTRIPLES))
 			return "N-TRIPLES";
-
 		else if (format.equals(Formats.DEFAULT_TURTLE))
 			return "TTL";
+		else if(format.equals(Formats.DEFAULT_JSONLD))
+			return "JSON-LD";
 		else
 			return "RDF/XML";
 

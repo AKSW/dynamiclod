@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.threads.DataModelThread;
 import dynlod.threads.GetFQDNFromTriplesThread;

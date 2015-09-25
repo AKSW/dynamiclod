@@ -5,7 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 
 import dynlod.mongodb.DBSuperClass;
-import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
+import dynlod.mongodb.collections.DistributionObjectDomainsMongoDBObject;
 
 public class FQDNQueries {
 	public int getNumberOfObjectResources(

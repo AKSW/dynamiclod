@@ -19,7 +19,7 @@ import com.mongodb.DBObject;
 import dynlod.DynlodGeneralProperties;
 import dynlod.API.diagram.DiagramData;
 import dynlod.mongodb.DBSuperClass;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 import dynlod.server.CreateD3JSONFormat;
 
 public class LinksetQueries {
@@ -197,7 +197,7 @@ public class LinksetQueries {
 		return null;
 	}
 	
-	public void getLinksetsInDegreeByDistribution(
+	public void getLinksetsDegrees(
 			DiagramData diagramData, String linkType, double min, double max) {
 		
 		HashMap<Integer, ArrayList<LinksetMongoDBObject>> list = new HashMap<Integer, ArrayList<LinksetMongoDBObject>>();

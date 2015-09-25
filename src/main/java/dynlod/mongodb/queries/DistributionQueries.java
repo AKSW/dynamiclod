@@ -18,10 +18,10 @@ import com.mongodb.DBObject;
 
 import dynlod.linksets.DistributionFQDN;
 import dynlod.mongodb.DBSuperClass;
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
-import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionObjectDomainsMongoDBObject;
+import dynlod.mongodb.collections.DistributionSubjectDomainsMongoDBObject;
 
 public class DistributionQueries {
 

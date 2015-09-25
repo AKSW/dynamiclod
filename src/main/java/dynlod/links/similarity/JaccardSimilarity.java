@@ -3,20 +3,35 @@ package dynlod.links.similarity;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This class is a comparator class which can be used
+ * to compute the jaccard coefficient
+ * 
+ * @author ciro
+ *
+ */
+public class JaccardSimilarity extends LinkSimilarity {
 
-public class JaccardSimilarity extends LinkSimilarity{
-
+	/**
+	 * This method can be used to compute the Jaccard coefficient
+	 * for two input sets.
+	 * 
+	 * @param s1	- first set
+	 * @param s2	- second set
+	 * @return jaccard coefficient of the two input sets
+	 */
 	@Override
-	public double compare(Set<String> s1, Set<String>s2) {
-      Set<String> u = new HashSet<String>();
-      u.addAll(s1);
-      u.addAll(s2);
-      
-      Set<String> i = new HashSet<String>();
-      i.addAll(s1);
-      i.retainAll(s2);
-      return (double) i.size() / (double) u.size();
-  }
+	public double compare(Set<String> s1, Set<String> s2) {
+		// get combined size of both sets
+		double sizeAll = s1.size() + s2.size();
+		
+		// get union of both sets
+		Set<String> unionSet = new HashSet<String>(s1);
+		unionSet.retainAll(s2);
+		double sizeUnion = unionSet.size();
+		
+		// compute coefficient
+		return sizeUnion / sizeAll;
+	}
 
-	
 }

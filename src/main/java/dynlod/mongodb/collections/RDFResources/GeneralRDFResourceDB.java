@@ -1,40 +1,54 @@
-package dynlod.mongodb.objects;
+package dynlod.mongodb.collections.RDFResources;
+
+import java.util.Set;
 
 import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
+import dynlod.mongodb.collections.DynamicLODCounterMongoDBObject;
 
-public class OWLClassMongoDBObject extends DBSuperClass {
+public abstract class GeneralRDFResourceDB extends DBSuperClass  {
 
-	public static final String COLLECTION_NAME = "Class";
-
-	public static final String DYN_LOD_ID = "dynLodID";
-
-	private int dynLodID = 0;
-
-	public OWLClassMongoDBObject(int id) {
-		super(COLLECTION_NAME, id);
+	public GeneralRDFResourceDB(String collectionName, int dynLodID) {
+		super(collectionName, dynLodID);
 		loadObject();
 	}
 
-	public OWLClassMongoDBObject(String URI) {
-		super(COLLECTION_NAME, URI);
+	public GeneralRDFResourceDB(String collectionName, String id) {
+		super(collectionName, id);
 		loadObject();
 	}
+	
+	public GeneralRDFResourceDB() {
+		super();
+	}
 
+	public final String DYN_LOD_ID = "dynLodID";
+
+	protected int dynLodID = 0;
+	
+
+	public int getDynLodID() {
+		return dynLodID;
+	}
+
+	public void setDynLodID(int dynLodID) {
+		this.dynLodID = dynLodID;
+	}
+	
 	@Override
 	public boolean updateObject(boolean checkBeforeInsert)
 			throws DynamicLODGeneralException {
-
 		// save object case it doens't exists
 		try {
-
 			if (dynLodID == 0)
 				dynLodID = new DynamicLODCounterMongoDBObject()
 						.incrementAndGetID();
 			mongoDBObject.put(DYN_LOD_ID, dynLodID);
 
+			updateLocalVariables();
+			
 			insert(checkBeforeInsert);
 			return true;
 
@@ -61,19 +75,19 @@ public class OWLClassMongoDBObject extends DBSuperClass {
 			if (dynLodID == 0)
 				dynLodID = new DynamicLODCounterMongoDBObject()
 						.incrementAndGetID();
-
+			loadLocalVariables();
 			return true;
 		}
 		else
 			return false;
-	}
+	}	
 
-	public int getDynLodID() {
-		return dynLodID;
-	}
+	abstract public void loadLocalVariables();
+	
+	abstract public void updateLocalVariables();
+	
+	abstract public void insertSet(Set<String> set);
+	
 
-	public void setDynLodID(int dynLodID) {
-		this.dynLodID = dynLodID;
-	}
-
+	
 }

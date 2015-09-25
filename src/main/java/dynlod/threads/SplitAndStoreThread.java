@@ -1,10 +1,8 @@
 package dynlod.threads;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.util.HashSet;
-import java.util.TreeSet;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
@@ -43,11 +41,16 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	BufferedWriter objectFile = null;
 	
 	// saving all predicates
-	public HashSet<String> predicates = new HashSet<String>();
+	public  HashMap<String, Integer> allPredicates = new  HashMap<String, Integer>();
 
-	// saving all classes
-	public HashSet<String> owlClasses = new HashSet<String>();
+	// saving all rdf type
+	public HashMap<String, Integer> rdfTypeSubjects = new HashMap<String, Integer>();
+	public HashMap<String, Integer> rdfTypeObjects = new HashMap<String, Integer>();
 
+	public HashMap<String, Integer> owlClasses = new  HashMap<String, Integer>();
+	public HashMap<String, Integer> rdfSubClassOf= new HashMap<String, Integer>();
+	
+	
 	public SplitAndStoreThread(ConcurrentLinkedQueue<String> subjectQueue,
 			ConcurrentLinkedQueue<String> objectQueue, String fileName) {
 		this.objectQueue = objectQueue;
@@ -118,24 +121,55 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 		return totalTriplesRead;
 	}
 
+	private void addToMap(HashMap<String, Integer> map, String value){
+		int n=0;
+		if(map.get(value)!=null)
+			n=map.get(value);
+		map.put(value, n+1);
+	}
+	
 	public void saveStatement(String stSubject, String stPredicate,
 			String stObject) {
 		
-		// check if we are describing a Class
-		boolean isClass = false;
-		if(stObject.equals("<http://www.w3.org/2002/07/owl#Class>")){
-			isClass = true;
-			owlClasses.add(stSubject);
+		
+		if(stObject.startsWith("<")){
+//			System.out.println(stObject);
+			stObject = stObject.substring(1, stObject.length() -1);
+//			System.out.println(stObject);
+
 		}
 		
+//		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+//			if(stPredicate.equals("<http://www.w3.org/1999/02/22-rdf-syntax-ns#>")){
+		// save rdf:type
+		
+		addToMap(allPredicates, stPredicate);
+
+		if(stObject.equals("http://www.w3.org/2002/07/owl#Class")){
+			addToMap(owlClasses, stSubject);
+		}
+		else if(stPredicate.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")){
+			addToMap(rdfSubClassOf, stObject);
+		}
+		else if(stPredicate.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")){
+//			addToMap(rdfTypeSubjects, triple.getSubject().toString());
+			addToMap(rdfTypeObjects, stObject);
+		}
+		
+//		if(stPredicate.equals("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")){
+//			addToMap(rdfTypeSubjects, stSubject);
+//			addToMap(rdfTypeObjects, stObject);
+//		}
+		
 		// save predicate
-		predicates.add(stPredicate);
 		
 		try {
-			if ((!isClass)
-					&& !stPredicate
-							.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
-				
+			if (true) {
+
+//				if (!stObject.equals("http://www.w3.org/2002/07/owl#Class")
+//						&& !stPredicate
+//								.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
+
 				
 				// compare the current subject with the previous one
 				if(!stSubject.equals(lastSubject)){
@@ -152,18 +186,14 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 				// get object (make sure that its a resource and not a literal), add
 				// to queue and save to file
 				if (!stObject.startsWith("\"")) {
-					String object;
-					if(stObject.startsWith("<"))
-					object = stObject.substring(1, stObject.length() -1);
-					else 
-						object = stObject;
-					objectFile.write(object+"\n");
+					objectFile.write(stObject+"\n");
 
 					// add object to object queue (the queue is read by another thread)
 					if (isChain)
-						objectQueue.add(object);
+						objectQueue.add(stObject);
 					objectLines++;
 
+//					System.out.println(stSubject+ " "+ stPredicate+" "+stObject);
 				}
 			}
 			while (objectQueue.size() > bufferSize) {
@@ -179,11 +209,12 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 				// System.out.println(objectQueue.size());
 				// System.out.println(subjectQueue.size());
 			}
-			totalTriplesRead++;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		totalTriplesRead++;
+
 
 	}
 

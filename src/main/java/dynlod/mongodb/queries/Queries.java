@@ -12,8 +12,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import dynlod.mongodb.DBSuperClass;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 
 public class Queries {
 

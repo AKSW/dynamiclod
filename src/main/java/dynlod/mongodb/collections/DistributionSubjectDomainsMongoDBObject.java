@@ -1,4 +1,4 @@
-package dynlod.mongodb.objects;
+package dynlod.mongodb.collections;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;

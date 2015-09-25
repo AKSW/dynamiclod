@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import dynlod.filters.GoogleBloomFilter;
 import dynlod.linksets.DistributionFQDN;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
 
 public class DataModelThread {
 
@@ -33,6 +33,8 @@ public class DataModelThread {
 	// | o| | s| p| o| -> |s |
 	//
 	//
+	
+	String distributionTitle; 
 
 	public boolean isSubject;
 
@@ -68,6 +70,8 @@ public class DataModelThread {
 //		DataModelThread dataThread = new DataModelThread();
 		this.isSubject = isSubject;
 //		dataThread.describedFQDN = describedFQDN;
+		
+		distributionTitle = targetDistribution.getTitle();
 
 		if (!targetDistribution.getUri().equals(distribution.getUri())) {
 			// save dataThread object
@@ -111,7 +115,7 @@ public class DataModelThread {
 		try {
 			
 			this.filterLoaded.set(1);
-			this.filter.loadFilter(filterPath);
+			this.filter.loadFilter(filterPath, distributionTitle);
 			
 			this.filterLoaded.set(2);
 

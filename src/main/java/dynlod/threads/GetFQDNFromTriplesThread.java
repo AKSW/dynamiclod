@@ -13,9 +13,9 @@ import org.bson.types.ObjectId;
 
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.linksets.DistributionFQDN;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.DistributionObjectDomainsMongoDBObject;
-import dynlod.mongodb.objects.DistributionSubjectDomainsMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionObjectDomainsMongoDBObject;
+import dynlod.mongodb.collections.DistributionSubjectDomainsMongoDBObject;
 
 public class GetFQDNFromTriplesThread extends Thread {
 	final static Logger logger = Logger

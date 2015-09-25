@@ -1,4 +1,4 @@
-package dynlod.mongodb.objects;
+package dynlod.mongodb.collections;
 
 import java.util.ArrayList;
 import java.util.Date;

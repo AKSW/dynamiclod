@@ -5,7 +5,7 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
-import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
 
 public class CheckWhetherToStream {
 

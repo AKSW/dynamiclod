@@ -1,15 +1,8 @@
 package dynlod.filters;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.log4j.Logger;
 
@@ -17,10 +10,7 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.Funnels;
 
-import dynlod.DynlodGeneralProperties;
-import dynlod.Manager;
-
-public class GoogleBloomFilter implements DataIDFilterInterface {
+public class GoogleBloomFilter {
 	
 	final static Logger logger = Logger.getLogger(GoogleBloomFilter.class);
 
@@ -69,13 +59,13 @@ public class GoogleBloomFilter implements DataIDFilterInterface {
 		return true;
 	}
 
-	public boolean loadFilter(String path) {
+	public boolean loadFilter(String path, String distributionName) {
 		try {
 			filter = BloomFilter.readFrom(new FileInputStream(new File(path)),
 					funnel);
 			fullFilePath = path;
 			
-			logger.debug("Filter loaded from file: "+ fullFilePath);
+			logger.debug("Filter loaded from file: "+ distributionName);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

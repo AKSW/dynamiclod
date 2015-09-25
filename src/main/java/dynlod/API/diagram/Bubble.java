@@ -2,8 +2,8 @@ package dynlod.API.diagram;
 
 import org.json.JSONObject;
 
-import dynlod.mongodb.objects.DatasetMongoDBObject;
-import dynlod.mongodb.objects.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
 
 public class Bubble {
 
@@ -84,10 +84,8 @@ public class Bubble {
 				setColor("rgb(253, 174, 107)");
 				setRadius(30);
 			}
-
 			else
-			setColor("rgb(66, 136, 78)");
-		
+				setColor("rgb(66, 136, 78)");
 
 			dynLodObject = (DistributionMongoDBObject) source;
 		}

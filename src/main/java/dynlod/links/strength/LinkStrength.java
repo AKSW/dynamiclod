@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import dynlod.mongodb.objects.DistributionMongoDBObject;
-import dynlod.mongodb.objects.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.LinksetMongoDBObject;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.FQDNQueries;
 

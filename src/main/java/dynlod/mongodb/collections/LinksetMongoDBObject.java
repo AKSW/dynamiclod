@@ -1,5 +1,6 @@
-package dynlod.mongodb.objects;
+package dynlod.mongodb.collections;
 
+import com.hp.hpl.jena.vocabulary.RDFS;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
@@ -22,7 +23,13 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 //	public static final String INVALID_LINKS = "invalidLinks";
 
-	public static final String LINK_SIMILARITY = "similarity";
+	public static final String PREDICATE_SIMILARITY = "predicateSimilarity";
+
+	public static final String OWL_CLASS_SIMILARITY = "owlClassSimilarity";
+
+	public static final String RDF_TYPE_SIMILARITY = "rdfTypeSimilarity";
+
+	public static final String RDF_SUBCLASS_SIMILARITY = "rdfSubClassSimilarity";
 
 	public static final String LINK_STRENGHT = "strength";
 
@@ -36,7 +43,13 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 	private int datasetSource;
 
-	private double similarity;
+	private double predicateSimilarity = 0;
+
+	private double owlClassSimilarity = 0;
+
+	private double rdfTypeSimilarity = 0;
+
+	private double rdfSubClassSimilarity = 0;
 
 	private double strength;
 
@@ -71,7 +84,13 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 			datasetTarget =  ((Number) obj.get(DATASET_TARGET)).intValue();
 
-			similarity =  ((Number) obj.get(LINK_SIMILARITY)).doubleValue();
+			predicateSimilarity =  ((Number) obj.get(PREDICATE_SIMILARITY)).doubleValue();
+
+			owlClassSimilarity =  ((Number) obj.get(OWL_CLASS_SIMILARITY)).doubleValue();
+
+			rdfTypeSimilarity =  ((Number) obj.get(RDF_TYPE_SIMILARITY)).doubleValue();
+
+			rdfSubClassSimilarity =  ((Number) obj.get(RDF_SUBCLASS_SIMILARITY)).doubleValue();
 
 			strength =  ((Number) obj.get(LINK_STRENGHT)).doubleValue();
 
@@ -111,7 +130,13 @@ public class LinksetMongoDBObject extends DBSuperClass {
 			
 
 			// updating similarity on mongodb
-			mongoDBObject.put(LINK_SIMILARITY, similarity);
+			mongoDBObject.put(PREDICATE_SIMILARITY, predicateSimilarity);
+
+			mongoDBObject.put(OWL_CLASS_SIMILARITY, owlClassSimilarity);
+
+			mongoDBObject.put(RDF_SUBCLASS_SIMILARITY, rdfSubClassSimilarity);
+
+			mongoDBObject.put(RDF_TYPE_SIMILARITY, rdfTypeSimilarity);
 
 			// updating link strength on mongodb
 			mongoDBObject.put(LINK_STRENGHT, strength);
@@ -149,7 +174,13 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 			datasetTarget =  ((Number) obj.get(DATASET_TARGET)).intValue();
 
-			similarity =  ((Number) obj.get(LINK_SIMILARITY)).doubleValue();
+			predicateSimilarity =  ((Number) obj.get(PREDICATE_SIMILARITY)).doubleValue();
+
+			owlClassSimilarity =  ((Number) obj.get(OWL_CLASS_SIMILARITY)).doubleValue();
+
+			rdfSubClassSimilarity =  ((Number) obj.get(RDF_SUBCLASS_SIMILARITY)).doubleValue();
+
+			rdfTypeSimilarity =  ((Number) obj.get(RDF_TYPE_SIMILARITY)).doubleValue();
 
 			strength =  ((Number) obj.get(LINK_STRENGHT)).doubleValue();
 
@@ -218,16 +249,42 @@ public class LinksetMongoDBObject extends DBSuperClass {
 		this.invalidLinks = invalidLinks;
 	}
 
-	public double getJaccardSimilarity() {
-		return similarity;
+	public double getPredicateSimilarity() {
+		return predicateSimilarity;
 	}
 	
-	public String getSimilarityAsString() {
-		return String.valueOf(similarity);
+	public String getPredicatesSimilarityAsString() {
+		return String.valueOf(predicateSimilarity);
 	}
 
-	public void setSimilarity(double similarity) {
-		this.similarity = similarity;
+	public void setPredicateSimilarity(double similarity) {
+		this.predicateSimilarity = similarity;
+	}
+
+	
+	
+	public double getOwlClassSimilarity() {
+		return owlClassSimilarity;
+	}
+
+	public void setOwlClassSimilarity(double owlClassSimilarity) {
+		this.owlClassSimilarity = owlClassSimilarity;
+	}
+
+	public double getRdfTypeSimilarity() {
+		return rdfTypeSimilarity;
+	}
+
+	public void setRdfTypeSimilarity(double rdfTypeSimilarity) {
+		this.rdfTypeSimilarity = rdfTypeSimilarity;
+	}
+
+	public double getRdfSubClassSimilarity() {
+		return rdfSubClassSimilarity;
+	}
+
+	public void setRdfSubClassSimilarity(double rdfSubClassSimilarity) {
+		this.rdfSubClassSimilarity = rdfSubClassSimilarity;
 	}
 
 	public double getStrength() {
