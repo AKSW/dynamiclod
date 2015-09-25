@@ -22,7 +22,6 @@ import dynlod.API.services.APIStatus;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoLinksFoundException;
 import dynlod.exceptions.api.DynamicLODAPINoParametersFoundExceiption;
-import dynlod.lovvocabularies.LOVVocabularies;
 
 public class ServiceAPI extends HttpServlet {
 	
@@ -67,15 +66,15 @@ public class ServiceAPI extends HttpServlet {
 			if (!hasOption)
 				throw new DynamicLODAPINoParametersFoundExceiption();
 
-			if (parameters.containsKey(options.ADD_DATASET)) {
+			if (parameters.containsKey(ServiceAPIOptions.ADD_DATASET)) {
 				String format;
-				if (parameters.containsKey(options.RDF_FORMAT)) {
-					format = (parameters.get(options.RDF_FORMAT)[0].toString());
+				if (parameters.containsKey(ServiceAPIOptions.RDF_FORMAT)) {
+					format = (parameters.get(ServiceAPIOptions.RDF_FORMAT)[0].toString());
 				} else{
 					format = "rdfxml";
 				}
 
-				for (String datasetURI : parameters.get(options.ADD_DATASET)) {
+				for (String datasetURI : parameters.get(ServiceAPIOptions.ADD_DATASET)) {
 					
 //					logger.debug("API ADD_DATASET: "+datasetURI+ format);
 
@@ -94,9 +93,9 @@ public class ServiceAPI extends HttpServlet {
 				}
 			}
 
-			if (parameters.containsKey(options.DATASET_STATUS)) {
+			if (parameters.containsKey(ServiceAPIOptions.DATASET_STATUS)) {
 
-				for (String datasetURI : parameters.get(options.DATASET_STATUS)) {
+				for (String datasetURI : parameters.get(ServiceAPIOptions.DATASET_STATUS)) {
 					
 //					logger.debug("API DATASET_STATUS: "+datasetURI);
 
@@ -116,9 +115,9 @@ public class ServiceAPI extends HttpServlet {
 				}
 			}
 
-			if (parameters.containsKey(options.RETRIEVE_DATASET)) {
+			if (parameters.containsKey(ServiceAPIOptions.RETRIEVE_DATASET)) {
 				for (String datasetURI : parameters
-						.get(options.RETRIEVE_DATASET)) {
+						.get(ServiceAPIOptions.RETRIEVE_DATASET)) {
 					APIRetrieveRDF apiRetrieve = null;
 					
 					if(parameters
@@ -137,15 +136,15 @@ public class ServiceAPI extends HttpServlet {
 					apiRetrieve.outModel.write(out, "TURTLE");
 				}
 			}
-			if (parameters.containsKey(options.SERVER_STATISTICS)) {
+			if (parameters.containsKey(ServiceAPIOptions.SERVER_STATISTICS)) {
 				out.write(new APIStatistics().getStatistics().toJSONString()); 
 			}			
-			if (parameters.containsKey(options.LIST_DISTRIBUTIONS)) {
+			if (parameters.containsKey(ServiceAPIOptions.LIST_DISTRIBUTIONS)) {
 				boolean getOntologies = false; 
 				if(parameters.containsKey("ontologies")) getOntologies=true;
 				out.write(new APIStatistics().getDistributions(
-						Integer.parseInt(parameters.get(options.LIST_SKIP)[0]),
-						Integer.parseInt(parameters.get(options.LIST_LIMIT)[0]), getOntologies
+						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_SKIP)[0]),
+						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_LIMIT)[0]), getOntologies
 						).toJSONString()); 
 			}
 
