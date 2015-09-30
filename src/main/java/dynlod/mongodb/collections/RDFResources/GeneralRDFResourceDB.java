@@ -6,12 +6,14 @@ import com.mongodb.DBObject;
 
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
-import dynlod.mongodb.collections.DynamicLODCounterMongoDBObject;
+import dynlod.mongodb.collections.DynamicLODCounterDB;
 
 public abstract class GeneralRDFResourceDB extends DBSuperClass  {
 
 	public GeneralRDFResourceDB(String collectionName, int dynLodID) {
 		super(collectionName, dynLodID);
+		this.dynLodID = dynLodID;
+		mongoDBObject.put(DYN_LOD_ID, dynLodID);
 		loadObject();
 	}
 
@@ -43,7 +45,7 @@ public abstract class GeneralRDFResourceDB extends DBSuperClass  {
 		// save object case it doens't exists
 		try {
 			if (dynLodID == 0)
-				dynLodID = new DynamicLODCounterMongoDBObject()
+				dynLodID = new DynamicLODCounterDB()
 						.incrementAndGetID();
 			mongoDBObject.put(DYN_LOD_ID, dynLodID);
 
@@ -73,7 +75,7 @@ public abstract class GeneralRDFResourceDB extends DBSuperClass  {
 			uri = (String) obj.get(URI);
 			dynLodID = (Integer) obj.get(DYN_LOD_ID);
 			if (dynLodID == 0)
-				dynLodID = new DynamicLODCounterMongoDBObject()
+				dynLodID = new DynamicLODCounterDB()
 						.incrementAndGetID();
 			loadLocalVariables();
 			return true;

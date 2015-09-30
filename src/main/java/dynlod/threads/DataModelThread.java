@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import dynlod.filters.GoogleBloomFilter;
 import dynlod.linksets.DistributionFQDN;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
 
 public class DataModelThread {
 
@@ -61,8 +61,8 @@ public class DataModelThread {
 	public boolean active = true;
 
 	public DataModelThread(
-			DistributionMongoDBObject distribution,
-			DistributionMongoDBObject targetDistribution, 
+			DistributionDB distribution,
+			DistributionDB targetDistribution, 
 			DistributionFQDN distributionFQDN,
 			boolean isSubject) {
 

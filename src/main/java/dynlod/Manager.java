@@ -25,8 +25,8 @@ import dynlod.links.similarity.JaccardSimilarity;
 import dynlod.links.similarity.LinkSimilarity;
 import dynlod.links.strength.LinkStrength;
 import dynlod.lovvocabularies.LOVVocabularies;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
-import dynlod.mongodb.collections.SystemPropertiesMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
+import dynlod.mongodb.collections.SystemPropertiesDB;
 import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
 import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassRelationDB;
 import dynlod.mongodb.collections.RDFResources.rdfSubClassOf.RDFSubClassOfRelationDB;
@@ -40,13 +40,13 @@ public class Manager {
 	private String someDatasetURI = null;
 
 	// list of subset and their distributions
-	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
+	public List<DistributionDB> distributionsLinks = new ArrayList<DistributionDB>();
 
 	InputRDFParser fileInputParserModel = new InputRDFParser();
 
 	public void streamAndCreateFilters() throws Exception {
 		// if there is at least one distribution, load them
-		Iterator<DistributionMongoDBObject> distributions = distributionsLinks
+		Iterator<DistributionDB> distributions = distributionsLinks
 				.iterator();
 
 		int counter = 0;
@@ -57,13 +57,13 @@ public class Manager {
 		while (distributions.hasNext()) {
 			counter++;
 
-			DistributionMongoDBObject distributionMongoDBObj = distributions
+			DistributionDB distributionMongoDBObj = distributions
 					.next();
 
 			// case there is no such distribution, create one.
 			if (distributionMongoDBObj.getStatus() == null) {
 				distributionMongoDBObj
-						.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+						.setStatus(DistributionDB.STATUS_WAITING_TO_STREAM);
 			}
 
 			// check is distribution need to be streamed
@@ -86,7 +86,7 @@ public class Manager {
 
 					// uptate status of distribution to streaming
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_STREAMING);
+							.setStatus(DistributionDB.STATUS_STREAMING);
 					distributionMongoDBObj.updateObject(true);
 
 					// now we need to download the distribution
@@ -100,14 +100,14 @@ public class Manager {
 
 					// uptate status of distribution
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_STREAMED);
+							.setStatus(DistributionDB.STATUS_STREAMED);
 					distributionMongoDBObj.updateObject(true);
 
 					logger.info("Distribution streamed. ");
 
 					// uptate status of distribution
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_CREATING_BLOOM_FILTER);
+							.setStatus(DistributionDB.STATUS_CREATING_BLOOM_FILTER);
 					distributionMongoDBObj.updateObject(true);
 
 					logger.info("Creating bloom filter.");
@@ -141,7 +141,7 @@ public class Manager {
 					
 					logger.info("Checking Similarity among distributions...");
 					distributionMongoDBObj
-						.setStatus(DistributionMongoDBObject.STATUS_CREATING_JACCARD_SIMILARITY);
+						.setStatus(DistributionDB.STATUS_CREATING_JACCARD_SIMILARITY);
 					distributionMongoDBObj.updateObject(true);
 					// Saving link similarities
 					
@@ -156,7 +156,7 @@ public class Manager {
 					
 					logger.info("Updating link strength among distributions...");
 					distributionMongoDBObj
-						.setStatus(DistributionMongoDBObject.STATUS_UPDATING_LINK_STRENGTH);
+						.setStatus(DistributionDB.STATUS_UPDATING_LINK_STRENGTH);
 					distributionMongoDBObj.updateObject(true);
 					// Saving link similarities
 					LinkStrength linkStrength = new LinkStrength();
@@ -167,7 +167,7 @@ public class Manager {
 
 					// uptate status of distribution
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_DONE);
+							.setStatus(DistributionDB.STATUS_DONE);
 					DateFormat dateFormat = new SimpleDateFormat(
 							"HH:mm:ss dd/MM/yyyy");
 					// get current date time with Date()
@@ -183,7 +183,7 @@ public class Manager {
 				} catch (Exception e) {
 					// uptate status of distribution
 					distributionMongoDBObj
-							.setStatus(DistributionMongoDBObject.STATUS_ERROR);
+							.setStatus(DistributionDB.STATUS_ERROR);
 					distributionMongoDBObj.setLastMsg(e.getMessage());
 
 					e.printStackTrace();
@@ -198,7 +198,7 @@ public class Manager {
 		logger.info("We are done reading your distributions.");
 	}
 
-	public Manager(List<DistributionMongoDBObject> distributionsLinks) {
+	public Manager(List<DistributionDB> distributionsLinks) {
 		this.distributionsLinks = distributionsLinks;
 		checkLOV();
 		try {
@@ -226,7 +226,7 @@ public class Manager {
 			logger.info("Parsing model in order to find distributions...");
 
 			// parse model in order to find distributions
-			List<DistributionMongoDBObject> listOfSubsets = fileInputParserModel
+			List<DistributionDB> listOfSubsets = fileInputParserModel
 					.parseDistributions();
 			int numberOfDistributions = listOfSubsets.size();
 
@@ -255,7 +255,7 @@ public class Manager {
 
 	private void checkLOV() {
 		// check if LOV have already been downloaded
-		SystemPropertiesMongoDBObject g = new SystemPropertiesMongoDBObject();
+		SystemPropertiesDB g = new SystemPropertiesDB();
 		if (g.getDownloadedLOV() == null || !g.getDownloadedLOV()) {
 			logger.info("LOV vocabularies still not lodaded! Loading now...");
 			try {
@@ -274,17 +274,17 @@ public class Manager {
 	}
 
 	private boolean checkDistributionStatus(
-			DistributionMongoDBObject distributionMongoDBObj) throws Exception {
+			DistributionDB distributionMongoDBObj) throws Exception {
 		boolean needDownload = false;
 
 		if (distributionMongoDBObj.getStatus().equals(
-				DistributionMongoDBObject.STATUS_WAITING_TO_STREAM))
+				DistributionDB.STATUS_WAITING_TO_STREAM))
 			needDownload = true;
 		else if (distributionMongoDBObj.getStatus().equals(
-				DistributionMongoDBObject.STATUS_STREAMING))
+				DistributionDB.STATUS_STREAMING))
 			needDownload = false;
 		else if (distributionMongoDBObj.getStatus().equals(
-				DistributionMongoDBObject.STATUS_ERROR))
+				DistributionDB.STATUS_ERROR))
 			needDownload = true;
 		else if (new CheckWhetherToStream()
 				.checkDistribution(distributionMongoDBObj))
@@ -295,7 +295,7 @@ public class Manager {
 
 	public boolean createBloomFilters(
 			StreamAndCompareDistribution downloadedFile,
-			DistributionMongoDBObject distributionMongoDBObj) {
+			DistributionDB distributionMongoDBObj) {
 		
 		GoogleBloomFilter filterSubject;
 		GoogleBloomFilter filterObject;

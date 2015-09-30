@@ -10,7 +10,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.queries.DatasetQueries;
 
-public class DatasetMongoDBObject extends ResourceMongoDBObject {
+public class DatasetDB extends ResourceDB {
 	 
 	// Collection name
 	public static final String COLLECTION_NAME = "Dataset";
@@ -48,21 +48,21 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 	
 	private ArrayList<Integer> parentDatasetsIDs = new ArrayList<Integer>();
 
-	public DatasetMongoDBObject(String uri) {
+	public DatasetDB(String uri) {
 		super(COLLECTION_NAME, uri);
 		loadObject();
 	}
-	public DatasetMongoDBObject(String uri, boolean isRegex) {
+	public DatasetDB(String uri, boolean isRegex) {
 		super(COLLECTION_NAME, uri, isRegex);
 		loadObject();
 	}
 	
-	public DatasetMongoDBObject(int id) {
+	public DatasetDB(int id) {
 		super(COLLECTION_NAME, id);
 		loadObject(id);
 	}
 	
-	public DatasetMongoDBObject(DBObject object) {
+	public DatasetDB(DBObject object) {
 		super(COLLECTION_NAME, object);
 		load(object);
 	}
@@ -75,7 +75,7 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 			mongoDBObject.put(SUBSET_IDS, subsetsIDs);
 			
 			if(dynLodID == 0)
-				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
+				dynLodID = new DynamicLODCounterDB().incrementAndGetID();
 			mongoDBObject.put(DYN_LOD_ID, dynLodID);
 			
 			// updating distributions on mongodb
@@ -126,7 +126,7 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 			access_url = (String) obj.get(ACCESS_URL);
 			dynLodID = (Integer) obj.get(DYN_LOD_ID);
 			if(dynLodID == 0)
-				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
+				dynLodID = new DynamicLODCounterDB().incrementAndGetID();
 
 			// loading subsets to object
 			BasicDBList subsetList = (BasicDBList) obj.get(SUBSET_IDS);
@@ -192,7 +192,7 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 		return distributionsIDs;
 	}
 	
-	public List<DistributionMongoDBObject> getDistributionsAsMongoDBObjects() {
+	public List<DistributionDB> getDistributionsAsMongoDBObjects() {
 		return new DatasetQueries().getDistributionsAsMongoDBObject(this);
 	}
 
@@ -200,7 +200,7 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 		return subsetsIDs;
 	}
 	
-	public ArrayList<DatasetMongoDBObject> getSubsetsAsMongoDBObject(){
+	public ArrayList<DatasetDB> getSubsetsAsMongoDBObject(){
 		
 		return new DatasetQueries().getSubsetsAsMongoDBObject(this);
 		
@@ -259,7 +259,7 @@ public class DatasetMongoDBObject extends ResourceMongoDBObject {
 	
 	public int getDynLodID() {
 		if(dynLodID == 0)
-			dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
+			dynLodID = new DynamicLODCounterDB().incrementAndGetID();
 		return dynLodID;
 	}
 

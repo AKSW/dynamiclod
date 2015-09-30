@@ -14,6 +14,11 @@ public class RDFSubClassOfDB extends GeneralRDFResourceDB{
 		super(COLLECTION_NAME, id);
 		loadObject();
 	}
+
+	public RDFSubClassOfDB(int id) {
+		super(COLLECTION_NAME, id);
+		loadObject();
+	}
 	
 	public RDFSubClassOfDB() {
 		super();

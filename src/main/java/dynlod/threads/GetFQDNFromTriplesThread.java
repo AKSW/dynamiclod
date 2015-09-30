@@ -13,9 +13,9 @@ import org.bson.types.ObjectId;
 
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.linksets.DistributionFQDN;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
-import dynlod.mongodb.collections.DistributionObjectDomainsMongoDBObject;
-import dynlod.mongodb.collections.DistributionSubjectDomainsMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
+import dynlod.mongodb.collections.DistributionObjectDomainsDB;
+import dynlod.mongodb.collections.DistributionSubjectDomainsDB;
 
 public class GetFQDNFromTriplesThread extends Thread {
 	final static Logger logger = Logger
@@ -36,7 +36,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 	protected ConcurrentHashMap<String, Thread> listOfThreads = new ConcurrentHashMap<String, Thread>();
 
 	private String uri;
-	public DistributionMongoDBObject distributionMongoDBObject = null;
+	public DistributionDB distributionMongoDBObject = null;
 	
 	public HashMap<String,Integer> localFQDN = new HashMap<String,Integer>();
 
@@ -44,7 +44,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 
 	private ConcurrentLinkedQueue<String> resourceQueue = null;
 	protected ArrayList<String> resourcesToBeProcessedQueue = new  ArrayList<String>();
-	public DistributionMongoDBObject distribution;
+	public DistributionDB distribution;
 	protected ConcurrentHashMap<Integer, DataModelThread> listOfWorkerThreads = new ConcurrentHashMap<Integer, DataModelThread>(); 
 	public ConcurrentHashMap<String, Integer> listLoadedFQDN = new ConcurrentHashMap<String, Integer>();
 	
@@ -62,7 +62,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 		this.resourceQueue = resourceQueue;
 		this.countTotalFQDN = new ConcurrentHashMap<String, Integer>();
 		this.uri = uri;
-		this.distribution = new DistributionMongoDBObject(uri);
+		this.distribution = new DistributionDB(uri);
 
 	}
 
@@ -146,7 +146,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 		Iterator it = countTotalFQDN.entrySet().iterator();
 		
 		if(distributionMongoDBObject==null)
-			distributionMongoDBObject = new DistributionMongoDBObject(uri);
+			distributionMongoDBObject = new DistributionDB(uri);
 
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
@@ -157,7 +157,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 			if (count > threshold) {
 				id = new ObjectId();
 				if (isSubject) {
-					DistributionSubjectDomainsMongoDBObject d2 = new DistributionSubjectDomainsMongoDBObject(id.get()
+					DistributionSubjectDomainsDB d2 = new DistributionSubjectDomainsDB(id.get()
 							.toString());
 					d2.setSubjectFQDN(d);
 					d2.setDistributionID(distributionMongoDBObject.getDynLodID());
@@ -172,8 +172,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 					}
 				} else {
 
-					DistributionObjectDomainsMongoDBObject d2 = null;
-					d2 = new DistributionObjectDomainsMongoDBObject(id.get()
+					DistributionObjectDomainsDB d2 = null;
+					d2 = new DistributionObjectDomainsDB(id.get()
 							.toString());
 					d2.setObjectFQDN(d);
 					d2.setNumberOfResources(count);

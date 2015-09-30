@@ -9,9 +9,9 @@ import org.json.JSONObject;
 
 import dynlod.DynlodGeneralProperties;
 import dynlod.API.core.API;
-import dynlod.mongodb.collections.DatasetMongoDBObject;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
-import dynlod.mongodb.collections.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DatasetDB;
+import dynlod.mongodb.collections.DistributionDB;
+import dynlod.mongodb.collections.LinksetDB;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.LinksetQueries;
 
@@ -19,7 +19,7 @@ public class APIStatus extends API {
 
 //	APIStatusMongoDBObject apiStatus = null;
 	
-	ArrayList<DistributionMongoDBObject> distributions;
+	ArrayList<DistributionDB> distributions;
 	
 	final static Logger logger = Logger.getLogger(APIStatus.class);
 
@@ -42,58 +42,58 @@ public class APIStatus extends API {
 		
 //		logger.debug("APIStatus number of distributions found: "+distributions.size());
 	
-		for (DistributionMongoDBObject distribution : distributions) {
+		for (DistributionDB distribution : distributions) {
 			
 			JSONObject datasetMessage = new JSONObject();
 			
-			ArrayList<DatasetMongoDBObject> d = distribution.getDefaultDatasetsAsResources();
+			ArrayList<DatasetDB> d = distribution.getDefaultDatasetsAsResources();
 			
-			Iterator<DatasetMongoDBObject> i = d.iterator();
+			Iterator<DatasetDB> i = d.iterator();
 			
 			ArrayList<String> parentNames = new ArrayList<String>();
 			while(i.hasNext()){
 				parentNames.add(i.next().getUri());
 			}
 			
-			if(distribution.getStatus().equals(DistributionMongoDBObject.STATUS_ERROR)){
-				datasetMessage.put(DistributionMongoDBObject.LAST_MSG, distribution.getLastMsg());
+			if(distribution.getStatus().equals(DistributionDB.STATUS_ERROR)){
+				datasetMessage.put(DistributionDB.LAST_MSG, distribution.getLastMsg());
 			}
-			datasetMessage.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
-			datasetMessage.put(DistributionMongoDBObject.RESOURCE_URI, distribution.getResourceUri()); 
-			datasetMessage.put(DistributionMongoDBObject.DEFAULT_DATASETS, parentNames); 
-			datasetMessage.put(DistributionMongoDBObject.STATUS, distribution.getStatus());
-			datasetMessage.put(DistributionMongoDBObject.TITLE, distribution.getTitle());
-			datasetMessage.put(DistributionMongoDBObject.DOWNLOAD_URL, distribution.getDownloadUrl());
-			datasetMessage.put(DistributionMongoDBObject.LAST_MSG, distribution.getLastMsg());
-			datasetMessage.put(DistributionMongoDBObject.TRIPLES, distribution.getTriples());
-			datasetMessage.put(DistributionMongoDBObject.LAST_TIME_STREAMED, distribution.getLastTimeStreamed());
+			datasetMessage.put(DistributionDB.DOWNLOAD_URL, distribution.getDownloadUrl());
+			datasetMessage.put(DistributionDB.RESOURCE_URI, distribution.getResourceUri()); 
+			datasetMessage.put(DistributionDB.DEFAULT_DATASETS, parentNames); 
+			datasetMessage.put(DistributionDB.STATUS, distribution.getStatus());
+			datasetMessage.put(DistributionDB.TITLE, distribution.getTitle());
+			datasetMessage.put(DistributionDB.DOWNLOAD_URL, distribution.getDownloadUrl());
+			datasetMessage.put(DistributionDB.LAST_MSG, distribution.getLastMsg());
+			datasetMessage.put(DistributionDB.TRIPLES, distribution.getTriples());
+			datasetMessage.put(DistributionDB.LAST_TIME_STREAMED, distribution.getLastTimeStreamed());
 			
 			
 			// indegrees
-			ArrayList<LinksetMongoDBObject> indegrees = new  LinksetQueries().getLinksetsInDegreeByDistribution(distribution.getDynLodID(), LinksetMongoDBObject.LINK_NUMBER_LINKS,50,-1);
+			ArrayList<LinksetDB> indegrees = new  LinksetQueries().getLinksetsInDegreeByDistribution(distribution.getDynLodID(), LinksetDB.LINK_NUMBER_LINKS,50,-1);
 			int indegreeCount = 0;
 			JSONArray inegreeArray = new JSONArray();
 			
-			for(LinksetMongoDBObject linkset : indegrees){
+			for(LinksetDB linkset : indegrees){
 				JSONObject indegreeTmpObj = new JSONObject();
 				
 				// check whether is vocabulary
-				DatasetMongoDBObject dataset = new DatasetMongoDBObject(linkset.getDatasetSource()); 
+				DatasetDB dataset = new DatasetDB(linkset.getDatasetSource()); 
 				if(dataset.getIsVocabulary()){
 					indegreeTmpObj.put("isVocabulary", true);
 				}
 				else {
-					dataset = new DatasetMongoDBObject(linkset.getDatasetTarget()); 
+					dataset = new DatasetDB(linkset.getDatasetTarget()); 
 					if(dataset.getIsVocabulary()){
 						indegreeTmpObj.put("isVocabulary", true);
 					}
 				}
 				
 				indegreeTmpObj.put("links",linkset.getLinks());
-				indegreeTmpObj.put("sourceDataset", new DatasetMongoDBObject(linkset.getDatasetSource()).getUri());
-				indegreeTmpObj.put("targetDataset",  new DatasetMongoDBObject(linkset.getDatasetTarget()).getUri());
-				indegreeTmpObj.put("sourceDistribution", new DistributionMongoDBObject(linkset.getDistributionSource()).getUri());
-				indegreeTmpObj.put("targetDistribution", new DistributionMongoDBObject(linkset.getDistributionTarget()).getUri());
+				indegreeTmpObj.put("sourceDataset", new DatasetDB(linkset.getDatasetSource()).getUri());
+				indegreeTmpObj.put("targetDataset",  new DatasetDB(linkset.getDatasetTarget()).getUri());
+				indegreeTmpObj.put("sourceDistribution", new DistributionDB(linkset.getDistributionSource()).getUri());
+				indegreeTmpObj.put("targetDistribution", new DistributionDB(linkset.getDistributionTarget()).getUri());
 				
 				inegreeArray.put(indegreeTmpObj); 
 			}
@@ -104,29 +104,29 @@ public class APIStatus extends API {
 //			datasetMessage.put("indegreeLinksCount", indegreeCount);
 			
 			// outdegrees
-			ArrayList<LinksetMongoDBObject> outdegrees = new LinksetQueries().getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LinksetMongoDBObject.LINK_NUMBER_LINKS,50,-1);
+			ArrayList<LinksetDB> outdegrees = new LinksetQueries().getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LinksetDB.LINK_NUMBER_LINKS,50,-1);
 			int outdegreeCount = 0;
 			JSONArray outdegreeArray = new JSONArray();
-			for(LinksetMongoDBObject linkset : outdegrees){
+			for(LinksetDB linkset : outdegrees){
 				JSONObject outdegreeTmpObj = new JSONObject();
 				
 				// check whether is vocabulary
-				DatasetMongoDBObject dataset = new DatasetMongoDBObject(linkset.getDatasetSource()); 
+				DatasetDB dataset = new DatasetDB(linkset.getDatasetSource()); 
 				if(dataset.getIsVocabulary()){
 					outdegreeTmpObj.put("isVocabulary", true);
 				}
 				else {
-					dataset = new DatasetMongoDBObject(linkset.getDatasetTarget()); 
+					dataset = new DatasetDB(linkset.getDatasetTarget()); 
 					if(dataset.getIsVocabulary()){
 						outdegreeTmpObj.put("isVocabulary", true);
 					}
 				}
 				
 				outdegreeTmpObj.put("links",linkset.getLinks());
-				outdegreeTmpObj.put("sourceDataset", new DatasetMongoDBObject(linkset.getDatasetSource()).getUri());
-				outdegreeTmpObj.put("targetDataset",new DatasetMongoDBObject(linkset.getDatasetTarget()).getUri());
-				outdegreeTmpObj.put("sourceDistribution",new DistributionMongoDBObject(linkset.getDistributionSource()).getUri());
-				outdegreeTmpObj.put("targetDistribution",new DistributionMongoDBObject(linkset.getDistributionTarget()).getUri());
+				outdegreeTmpObj.put("sourceDataset", new DatasetDB(linkset.getDatasetSource()).getUri());
+				outdegreeTmpObj.put("targetDataset",new DatasetDB(linkset.getDatasetTarget()).getUri());
+				outdegreeTmpObj.put("sourceDistribution",new DistributionDB(linkset.getDistributionSource()).getUri());
+				outdegreeTmpObj.put("targetDistribution",new DistributionDB(linkset.getDistributionTarget()).getUri());
 				
 				outdegreeArray.put(outdegreeTmpObj); 
 			}

@@ -8,7 +8,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import dynlod.mongodb.IndexesCreator;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
 import dynlod.mongodb.queries.Queries;
 import dynlod.utils.FileUtils;
 
@@ -44,23 +44,23 @@ public class StartService extends HttpServlet {
 					// creating indexes
 					new IndexesCreator().createIndexes();
 
-					ArrayList<DistributionMongoDBObject> distributions = new ArrayList<DistributionMongoDBObject>();
+					ArrayList<DistributionDB> distributions = new ArrayList<DistributionDB>();
 
 					if (DynlodGeneralProperties.RESUME) {
 						
 						// re-download distributions with "Downloading" status
-						ArrayList<String> q = Queries.getMongoDBObject(
-								DistributionMongoDBObject.COLLECTION_NAME,
-								DistributionMongoDBObject.STATUS,
-								DistributionMongoDBObject.STATUS_STREAMING);
+						ArrayList<String> q = new Queries().getMongoDBObject(
+								DistributionDB.COLLECTION_NAME,
+								DistributionDB.STATUS,
+								DistributionDB.STATUS_STREAMING);
 						logger.debug("re-download distributions with \""
-								+ DistributionMongoDBObject.STATUS_STREAMING
+								+ DistributionDB.STATUS_STREAMING
 								+ "\" status");
 
 						for (String s : q) {
-							DistributionMongoDBObject dist = new DistributionMongoDBObject(
+							DistributionDB dist = new DistributionDB(
 									s);
-							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+							dist.setStatus(DistributionDB.STATUS_WAITING_TO_STREAM);
 							dist.updateObject(true);
 //							distributions.add(dist);
 						}
@@ -70,19 +70,19 @@ public class StartService extends HttpServlet {
 						// download distributions with
 						// "STATUS_WAITING_TO_STREAM"
 						// status
-						q = Queries
+						q = new Queries()
 								.getMongoDBObject(
-										DistributionMongoDBObject.COLLECTION_NAME,
-										DistributionMongoDBObject.STATUS,
-										DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+										DistributionDB.COLLECTION_NAME,
+										DistributionDB.STATUS,
+										DistributionDB.STATUS_WAITING_TO_STREAM);
 						logger.debug("download distributions with \""
-								+ DistributionMongoDBObject.STATUS_WAITING_TO_STREAM
+								+ DistributionDB.STATUS_WAITING_TO_STREAM
 								+ "\" status");
 
 						for (String s : q) {
-							DistributionMongoDBObject dist = new DistributionMongoDBObject(
+							DistributionDB dist = new DistributionDB(
 									s);
-							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+							dist.setStatus(DistributionDB.STATUS_WAITING_TO_STREAM);
 							dist.updateObject(true);
 							distributions.add(dist);
 						}
@@ -92,18 +92,18 @@ public class StartService extends HttpServlet {
 					if(DynlodGeneralProperties.RESUME_ERRORS){
 						// download distributions with "ERROR"
 						// status
-						ArrayList<String> q = Queries.getMongoDBObject(
-								DistributionMongoDBObject.COLLECTION_NAME,
-								DistributionMongoDBObject.STATUS,
-								DistributionMongoDBObject.STATUS_ERROR);
+						ArrayList<String> q = new Queries().getMongoDBObject(
+								DistributionDB.COLLECTION_NAME,
+								DistributionDB.STATUS,
+								DistributionDB.STATUS_ERROR);
 						logger.debug("download distributions with \""
-								+ DistributionMongoDBObject.STATUS_WAITING_TO_STREAM
+								+ DistributionDB.STATUS_WAITING_TO_STREAM
 								+ "\" status");
 
 						for (String s : q) {
-							DistributionMongoDBObject dist = new DistributionMongoDBObject(
+							DistributionDB dist = new DistributionDB(
 									s);
-							dist.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+							dist.setStatus(DistributionDB.STATUS_WAITING_TO_STREAM);
 							dist.updateObject(true);
 							distributions.add(dist);
 						}

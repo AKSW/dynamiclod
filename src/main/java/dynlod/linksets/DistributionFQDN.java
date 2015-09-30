@@ -2,13 +2,13 @@ package dynlod.linksets;
 
 import java.util.TreeSet;
 
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
 
 public class DistributionFQDN {
 	
 	public int distribution;
 
-	public DistributionMongoDBObject distributionMongoDBObject;
+	public DistributionDB distributionMongoDBObject;
 	
 	public TreeSet<String> subjectsFQDN = new TreeSet<String>();
 	

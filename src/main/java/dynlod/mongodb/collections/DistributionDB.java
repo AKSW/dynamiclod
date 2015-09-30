@@ -9,7 +9,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.queries.DatasetQueries;
 
-public class DistributionMongoDBObject extends ResourceMongoDBObject {
+public class DistributionDB extends ResourceDB {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "Distribution";
@@ -44,6 +44,8 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 	public static final String DEFAULT_DATASETS = "defaultDatasets";
 
 	public static final String TOP_DATASET = "topDataset";
+
+	public static final String TOP_DATASET_TITLE = "topDatasetTitle";
 
 	public static final String SUBJECT_FILTER_PATH = "subjectFilterPath";
 
@@ -91,6 +93,8 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 
 	private String subjectFilterPath;
 
+	private String topDatasetTitle;
+
 	private String objectFilterPath;
 
 	private String objectPath;
@@ -126,17 +130,17 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 	
 	
 
-	public DistributionMongoDBObject(String uri) {
+	public DistributionDB(String uri) {
 		super(COLLECTION_NAME, uri);
 		loadObject();
 	}
 	
-	public DistributionMongoDBObject(int id) {
+	public DistributionDB(int id) {
 		super(COLLECTION_NAME, id);
 		loadObject(id);
 	}
 	
-	public DistributionMongoDBObject(DBObject object) {
+	public DistributionDB(DBObject object) {
 		super(COLLECTION_NAME, object);
 		load(object);
 	}
@@ -162,6 +166,7 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 			mongoDBObject.put(HTTP_LAST_MODIFIED, httpLastModified);
 			mongoDBObject.put(TRIPLES, triples);
 			mongoDBObject.put(TOP_DATASET, topDataset);
+			mongoDBObject.put(TOP_DATASET_TITLE, topDatasetTitle);
 			mongoDBObject.put(LAST_TIME_STREAMED, lastTimeStreamed);
 			mongoDBObject.put(SUBJECT_FILTER_PATH, subjectFilterPath);
 			mongoDBObject.put(OBJECT_FILTER_PATH, objectFilterPath);
@@ -184,7 +189,7 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 			
 			
 			if(dynLodID == 0)
-				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
+				dynLodID = new DynamicLODCounterDB().incrementAndGetID();
 			mongoDBObject.put(DYN_LOD_ID, dynLodID);
 
 			insert(checkBeforeInsert);
@@ -227,6 +232,7 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 			objectFilterPath = (String) obj.get(OBJECT_FILTER_PATH);
 			objectPath = (String) obj.get(OBJECT_PATH);
 			title = (String) obj.get(TITLE);
+			topDatasetTitle = (String) obj.get(TOP_DATASET_TITLE);
 			httpFormat = (String) obj.get(HTTP_FORMAT);
 			httpLastModified = (String) obj.get(HTTP_LAST_MODIFIED);
 			format = (String) obj.get(FORMAT);
@@ -246,7 +252,7 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 			
 			dynLodID = (Integer) obj.get(DYN_LOD_ID);
 			if(dynLodID == 0)
-				dynLodID = new DynamicLODCounterMongoDBObject().incrementAndGetID();
+				dynLodID = new DynamicLODCounterDB().incrementAndGetID();
 			
 			// loading default datasets to object
 			BasicDBList defaultDatasetList = (BasicDBList) obj
@@ -324,7 +330,7 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 	}
 
 	
-	public ArrayList<DatasetMongoDBObject> getDefaultDatasetsAsResources() {
+	public ArrayList<DatasetDB> getDefaultDatasetsAsResources() {
 		return new DatasetQueries().getDatasets(defaultDatasets);
 	}
 
@@ -454,14 +460,20 @@ public class DistributionMongoDBObject extends ResourceMongoDBObject {
 		this.lastTimeStreamed = lastTimeStreamed;
 	}
 
-
 	public int getDynLodID() {
 		return dynLodID;
 	}
 
-
 	public void setDynLodID(int dynLodID) {
 		this.dynLodID = dynLodID;
+	}
+
+	public String getTopDatasetTitle() {
+		return topDatasetTitle;
+	}
+
+	public void setTopDatasetTitle(String topDatasetTitle) {
+		this.topDatasetTitle = topDatasetTitle;
 	}
 	
 	

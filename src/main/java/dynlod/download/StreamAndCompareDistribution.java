@@ -28,7 +28,7 @@ import dynlod.DynlodGeneralProperties;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.linksets.MakeLinksetsMasterThread;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
 import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesDB;
 import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
 import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassDB;
@@ -74,9 +74,9 @@ public class StreamAndCompareDistribution extends Stream {
 	public MakeLinksetsMasterThread getDomainFromObjectsThread = null;
 	public MakeLinksetsMasterThread getDomainFromSubjectsThread = null;
 	
-	private DistributionMongoDBObject distribution = null;
+	private DistributionDB distribution = null;
 
-	public StreamAndCompareDistribution(DistributionMongoDBObject distributionMongoDBObj) throws MalformedURLException {
+	public StreamAndCompareDistribution(DistributionDB distributionMongoDBObj) throws MalformedURLException {
 		this.distribution = distributionMongoDBObj;
 		this.url = new URL(distributionMongoDBObj.getDownloadUrl());
 		this.RDFFormat = distributionMongoDBObj.getFormat();
@@ -101,7 +101,7 @@ public class StreamAndCompareDistribution extends Stream {
 				+ hashFileName;
 
 		if (RDFFormat == null || RDFFormat.equals("")) {
-			DistributionMongoDBObject dist = new DistributionMongoDBObject(
+			DistributionDB dist = new DistributionDB(
 					url.toString());
 			if (dist.getFormat() == null || dist.getFormat() == ""
 					|| dist.getFormat().equals(""))

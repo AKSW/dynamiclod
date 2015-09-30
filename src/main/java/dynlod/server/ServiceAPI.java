@@ -139,14 +139,31 @@ public class ServiceAPI extends HttpServlet {
 			if (parameters.containsKey(ServiceAPIOptions.SERVER_STATISTICS)) {
 				out.write(new APIStatistics().getStatistics().toJSONString()); 
 			}			
-			if (parameters.containsKey(ServiceAPIOptions.LIST_DISTRIBUTIONS)) {
-				boolean getOntologies = false; 
-				if(parameters.containsKey("ontologies")) getOntologies=true;
-				out.write(new APIStatistics().getDistributions(
-						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_SKIP)[0]),
-						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_LIMIT)[0]), getOntologies
+			if (parameters.containsKey(ServiceAPIOptions.LIST)) {
+				boolean isVocabulary = false; 
+				if(parameters.get(ServiceAPIOptions.LIST_IS_VOCABULARY)[0].toString().equals("true"))
+					isVocabulary = true;
+				String searchValue = parameters.get(ServiceAPIOptions.LIST_SEARCH)[0];
+					
+				out.write(new APIStatistics().listDistributions(
+						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_START)[0]),
+						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_SKIP)[0]), isVocabulary,
+						searchValue
 						).toJSONString()); 
 			}
+			
+			if (parameters.containsKey(ServiceAPIOptions.DATASET_STATISTICS)) {
+				out.write(new APIStatistics().getTop(parameters.get(ServiceAPIOptions.DATASET_DISTRIBUTION)[0],
+						Integer.parseInt(parameters.get(ServiceAPIOptions.DATASET_TOP)[0]),
+						parameters.get(ServiceAPIOptions.DATASET_TYPE)[0]
+						).toJSONString()); 
+			}
+			if (parameters.containsKey(ServiceAPIOptions.COMPARE_DATASETS)) {
+				out.write(new APIStatistics().compareDatasets(Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET1)[0]),
+						Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET2)[0]), parameters.get(ServiceAPIOptions.DATASET_TYPE)[0]).toJSONString()); 
+			}			
+			
+			
 
 		} catch (DynamicLODAPINoParametersFoundExceiption e) {
 			Iterator<APIOption> it = options.iterator();

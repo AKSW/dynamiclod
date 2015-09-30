@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
-import dynlod.mongodb.collections.DatasetMongoDBObject;
+import dynlod.mongodb.collections.DatasetDB;
 import dynlod.mongodb.queries.DatasetQueries;
 
 public class ResourceTree extends HttpServlet {
@@ -29,7 +29,7 @@ public class ResourceTree extends HttpServlet {
 	}
 
 
-	ArrayList<DatasetMongoDBObject> d = new ArrayList<DatasetMongoDBObject>();
+	ArrayList<DatasetDB> d = new ArrayList<DatasetDB>();
 
 	public void getTree(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -44,8 +44,8 @@ public class ResourceTree extends HttpServlet {
 		JsonArray data2 = new JsonArray();
 
 		JsonArray datasetArray = new JsonArray();
-		for (DatasetMongoDBObject dataset : d) {
-			ArrayList<DatasetMongoDBObject> parent_list = dataset.getSubsetsAsMongoDBObject();
+		for (DatasetDB dataset : d) {
+			ArrayList<DatasetDB> parent_list = dataset.getSubsetsAsMongoDBObject();
 			
 			// add dataset
 			JsonObject jsonparent = new JsonObject();
@@ -54,7 +54,7 @@ public class ResourceTree extends HttpServlet {
 			jsonparent.put("text", dataset.getTitle());
 			datasetArray.add(jsonparent);
 			
-			for (DatasetMongoDBObject parent : parent_list) {
+			for (DatasetDB parent : parent_list) {
 				for(int p: parent.getParentDatasetID()){
 					if(p>0){
 						jsonparent = new JsonObject();

@@ -5,7 +5,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class DynamicLODCounterMongoDBObject extends DBSuperClass {
+public class DynamicLODCounterDB extends DBSuperClass {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "DynamicLodCounter";
@@ -18,7 +18,7 @@ public class DynamicLODCounterMongoDBObject extends DBSuperClass {
 	private Integer counter = 0;
 	
 
-	public DynamicLODCounterMongoDBObject() {
+	public DynamicLODCounterDB() {
 		super(COLLECTION_NAME, COLLECTION_NAME);
 		loadObject();
 	}

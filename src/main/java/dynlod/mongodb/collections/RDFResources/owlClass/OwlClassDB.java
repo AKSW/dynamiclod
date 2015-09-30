@@ -14,6 +14,10 @@ public class OwlClassDB extends GeneralRDFResourceDB{
 		super(COLLECTION_NAME, id);
 		loadObject();
 	}
+	public OwlClassDB(int id) {
+		super(COLLECTION_NAME, id);
+		loadObject();
+	}
 	
 	public OwlClassDB() {
 		super();

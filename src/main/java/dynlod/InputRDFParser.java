@@ -25,8 +25,8 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import dynlod.exceptions.DynamicLODFormatNotAcceptedException;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.exceptions.DynamicLODNoDatasetFoundException;
-import dynlod.mongodb.collections.DatasetMongoDBObject;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DatasetDB;
+import dynlod.mongodb.collections.DistributionDB;
 import dynlod.ontology.NS;
 import dynlod.ontology.RDFProperties;
 import dynlod.utils.FileUtils;
@@ -43,7 +43,7 @@ public class InputRDFParser {
 	final static Logger logger = Logger.getLogger(InputRDFParser.class);
 
 	private Model inModel = ModelFactory.createDefaultModel();
-	public List<DistributionMongoDBObject> distributionsLinks = new ArrayList<DistributionMongoDBObject>();
+	public List<DistributionDB> distributionsLinks = new ArrayList<DistributionDB>();
 	int numberOfDistributions = 0;
 	public boolean someDownloadURLFound = false;
 	private String fileURLHash;
@@ -95,7 +95,7 @@ public class InputRDFParser {
 	 * @throws DynamicLODFormatNotAcceptedException
 	 * @throws DynamicLODGeneralException
 	 */
-	public List<DistributionMongoDBObject> parseDistributions()
+	public List<DistributionDB> parseDistributions()
 			throws DynamicLODNoDatasetFoundException,
 			DynamicLODFormatNotAcceptedException, DynamicLODGeneralException {
 		
@@ -103,7 +103,7 @@ public class InputRDFParser {
 		StmtIterator datasetsStmt = getFirstStmt();
 
 		if (datasetsStmt.hasNext())
-			iterateSubsetsNew(datasetsStmt, 0, 0, true);
+			iterateSubsetsNew(datasetsStmt, 0, 0,null, true);
 		else
 			throw new DynamicLODNoDatasetFoundException(
 					"We could not parse any datasets.");
@@ -122,7 +122,7 @@ public class InputRDFParser {
 	 * @throws DynamicLODFormatNotAcceptedException
 	 */
 	private void iterateSubsetsNew(StmtIterator stmtDatasets,
-			int parentDataset, int topDatasetID, boolean isTopDataset)
+			int parentDataset, int topDatasetID, String topDatasetTitle, boolean isTopDataset)
 			throws DynamicLODGeneralException,
 			DynamicLODFormatNotAcceptedException {
 
@@ -137,17 +137,13 @@ public class InputRDFParser {
 
 
 			// create a mongodb dataset object
-			DatasetMongoDBObject datasetMongoDBObj = new DatasetMongoDBObject(
+			DatasetDB datasetMongoDBObj = new DatasetDB(
 					datasetURI);
 			
 			// do not overlap LOV datasets
 			if(datasetMongoDBObj.getIsVocabulary())
 				break;
 			
-			// setting TOP dataset
-			if (isTopDataset) {
-				topDatasetID = datasetMongoDBObj.getDynLodID();
-			}
 			
 
 			datasetMongoDBObj.setAccess_url(access_url);
@@ -170,6 +166,12 @@ public class InputRDFParser {
 						.toString());
 			} else
 				datasetMongoDBObj.setLabel(datasetURI);
+
+			// setting TOP dataset
+			if (isTopDataset) {
+				topDatasetID = datasetMongoDBObj.getDynLodID();
+				topDatasetTitle = datasetMongoDBObj.getTitle();
+			}
 
 			datasetMongoDBObj.updateObject(true);
 			datasetMongoDBObj.addParentDatasetID(parentDataset);
@@ -203,10 +205,10 @@ public class InputRDFParser {
 					}
 
 					if (stmtDatasets3.hasNext()) {
-						iterateSubsetsNew(stmtDatasets3, datasetMongoDBObj.getDynLodID(), topDatasetID, false);
+						iterateSubsetsNew(stmtDatasets3, datasetMongoDBObj.getDynLodID(), topDatasetID, topDatasetTitle, false);
 //						datasetMongoDBObj.addSubsetID(subset.getObject()
 //								.toString());
-						datasetMongoDBObj.addSubsetID(new DatasetMongoDBObject(subset.getObject()
+						datasetMongoDBObj.addSubsetID(new DatasetDB(subset.getObject()
 								.toString()).getDynLodID());
 						datasetMongoDBObj.updateObject(true);
 					}
@@ -226,7 +228,7 @@ public class InputRDFParser {
 								.createProperty(NS.VOID_URI, "dataDump"))) {
 					Statement stmtDistribution2 = stmtDistribution.next();
 					addDistribution(stmtDistribution2, stmtDistribution2,
-							datasetMongoDBObj, topDatasetID);
+							datasetMongoDBObj,topDatasetTitle, topDatasetID);
 				} else if (stmtDistribution.hasNext()) {
 					break;
 				}
@@ -271,7 +273,7 @@ public class InputRDFParser {
 										downloadURLFound = true;
 										addDistribution(downloadURLStmt,
 												distributionStmt,
-												datasetMongoDBObj, topDatasetID);
+												datasetMongoDBObj,topDatasetTitle, topDatasetID);
 
 									}
 								} catch (Exception ex) {
@@ -308,7 +310,7 @@ public class InputRDFParser {
 
 								downloadURLFound = true;
 								addDistribution(downloadURLStmt,
-										distributionStmt, datasetMongoDBObj,
+										distributionStmt, datasetMongoDBObj, topDatasetTitle,
 										topDatasetID);
 
 							}
@@ -322,8 +324,8 @@ public class InputRDFParser {
 	}
 
 	public void addDistribution(Statement downloadURLStmt,
-			Statement stmtDistribution, DatasetMongoDBObject subsetMongoDBObj,
-			int topDataset) {
+			Statement stmtDistribution, DatasetDB subsetMongoDBObj,
+			String topDatasetTitle, int topDatasetID) {
 
 		logger.info("Distribution found: downloadURL: "
 				+ downloadURLStmt.getObject().toString());
@@ -333,7 +335,7 @@ public class InputRDFParser {
 		someDownloadURLFound = true;
 
 		// creating mongodb distribution object
-		DistributionMongoDBObject distributionMongoDBObj = new DistributionMongoDBObject(
+		DistributionDB distributionMongoDBObj = new DistributionDB(
 				downloadURLStmt.getObject().toString());
 
 		// do not overlap LOV datasets
@@ -345,7 +347,9 @@ public class InputRDFParser {
  
 		distributionMongoDBObj.addDefaultDataset(subsetMongoDBObj.getDynLodID());
 
-		distributionMongoDBObj.setTopDataset(topDataset); 
+		distributionMongoDBObj.setTopDataset(topDatasetID); 
+
+		distributionMongoDBObj.setTopDatasetTitle(topDatasetTitle); 
 
 		distributionMongoDBObj.setDownloadUrl(downloadURLStmt.getObject()
 				.toString());
@@ -416,7 +420,7 @@ public class InputRDFParser {
 
 		if (distributionMongoDBObj.getStatus() == null) {
 			distributionMongoDBObj
-					.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_STREAM);
+					.setStatus(DistributionDB.STATUS_WAITING_TO_STREAM);
 		}
 		distributionMongoDBObj.updateObject(true);
 		distributionsLinks.add(distributionMongoDBObj);

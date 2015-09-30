@@ -5,13 +5,13 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
 
 public class CheckWhetherToStream {
 
 	final static Logger logger = Logger.getLogger(CheckWhetherToStream.class);
 
-	public boolean checkDistribution(DistributionMongoDBObject distribution)
+	public boolean checkDistribution(DistributionDB distribution)
 			throws Exception {
 
 		logger.debug("Checking whether we need to download "

@@ -12,7 +12,11 @@ public class RDFTypeObjectDB extends GeneralRDFResourceDB{
 
 	public RDFTypeObjectDB(String id) {
 		super(COLLECTION_NAME, id);
-		// TODO Auto-generated constructor stub
+		loadObject();
+	}
+	public RDFTypeObjectDB(int id) {
+		super(COLLECTION_NAME, id);
+		loadObject();
 	}
 	
 	public RDFTypeObjectDB() {

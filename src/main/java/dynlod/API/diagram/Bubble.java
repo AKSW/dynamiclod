@@ -2,8 +2,8 @@ package dynlod.API.diagram;
 
 import org.json.JSONObject;
 
-import dynlod.mongodb.collections.DatasetMongoDBObject;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DatasetDB;
+import dynlod.mongodb.collections.DistributionDB;
 
 public class Bubble {
 
@@ -32,7 +32,7 @@ public class Bubble {
 
 		node.put("text", getText());
 		node.put("group", group);
-		DatasetMongoDBObject d = new DatasetMongoDBObject(group);
+		DatasetDB d = new DatasetDB(group);
 		
 		if(!d.getTitle().equals(""))
 			node.put("group_name", d.getTitle());
@@ -65,9 +65,9 @@ public class Bubble {
 	}
 	
 	private void startBubble(Object source){
-		if (source instanceof DistributionMongoDBObject) {
+		if (source instanceof DistributionDB) {
 
-			DistributionMongoDBObject tmp = (DistributionMongoDBObject) source;
+			DistributionDB tmp = (DistributionDB) source;
 			this.group = tmp.getTopDataset();
 			this.isVocab = tmp.getIsVocabulary();
 			if (tmp.getTitle() != null && !tmp.getTitle().equals(""))
@@ -87,11 +87,11 @@ public class Bubble {
 			else
 				setColor("rgb(66, 136, 78)");
 
-			dynLodObject = (DistributionMongoDBObject) source;
+			dynLodObject = (DistributionDB) source;
 		}
 
-		else if (source instanceof DatasetMongoDBObject) {
-			DatasetMongoDBObject tmp = (DatasetMongoDBObject) source;
+		else if (source instanceof DatasetDB) {
+			DatasetDB tmp = (DatasetDB) source;
 			this.isVocab = tmp.getIsVocabulary();
 
 			if (tmp.getTitle() != null || !tmp.getTitle().equals(""))
@@ -114,7 +114,7 @@ public class Bubble {
 			else
 			setColor("rgb(116, 196, 118)");
 
-			dynLodObject = (DatasetMongoDBObject) source;
+			dynLodObject = (DatasetDB) source;
 		}
 	}
 

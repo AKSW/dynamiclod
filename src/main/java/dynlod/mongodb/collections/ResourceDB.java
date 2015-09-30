@@ -6,7 +6,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class ResourceMongoDBObject extends DBSuperClass {
+public class ResourceDB extends DBSuperClass {
 	
 	public final String MODIFIED_TIMESTAMP = "modifiedTimestamp";
 
@@ -43,22 +43,22 @@ public class ResourceMongoDBObject extends DBSuperClass {
 	}
 	
 
-	public ResourceMongoDBObject(String collectionName, String uri) {
+	public ResourceDB(String collectionName, String uri) {
 		super(collectionName, uri);
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ResourceMongoDBObject(String collectionName, int id) {
+	public ResourceDB(String collectionName, int id) {
 		super(collectionName, id);
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ResourceMongoDBObject(String collectionName, DBObject object) {
+	public ResourceDB(String collectionName, DBObject object) {
 		super(collectionName, object);
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ResourceMongoDBObject(String collection, String uri, boolean isRegex) {
+	public ResourceDB(String collection, String uri, boolean isRegex) {
 		super(collection, uri, isRegex);
 		loadObject();
 	}

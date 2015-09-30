@@ -7,7 +7,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class DistributionSubjectDomainsMongoDBObject extends DBSuperClass {
+public class DistributionSubjectDomainsDB extends DBSuperClass {
 	// Collection name
 		public static final String COLLECTION_NAME = "DistributionSubjectDomains";
 
@@ -27,7 +27,7 @@ public class DistributionSubjectDomainsMongoDBObject extends DBSuperClass {
 		private int numberOfResources;
 		
 		
-		public DistributionSubjectDomainsMongoDBObject(String uri) {
+		public DistributionSubjectDomainsDB(String uri) {
 			
 			super(COLLECTION_NAME, uri);
 			loadObject();

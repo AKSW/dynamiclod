@@ -38,8 +38,8 @@ import dynlod.links.similarity.JaccardSimilarity;
 import dynlod.links.similarity.LinkSimilarity;
 import dynlod.links.strength.LinkStrength;
 import dynlod.linksets.MakeLinksetsMasterThread;
-import dynlod.mongodb.collections.DatasetMongoDBObject;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
+import dynlod.mongodb.collections.DatasetDB;
+import dynlod.mongodb.collections.DistributionDB;
 import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesDB;
 import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
 import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassDB;
@@ -54,7 +54,7 @@ import dynlod.utils.Timer;
 public class LOVVocabularies extends Stream {
 	final static Logger logger = Logger.getLogger(LOVVocabularies.class);
 
-	DistributionMongoDBObject distribution = null;
+	DistributionDB distribution = null;
 	
 	
 	// saving all predicates
@@ -142,21 +142,21 @@ public class LOVVocabularies extends Stream {
 					.createResource(node.getURI());
 
 			// new dataset at mongodb
-			DatasetMongoDBObject d = new DatasetMongoDBObject(
+			DatasetDB dataset = new DatasetDB(
 					node.getNameSpace());
 			StmtIterator stmt = tmpModel.listStatements(r, p, (RDFNode) null);
 			
 			if (stmt.hasNext())
-				d.setTitle(stmt.next().getObject().toString());
+				dataset.setTitle(stmt.next().getObject().toString());
 			
 
 			stmt = tmpModel.listStatements(r, p2, (RDFNode) null);
 			if (stmt.hasNext())
-				d.setLabel(stmt.next().getObject().toString());
+				dataset.setLabel(stmt.next().getObject().toString());
 			
-			d.setIsVocabulary(true);
+			dataset.setIsVocabulary(true);
 
-			d.updateObject(true);
+			dataset.updateObject(true);
 
 			StmtIterator triples = m.listStatements(null, null, (RDFNode) null);
 
@@ -201,8 +201,8 @@ public class LOVVocabularies extends Stream {
 //				predicates.add(triple.getPredicate().toString());
 
 			}
-			distribution = new DistributionMongoDBObject(node.getNameSpace());
-			distribution.setTopDataset(d.getDynLodID());
+			distribution = new DistributionDB(node.getNameSpace());
+			distribution.setTopDataset(dataset.getDynLodID());
 			distribution.updateObject(true);
 //			
 			MakeLinksetsMasterThread makeLinksets = new MakeLinksetsMasterThread(subjectsQueue, node.getNameSpace());
@@ -223,19 +223,19 @@ public class LOVVocabularies extends Stream {
 			
 			
 			
-			if (d.getTitle() != null)
-				distribution.setTitle(d.getTitle());
-			else if (d.getLabel() != null)
-				distribution.setTitle(d.getLabel());
+			if (dataset.getTitle() != null)
+				distribution.setTitle(dataset.getTitle());
+			else if (dataset.getLabel() != null)
+				distribution.setTitle(dataset.getLabel());
 			
-			SaveDist(node.getNameSpace(), subjects, objects, d.getDynLodID());
+			SaveDist(node.getNameSpace(), subjects, objects, dataset.getDynLodID(), dataset.getTitle());
 
 		}
 
 	}
 
 	public void SaveDist(String nameSpace, ArrayList<String> subjects,
-			ArrayList<String> objects, int parentDynID) throws Exception {
+			ArrayList<String> objects, int parentDynID, String parentTitle) throws Exception {
 		
 	
 		
@@ -313,17 +313,18 @@ public class LOVVocabularies extends Stream {
 		
 		distribution.setDownloadUrl(nameSpace);
 		distribution.setDefaultDatasets(parentDataset);
-//		distribution.setTopDataset(parentDynID);
+		distribution.setTopDataset(parentDynID);
 		distribution.setTriples(subjects.size() + objects.size());
 		distribution.setTimeToCreateSubjectFilter(timer);
 		distribution.setTimeToCreateObjectFilter(timer2);
 		distribution.setFormat("nq");
+		distribution.setTopDatasetTitle(parentTitle);
 		distribution.setIsVocabulary(true);
 		distribution.setNumberOfObjectTriples(String.valueOf(objects.size()));
 		distribution.setNumberOfSubjectTriples(String.valueOf(subjects.size()));
 		distribution.setSuccessfullyDownloaded(true);
 //		distribution.setStatus(DistributionMongoDBObject.STATUS_WAITING_TO_CREATE_LINKSETS);
-		distribution.setStatus(DistributionMongoDBObject.STATUS_DONE);
+		distribution.setStatus(DistributionDB.STATUS_DONE);
 		distribution.setSubjectFilterPath(DynlodGeneralProperties.SUBJECT_FILE_FILTER_PATH
 				+ FileUtils.stringToHash(nameSpace));
 		distribution.setObjectFilterPath(DynlodGeneralProperties.OBJECT_FILE_FILTER_PATH

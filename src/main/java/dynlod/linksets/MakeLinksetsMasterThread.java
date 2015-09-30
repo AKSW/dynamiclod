@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 
-import dynlod.mongodb.collections.DistributionMongoDBObject;
-import dynlod.mongodb.collections.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
+import dynlod.mongodb.collections.LinksetDB;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.threads.DataModelThread;
 import dynlod.threads.GetFQDNFromTriplesThread;
@@ -28,7 +28,7 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 
 	final static Logger logger = Logger.getLogger(MakeLinksetsMasterThread.class);
 
-	ArrayList<DistributionMongoDBObject> distributionsToCompare;
+	ArrayList<DistributionDB> distributionsToCompare;
 	ArrayList<String> resourcesToBeProcessedQueueCopy;
 
 	public HashMap<String, Integer> localFQDNCopy = new HashMap<String, Integer>();
@@ -70,7 +70,7 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 										fqdnPerDistribution);
 					
 
-					for (DistributionMongoDBObject distributionToCompare : distributionsToCompare) {
+					for (DistributionDB distributionToCompare : distributionsToCompare) {
 						if (!listOfWorkerThreads
 								.containsKey(distributionToCompare.getDynLodID()))
 							try {
@@ -194,7 +194,7 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 
 						dataThread.active = false;
 						
-						LinksetMongoDBObject l; 
+						LinksetDB l; 
 
 						String mongoDBURL;
 
@@ -204,7 +204,7 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 						
 						if(isSubject){
 							 mongoDBURL = dataThread.targetDistributionID+ "-" + dataThread.distributionID;
-							 l = new LinksetMongoDBObject(
+							 l = new LinksetDB(
 										mongoDBURL);
 							l.setDistributionSource(dataThread.targetDistributionID);
 							l.setDistributionTarget(dataThread.distributionID);
@@ -215,7 +215,7 @@ public class MakeLinksetsMasterThread extends GetFQDNFromTriplesThread {
 						else{
 							 mongoDBURL = dataThread.distributionID + "-"
 										+ dataThread.targetDistributionID;
-							 l = new LinksetMongoDBObject(
+							 l = new LinksetDB(
 										mongoDBURL);
 						
 						l.setDistributionSource(dataThread.distributionID);

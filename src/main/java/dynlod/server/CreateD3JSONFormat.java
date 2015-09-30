@@ -20,9 +20,9 @@ import dynlod.API.diagram.Bubble;
 import dynlod.API.diagram.Diagram;
 import dynlod.API.diagram.DiagramData;
 import dynlod.API.diagram.Link;
-import dynlod.mongodb.collections.DatasetMongoDBObject;
-import dynlod.mongodb.collections.DistributionMongoDBObject;
-import dynlod.mongodb.collections.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DatasetDB;
+import dynlod.mongodb.collections.DistributionDB;
+import dynlod.mongodb.collections.LinksetDB;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.FQDNQueries;
 import dynlod.mongodb.queries.LinksetQueries;
@@ -109,8 +109,8 @@ public class CreateD3JSONFormat extends HttpServlet {
 //				distributionsID.add(distribution);
 //			}
 //		}
-		ArrayList<DistributionMongoDBObject> dis = new DistributionQueries().getSetOfDistributions(diagramData.distributionsID);
-		for (DistributionMongoDBObject distributionMongoDBObject : dis) {
+		ArrayList<DistributionDB> dis = new DistributionQueries().getSetOfDistributions(diagramData.distributionsID);
+		for (DistributionDB distributionMongoDBObject : dis) {
 			diagramData.loadedDistributions.put(distributionMongoDBObject.getDynLodID(), distributionMongoDBObject);
 		}
 		
@@ -120,14 +120,14 @@ public class CreateD3JSONFormat extends HttpServlet {
 		if (parameters.containsKey("getAllDistributions")) {
 
 			Diagram diagram = new Diagram();
-			ArrayList<LinksetMongoDBObject> linksets = new LinksetQueries()
+			ArrayList<LinksetDB> linksets = new LinksetQueries()
 					.getLinksetsWithLinks();
 
-			for (LinksetMongoDBObject linkset : linksets) {
+			for (LinksetDB linkset : linksets) {
 
-				Bubble target = new Bubble( new DistributionMongoDBObject(
+				Bubble target = new Bubble( new DistributionDB(
 						linkset.getDistributionTarget()));
-				Bubble source = new Bubble( new DistributionMongoDBObject(
+				Bubble source = new Bubble( new DistributionDB(
 						linkset.getDistributionSource()));
 			
 
@@ -155,7 +155,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 //					currentLevel = Integer.parseInt(parameters.get("level")[0]);
 //				}
 				
-				DatasetMongoDBObject d = new DatasetMongoDBObject(Integer.valueOf(datasetID));
+				DatasetDB d = new DatasetDB(Integer.valueOf(datasetID));
 
 				iterateDataset(d, diagramTemp, d.getDynLodID(), currentLevel);				
 			}
@@ -178,17 +178,17 @@ public class CreateD3JSONFormat extends HttpServlet {
 
 	}
 
-	private void iterateDataset(DatasetMongoDBObject dataset,
+	private void iterateDataset(DatasetDB dataset,
 			Diagram diagram, int parentDataset, int currentLevel) {
 		
 		
-		for (DatasetMongoDBObject subset : dataset.getSubsetsAsMongoDBObject()) {
+		for (DatasetDB subset : dataset.getSubsetsAsMongoDBObject()) {
 			makeLink(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
 					diagram.addBubble(new Bubble(subset, true,parentDataset)), diagram, "S");				
 			iterateDataset(subset, diagram, parentDataset, --currentLevel);
 		}
 		
-		for (DistributionMongoDBObject distribution : dataset.getDistributionsAsMongoDBObjects()) {
+		for (DistributionDB distribution : dataset.getDistributionsAsMongoDBObjects()) {
 			
 
 			makeLink(diagram.addBubble(new Bubble(dataset, true,parentDataset)),
@@ -201,22 +201,22 @@ public class CreateD3JSONFormat extends HttpServlet {
 //					.getLinksetsOutDegreeByDistribution(distribution.getDynLodID(), LINK_TYPE,min, max);
 			
 			// get indegree and outdegree for a distribution
-			ArrayList<LinksetMongoDBObject> in = diagramData.indegreeLinks.get(distribution.getDynLodID());
-			ArrayList<LinksetMongoDBObject> out = diagramData.outdegreeLinks.get(distribution.getDynLodID());
+			ArrayList<LinksetDB> in = diagramData.indegreeLinks.get(distribution.getDynLodID());
+			ArrayList<LinksetDB> out = diagramData.outdegreeLinks.get(distribution.getDynLodID());
 			
 
 			if(in!=null){
 				
-			for (LinksetMongoDBObject linkset : in) {
+			for (LinksetDB linkset : in) {
 				// get all distribution objects
 				
 				
 //				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject source = diagramData.loadedDistributions.get(linkset.getDistributionSource());
+				DistributionDB source = diagramData.loadedDistributions.get(linkset.getDistributionSource());
 				
 				
 //				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
-				DistributionMongoDBObject target =  distribution;
+				DistributionDB target =  distribution;
 				
 				String links = getLinksCorrectFormat(linkset);
 				
@@ -232,11 +232,11 @@ public class CreateD3JSONFormat extends HttpServlet {
 			}
 		}
 			if(out!=null)
-			for (LinksetMongoDBObject linkset : out) {
+			for (LinksetDB linkset : out) {
 //				DistributionMongoDBObject source =  new DistributionMongoDBObject(linkset.getDistributionSource());
-				DistributionMongoDBObject source =  distribution;
+				DistributionDB source =  distribution;
 //				DistributionMongoDBObject target =  new DistributionMongoDBObject(linkset.getDistributionTarget());
-				DistributionMongoDBObject target =  diagramData.loadedDistributions.get(linkset.getDistributionTarget());
+				DistributionDB target =  diagramData.loadedDistributions.get(linkset.getDistributionTarget());
 				
 				
 				String links = getLinksCorrectFormat(linkset);
@@ -294,13 +294,13 @@ public class CreateD3JSONFormat extends HttpServlet {
 		
 	}
 	
-	protected String getLinksCorrectFormat(LinksetMongoDBObject linkset){
+	protected String getLinksCorrectFormat(LinksetDB linkset){
 		String links;
 		if(showInvalidLinks)
 			links = linkset.getInvalidLinksAsString();
-		else if(LINK_TYPE.equals(LinksetMongoDBObject.PREDICATE_SIMILARITY))
+		else if(LINK_TYPE.equals(LinksetDB.PREDICATE_SIMILARITY))
 			links = linkset.getPredicatesSimilarityAsString();
-		else if(LINK_TYPE.equals(LinksetMongoDBObject.LINK_STRENGHT)){
+		else if(LINK_TYPE.equals(LinksetDB.LINK_STRENGHT)){
 			links = linkset.getStrengthAsString();
 			
 		}
@@ -333,11 +333,11 @@ public class CreateD3JSONFormat extends HttpServlet {
 //				showInvalidLinks = true;
 			
 			if(parameters.get("linkType")[0].equals("showLinksStrength"))
-				LINK_TYPE = LinksetMongoDBObject.LINK_STRENGHT;
+				LINK_TYPE = LinksetDB.LINK_STRENGHT;
 			else if(parameters.get("linkType")[0].equals("showSimilarity"))
-				LINK_TYPE = LinksetMongoDBObject.PREDICATE_SIMILARITY;
+				LINK_TYPE = LinksetDB.PREDICATE_SIMILARITY;
 			else if(parameters.get("linkType")[0].equals("showLinks")){
-				LINK_TYPE = LinksetMongoDBObject.LINK_NUMBER_LINKS;
+				LINK_TYPE = LinksetDB.LINK_NUMBER_LINKS;
 				min = 50;
 				max = -1;
 			}

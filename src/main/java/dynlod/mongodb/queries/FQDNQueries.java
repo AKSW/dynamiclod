@@ -5,7 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 
 import dynlod.mongodb.DBSuperClass;
-import dynlod.mongodb.collections.DistributionObjectDomainsMongoDBObject;
+import dynlod.mongodb.collections.DistributionObjectDomainsDB;
 
 public class FQDNQueries {
 	public int getNumberOfObjectResources(
@@ -15,18 +15,18 @@ public class FQDNQueries {
 		try {
 
 			DBCollection collection = DBSuperClass.getInstance().getCollection(
-					DistributionObjectDomainsMongoDBObject.COLLECTION_NAME);
+					DistributionObjectDomainsDB.COLLECTION_NAME);
 
 			// get all objects domain of a distribution
 			BasicDBObject query = new BasicDBObject(
-					DistributionObjectDomainsMongoDBObject.DISTRIBUTION_ID,
+					DistributionObjectDomainsDB.DISTRIBUTION_ID,
 					distributionID);
 
 			DBCursor cursor = collection.find(query);
 
 			while (cursor.hasNext()) {
 				result = result + ((Number) cursor.next().get(
-						DistributionObjectDomainsMongoDBObject.NUMBER_OF_RESOURCES)).intValue();
+						DistributionObjectDomainsDB.NUMBER_OF_RESOURCES)).intValue();
 			}
 
 			

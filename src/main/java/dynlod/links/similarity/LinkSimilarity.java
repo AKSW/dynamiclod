@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import dynlod.mongodb.collections.DistributionMongoDBObject;
-import dynlod.mongodb.collections.LinksetMongoDBObject;
+import dynlod.mongodb.collections.DistributionDB;
+import dynlod.mongodb.collections.LinksetDB;
 import dynlod.mongodb.collections.RDFResources.GeneralRDFResourceRelationDB;
 import dynlod.mongodb.collections.RDFResources.allPredicates.AllPredicatesRelationDB;
 import dynlod.mongodb.collections.RDFResources.owlClass.OwlClassRelationDB;
@@ -24,11 +24,11 @@ public abstract class LinkSimilarity {
 	 * Update values of distribution similarities 
 	 * @param distribution Distribution that should be compared
 	 */
-	public void updateLinks(DistributionMongoDBObject distribution, GeneralRDFResourceRelationDB type ){
+	public void updateLinks(DistributionDB distribution, GeneralRDFResourceRelationDB type ){
 		this.type = type;
 		
 		// get all distributions except for the current one
-		ArrayList<DistributionMongoDBObject> distributions = new DistributionQueries().getDistributions(true);
+		ArrayList<DistributionDB> distributions = new DistributionQueries().getDistributions(true);
 		
 //		PredicatesQueries predicates = new PredicatesQueries();
 		HashSet<String> set1 ;
@@ -43,7 +43,7 @@ public abstract class LinkSimilarity {
 		else
 			set1 = new OwlClassRelationDB().getSetOfPredicates(distribution.getDynLodID());
 		
-		for(DistributionMongoDBObject d: distributions){
+		for(DistributionDB d: distributions){
 			if(d.getDynLodID() != distribution.getDynLodID()){
 			
 			HashSet<String> set2;
@@ -103,9 +103,9 @@ public abstract class LinkSimilarity {
 	 * @param dist2 distribution 2
 	 * @param value similarity value
 	 */
-	private void makeLink(DistributionMongoDBObject dist1, DistributionMongoDBObject dist2, double value){
+	private void makeLink(DistributionDB dist1, DistributionDB dist2, double value){
 		String id = String.valueOf(dist1.getDynLodID()) + "-" + String.valueOf(dist2.getDynLodID());
-		LinksetMongoDBObject link = new LinksetMongoDBObject(id);
+		LinksetDB link = new LinksetDB(id);
 //		link.setPredicateSimilarity(value);
 		
 		

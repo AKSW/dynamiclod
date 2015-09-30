@@ -15,7 +15,7 @@ import dynlod.mongodb.collections.RDFResources.GeneralRDFResourceRelationDB;
 
 public class AllPredicatesRelationDB extends GeneralRDFResourceRelationDB{
 	
-	public static final String COLLECTION_NAME = "PredicateResource";
+	public static final String COLLECTION_NAME = "allPredicatesResource";
 
 	public AllPredicatesRelationDB(int id) {
 		super(COLLECTION_NAME, id);

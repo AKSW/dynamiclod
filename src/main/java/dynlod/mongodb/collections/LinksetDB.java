@@ -7,7 +7,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class LinksetMongoDBObject extends DBSuperClass {
+public class LinksetDB extends DBSuperClass {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "Linkset";
@@ -57,12 +57,12 @@ public class LinksetMongoDBObject extends DBSuperClass {
 
 	private int invalidLinks = 0;
 	
-	public LinksetMongoDBObject(String uri) {
+	public LinksetDB(String uri) {
 		super(COLLECTION_NAME, uri);
 		loadObject();
 	}
 
-	public LinksetMongoDBObject(DBObject object) {
+	public LinksetDB(DBObject object) {
 		super(COLLECTION_NAME, object);
 		load(object);
 	}

@@ -210,8 +210,8 @@ abstract public class DBSuperClass {
 	protected DBObject search() {
 
 		// adding object URI
-		if (uri == null)
-			return null;
+//		if (uri == null)
+//			return null;
 
 		DBCursor d = objectCollection.find(mongoDBObject);
 		if (d.hasNext())

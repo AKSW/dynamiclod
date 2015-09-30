@@ -7,7 +7,7 @@ import com.mongodb.DBObject;
 import dynlod.exceptions.DynamicLODGeneralException;
 import dynlod.mongodb.DBSuperClass;
 
-public class SystemPropertiesMongoDBObject extends DBSuperClass {
+public class SystemPropertiesDB extends DBSuperClass {
 
 	// Collection name
 	public static final String COLLECTION_NAME = "SystemProperties";
@@ -19,7 +19,7 @@ public class SystemPropertiesMongoDBObject extends DBSuperClass {
 
 	private Boolean downloadedLOV;	
 
-	public SystemPropertiesMongoDBObject() {
+	public SystemPropertiesDB() {
 		super(COLLECTION_NAME, COLLECTION_NAME);
 		loadObject();
 	}
