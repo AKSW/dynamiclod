@@ -18,17 +18,19 @@ public class ServiceAPIOptions extends ArrayList<APIOption>{
 
 	public static final String COMPARE_DATASETS = "compareDatasets"; 
 
-	public static final String COMPARE_DATASETS_DATASET1 = "dataset1"; 
+	public static final String COMPARE_DATASETS_DATASET1 = "compareDataset1"; 
 
-	public static final String COMPARE_DATASETS_DATASET2 = "dataset2"; 
+	public static final String COMPARE_DATASETS_DATASET2 = "compareDataset2"; 
 	
 	public static final String DATASET_STATISTICS = "datasetStatistics"; 
 	
-	public static final String DATASET_DISTRIBUTION = "datasetDistribution"; 
+	public static final String DATASET_DETAILS_STATISTICS = "datasetDetailsStatistics"; 
+
+	public static final String DUMP_FILE = "dumpFile"; 
 	
-	public static final String DATASET_TOP = "datasetTop"; 
+	public static final String TOP_N = "topN"; 
 	
-	public static final String DATASET_TYPE = "datasetType"; 
+	public static final String TYPE = "type"; 
 	
 	public static final String DATASET_TYPE_LINKS = "links"; 
 	
@@ -65,6 +67,7 @@ public class ServiceAPIOptions extends ArrayList<APIOption>{
 		add(new APIOption(LIST_SKIP, ""));
 		add(new APIOption(DATASET_STATISTICS, ""));
 		add(new APIOption(COMPARE_DATASETS, ""));
+		add(new APIOption(DATASET_DETAILS_STATISTICS, ""));
 		
 		
 	}

@@ -1,7 +1,9 @@
 package dynlod.mongodb.collections.RDFResources;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.mongodb.BasicDBList;
@@ -170,7 +172,35 @@ public class GeneralRDFResourceRelationDB extends DBSuperClass{
 	
 	public Set<String> getSetOfPredicates(int distributionDynLODID){return null;}
 	
-	
+	public List<GeneralRDFResourceRelationDB> getTopNPredicates(String collectionName, int distributinID, int topN){
+		List<GeneralRDFResourceRelationDB> result = new ArrayList<GeneralRDFResourceRelationDB>();
+		
+		try {
+
+			DBCollection collection = DBSuperClass.getInstance().getCollection(
+					collectionName);
+
+			// query all fqdn
+			BasicDBObject query = new BasicDBObject(
+					GeneralRDFResourceRelationDB.DISTRIBUTION_ID,
+					distributinID);
+			BasicDBObject sort = new BasicDBObject(GeneralRDFResourceRelationDB.AMOUNT, -1);
+
+			DBCursor cursor = collection.find(query).sort(sort).limit(topN);
+
+			// save a list with distribution and fqdn
+			while (cursor.hasNext()) {
+				DBObject instance = cursor.next();
+				GeneralRDFResourceRelationDB r = new GeneralRDFResourceRelationDB(instance);
+				result.add(r);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
 	
 	public Set<GeneralRDFResourceRelationDB> getPredicatesIn(String collectionName, Set<Integer> in, int distribution1, int distribution2){
 		
@@ -203,7 +233,6 @@ public class GeneralRDFResourceRelationDB extends DBSuperClass{
 			
 			DBCollection collection = DBSuperClass.getInstance().getCollection(
 					collectionName);
-			
 
 			DBCursor cursor = collection.find(query);
 
@@ -217,13 +246,6 @@ public class GeneralRDFResourceRelationDB extends DBSuperClass{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		
-		
-		
-		
-		
 		
 		return result;
 		

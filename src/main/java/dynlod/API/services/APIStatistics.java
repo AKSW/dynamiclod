@@ -5,11 +5,11 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
 
 import dynlod.API.core.APIMessage;
 import dynlod.API.core.ServiceAPIOptions;
@@ -84,7 +84,57 @@ public class APIStatistics{
 		return apimessage;
 	}
 
-	public APIMessage getTop(String distribution, int topValue, String type){
+	public APIMessage getTop(String distribution, int topN, String type){
+		APIMessage apimessage = new APIMessage(); 
+		NumberFormat formatterLinks = new DecimalFormat("###,###,###,###");
+		DistributionDB dist= new DistributionDB(distribution);
+		int distributionID = dist.getDynLodID();
+		
+		JSONArray jsonArr = new JSONArray();
+		JSONObject msg = new JSONObject();
+		
+		String collectionName = "" ;
+
+		if(type.equals(ServiceAPIOptions.DATASET_TYPE_PREDICATES)){
+			collectionName = AllPredicatesRelationDB.COLLECTION_NAME;
+		}
+		else if(type.equals(ServiceAPIOptions.DATASET_TYPE_CLASSES)){
+			collectionName = OwlClassRelationDB.COLLECTION_NAME;
+		}
+		else if(type.equals(ServiceAPIOptions.DATASET_TYPE_SUBCLASSES)){
+			collectionName = RDFSubClassOfRelationDB.COLLECTION_NAME;
+		}
+		else if(type.equals(ServiceAPIOptions.DATASET_TYPE_TYPE)){
+			collectionName = RDFTypeObjectRelationDB.COLLECTION_NAME;
+		}
+		
+		List<GeneralRDFResourceRelationDB> list = new GeneralRDFResourceRelationDB().getTopNPredicates(collectionName, distributionID, topN);
+		
+		
+		for (GeneralRDFResourceRelationDB d : list){
+			JSONArray jsonObj = new JSONArray();
+			
+			if(type.equals(ServiceAPIOptions.DATASET_TYPE_CLASSES))
+				jsonObj.put(new OwlClassDB(d.getPredicateID()).getUri());
+			else if(type.equals(ServiceAPIOptions.DATASET_TYPE_SUBCLASSES))
+				jsonObj.put(new RDFSubClassOfDB(d.getPredicateID()).getUri());
+			else if(type.equals(ServiceAPIOptions.DATASET_TYPE_TYPE))
+				jsonObj.put(new RDFTypeObjectDB(d.getPredicateID()).getUri());
+			else
+				jsonObj.put(new AllPredicatesDB(d.getPredicateID()).getUri());
+			
+			jsonObj.put(formatterLinks.format(d.getAmount()));
+			
+			jsonArr.put(jsonObj);
+		}
+
+		msg.put("distributions", jsonArr);
+		apimessage.addListMsg(msg); 
+		
+		return apimessage;
+	}
+	
+	public APIMessage datasetDetails(String distribution, int topN, String type){
 		APIMessage apimessage = new APIMessage(); 
 		NumberFormat formatterLinks = new DecimalFormat("###,###,###,###");
 		NumberFormat formatterDecimal = new DecimalFormat("#.####");
@@ -95,7 +145,7 @@ public class APIStatistics{
 		DistributionDB dist= new DistributionDB(distribution);
 		
 		// get how many vocabs and datasets are in the database
-		ArrayList<LinksetDB> links = new LinksetQueries().getLinksetsByDistribution(distribution, topValue, type);
+		ArrayList<LinksetDB> links = new LinksetQueries().getLinksetsByDistribution(distribution, topN, type);
 		
 		
 		for (LinksetDB d : links){
@@ -131,8 +181,7 @@ public class APIStatistics{
 		apimessage.addListMsg(msg); 
 		
 		return apimessage;
-	}
-	
+	}	
 	
 //	@Test
 //	public void compareDatasets(){

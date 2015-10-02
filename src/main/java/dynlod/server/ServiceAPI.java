@@ -153,15 +153,22 @@ public class ServiceAPI extends HttpServlet {
 			}
 			
 			if (parameters.containsKey(ServiceAPIOptions.DATASET_STATISTICS)) {
-				out.write(new APIStatistics().getTop(parameters.get(ServiceAPIOptions.DATASET_DISTRIBUTION)[0],
-						Integer.parseInt(parameters.get(ServiceAPIOptions.DATASET_TOP)[0]),
-						parameters.get(ServiceAPIOptions.DATASET_TYPE)[0]
+				out.write(new APIStatistics().datasetDetails(parameters.get(ServiceAPIOptions.DUMP_FILE)[0],
+						Integer.parseInt(parameters.get(ServiceAPIOptions.TOP_N)[0]),
+						parameters.get(ServiceAPIOptions.TYPE)[0]
 						).toJSONString()); 
 			}
 			if (parameters.containsKey(ServiceAPIOptions.COMPARE_DATASETS)) {
 				out.write(new APIStatistics().compareDatasets(Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET1)[0]),
-						Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET2)[0]), parameters.get(ServiceAPIOptions.DATASET_TYPE)[0]).toJSONString()); 
-			}			
+						Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET2)[0]), parameters.get(ServiceAPIOptions.TYPE)[0]).toJSONString()); 
+			}	
+			
+			if (parameters.containsKey(ServiceAPIOptions.DATASET_DETAILS_STATISTICS)) {
+				out.write(new APIStatistics().getTop(parameters.get(ServiceAPIOptions.DUMP_FILE)[0],
+						Integer.parseInt(parameters.get(ServiceAPIOptions.TOP_N)[0]),
+						parameters.get(ServiceAPIOptions.TYPE)[0]
+						).toJSONString()); 			
+			}	
 			
 			
 
