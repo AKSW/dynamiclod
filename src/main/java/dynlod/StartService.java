@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import dynlod.mongodb.IndexesCreator;
 import dynlod.mongodb.collections.DistributionDB;
-import dynlod.mongodb.queries.Queries;
+import dynlod.mongodb.queries.GeneralQueries;
 import dynlod.utils.FileUtils;
 
 /**
@@ -49,7 +49,7 @@ public class StartService extends HttpServlet {
 					if (DynlodGeneralProperties.RESUME) {
 						
 						// re-download distributions with "Downloading" status
-						ArrayList<String> q = new Queries().getMongoDBObject(
+						ArrayList<String> q = new GeneralQueries().getMongoDBObject(
 								DistributionDB.COLLECTION_NAME,
 								DistributionDB.STATUS,
 								DistributionDB.STATUS_STREAMING);
@@ -70,7 +70,7 @@ public class StartService extends HttpServlet {
 						// download distributions with
 						// "STATUS_WAITING_TO_STREAM"
 						// status
-						q = new Queries()
+						q = new GeneralQueries()
 								.getMongoDBObject(
 										DistributionDB.COLLECTION_NAME,
 										DistributionDB.STATUS,
@@ -92,7 +92,7 @@ public class StartService extends HttpServlet {
 					if(DynlodGeneralProperties.RESUME_ERRORS){
 						// download distributions with "ERROR"
 						// status
-						ArrayList<String> q = new Queries().getMongoDBObject(
+						ArrayList<String> q = new GeneralQueries().getMongoDBObject(
 								DistributionDB.COLLECTION_NAME,
 								DistributionDB.STATUS,
 								DistributionDB.STATUS_ERROR);

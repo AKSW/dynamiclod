@@ -140,5 +140,11 @@ public class DynlodGeneralProperties {
 	public static String USE_MULTITHREAD;
 	public static String LOV_URL;
 	public static String REMOVE_DATASET_PASS;
+	
+	public static String TYPE_SUBJECT = "subject";
+	public static String TYPE_PROPERTY = "property";
+	public static String TYPE_OBJECT = "object";
+	
+	
 
 }

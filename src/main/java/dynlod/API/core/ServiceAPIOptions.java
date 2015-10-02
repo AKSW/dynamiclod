@@ -55,6 +55,14 @@ public class ServiceAPIOptions extends ArrayList<APIOption>{
 	public static final String LIST_SEARCH = "search[value]"; 
 	
 	public static final String LIST_IS_VOCABULARY = "isVocabulary"; 
+
+	public static final String LIST_SEARCH_SUBJECT = "searchSubject"; 
+
+	public static final String LIST_SEARCH_PROPERTY = "searchProperty"; 
+
+	public static final String LIST_SEARCH_OBJECT = "searchObject"; 
+
+	
 	
 	{
 		add(new APIOption(ADD_DATASET, "link for your dataset description to be streamed. Might be a list of links."));

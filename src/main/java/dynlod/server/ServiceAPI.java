@@ -144,11 +144,22 @@ public class ServiceAPI extends HttpServlet {
 				if(parameters.get(ServiceAPIOptions.LIST_IS_VOCABULARY)[0].toString().equals("true"))
 					isVocabulary = true;
 				String searchValue = parameters.get(ServiceAPIOptions.LIST_SEARCH)[0];
+				
+				String searchSubject = null;
+				String searchProperty = null;
+				String searchObject = null;
+				
+				if(!parameters.get(ServiceAPIOptions.LIST_SEARCH_SUBJECT)[0].equals(""))
+					searchSubject = parameters.get(ServiceAPIOptions.LIST_SEARCH_SUBJECT)[0].toString();
+				if(!parameters.get(ServiceAPIOptions.LIST_SEARCH_PROPERTY)[0].equals(""))
+					searchProperty = parameters.get(ServiceAPIOptions.LIST_SEARCH_PROPERTY)[0].toString();
+				if(!parameters.get(ServiceAPIOptions.LIST_SEARCH_OBJECT)[0].equals(""))
+					searchObject = parameters.get(ServiceAPIOptions.LIST_SEARCH_OBJECT)[0].toString();
 					
 				out.write(new APIStatistics().listDistributions(
 						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_START)[0]),
 						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_SKIP)[0]), isVocabulary,
-						searchValue
+						searchValue, searchSubject, searchProperty, searchObject
 						).toJSONString()); 
 			}
 			

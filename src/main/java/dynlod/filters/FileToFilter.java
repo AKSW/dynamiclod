@@ -75,43 +75,5 @@ public class FileToFilter {
 
 	}
 
-//	public int searchFileOnFilter(GoogleBloomFilter filter, String path) throws Exception {
-//		BufferedReader br = null;
-//		try {
-//
-//			int ie = 0;
-//			String sCurrentLine;
-//			br = new BufferedReader(new FileReader(path));
-//			
-//			while ((sCurrentLine = br.readLine()) != null) {
-//				if (filter.compare(sCurrentLine)) { 
-//					links.add(sCurrentLine);
-//				}
-//			}
-//			
-//			// remove duplicates from the linkset list
-//			Iterator<String> i = links.iterator();
-//			
-//			while(i.hasNext()){
-//				String link = i.next();
-//				if(!linksUniq.contains(link)){
-//					linksUniq.add(link);
-//				}
-//			}
-//
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				if (br != null)
-//					br.close();
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//		}
-//
-//		return linksUniq.size();
-//	}
 
 }

@@ -16,6 +16,7 @@ import dynlod.linksets.DistributionFQDN;
 import dynlod.mongodb.collections.DistributionDB;
 import dynlod.mongodb.collections.DistributionObjectDomainsDB;
 import dynlod.mongodb.collections.DistributionSubjectDomainsDB;
+import dynlod.utils.FQDN;
 
 public class GetFQDNFromTriplesThread extends Thread {
 	final static Logger logger = Logger
@@ -90,20 +91,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 				try {
 					obj = resourceQueue.remove();
 					resourcesToBeProcessedQueue.add(obj);
-
-//					if (obj.startsWith("<"))
-//						obj = obj.substring(1, obj.length() - 1);
-//					else
-//						obj = obj.substring(0, obj.length() - 1);
-
-					String[] ar = obj.split("/");
-					if (ar.length > 3)
-						obj = ar[0] + "//" + ar[2] + "/" + ar[3] + "/";
-					else if (ar.length > 2)
-						obj = ar[0] + "//" + ar[2] + "/";
-					else {
-						obj = "";
-					}
+					
+					FQDN.getFQDNFromString(obj);
 
 					if (!obj.equals("")) {
 						countTotalFQDN.putIfAbsent(obj, 0);

@@ -11,6 +11,7 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import dynlod.DynlodGeneralProperties;
 import dynlod.API.core.APIMessage;
 import dynlod.API.core.ServiceAPIOptions;
 import dynlod.mongodb.collections.DistributionDB;
@@ -55,16 +56,85 @@ public class APIStatistics{
 		return apimessage;
 	}
 	
-	public APIMessage listDistributions(int skip, int limit, boolean getOntologies, String search){
-		APIMessage apimessage = new APIMessage(); 
+	public APIMessage listDistributions(int skip, int limit, boolean isVocabulary, String search, 
+			String searchSubject, String searchProperty, String searchObject){
+		APIMessage apimessage = new APIMessage(); 	
 		
+		boolean hasResource = false;
+		boolean resourceFound = false;
+		
+		if(((searchSubject != null) || 
+			     (searchProperty != null) || 
+			     (searchObject != null)))
+		hasResource = true;
 		
 		JSONArray jsonArr = new JSONArray();
 		JSONObject msg = new JSONObject();
+		
+		List<Set<Integer>> setOfSetsOfDistributions = new ArrayList<Set<Integer>> ();
+		
+		if(searchSubject!=null){
+			HashSet<Integer> i = new HashSet<Integer>();
+			for(DistributionDB n: new DistributionQueries().
+					getDistributionsByResource(searchSubject, DynlodGeneralProperties.TYPE_SUBJECT)){
+				i.add(n.getDynLodID());
+			}
+			setOfSetsOfDistributions.add(i);
+			if(i.size()>0)
+				resourceFound=true;
+		}
+		if(searchObject!=null){
+			HashSet<Integer> i = new HashSet<Integer>();
+			for(DistributionDB n: new DistributionQueries().
+					getDistributionsByResource(searchObject, DynlodGeneralProperties.TYPE_OBJECT)){
+				i.add(n.getDynLodID());
+			}
+			setOfSetsOfDistributions.add(i);
+			if(i.size()>0)
+				resourceFound=true;
+		}
+		if(searchProperty!=null){
+			HashSet<Integer> i = new HashSet<Integer>();
+			for(DistributionDB n: new DistributionQueries().
+					getDistributionsByResource(searchProperty, DynlodGeneralProperties.TYPE_PROPERTY)){
+				i.add(n.getDynLodID());
+			}
+			setOfSetsOfDistributions.add(i);
+			if(i.size()>0)
+				resourceFound=true;
+		}
+		
+		
+		List<Integer> in = new ArrayList<Integer>();
+		
+		
+		if(setOfSetsOfDistributions.size()>0){
+			Set<Integer> setCross = setOfSetsOfDistributions.get(0);
+			for (int i = 1; i < setOfSetsOfDistributions.size(); i++) {
+//				if(setOfSetsOfDistributions.get(i).size()>0)
+					setCross.retainAll(setOfSetsOfDistributions.get(i));
+			}   
+			for (Integer v : setCross) {
+				in.add(v);
+			}
+		}
+		
+		if(( !resourceFound &&
+				hasResource ) || (hasResource && in.size() ==0)){
+			JSONArray jsonObj = new JSONArray();
+			msg.put("distributions", jsonArr);
+			msg.put("totalDistributions",0);
 
-		// get how many vocabs and datasets are in the database
-		ArrayList<DistributionDB> distributions = new DistributionQueries()
-		.getDistributions(skip, limit, getOntologies, search);
+			apimessage.addListMsg(msg); 
+			return apimessage;
+			
+		}
+		
+		// search by name
+		DistributionQueries dq = new DistributionQueries();
+		ArrayList<DistributionDB> distributions = dq
+		.getDistributions(skip, limit, isVocabulary, search, in);
+		
 		
 		for (DistributionDB d : distributions){
 			JSONArray jsonObj = new JSONArray();
@@ -77,7 +147,7 @@ public class APIStatistics{
 		}
 		
 		msg.put("distributions", jsonArr);
-		msg.put("totalDistributions", new DistributionQueries().countDistributions(getOntologies));
+		msg.put("totalDistributions",dq.getDistributionQuerySize);
 
 		apimessage.addListMsg(msg); 
 		
