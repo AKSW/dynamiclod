@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,9 +49,10 @@ public class ServiceAPI extends HttpServlet {
 		staticRequest = request;
 
 		ServiceAPIOptions options = new ServiceAPIOptions();
-		PrintWriter out;
+//		PrintWriter out;
+		ServletOutputStream out = response.getOutputStream();
 
-		out = response.getWriter();
+//		out = response.getWriter();
 		try {
 
 			Map<String, String[]> parameters = request.getParameterMap();
@@ -88,8 +90,8 @@ public class ServiceAPI extends HttpServlet {
 							e.printStackTrace();
 						}
 					}
-					out.write(apiDataset.apiMessage.toJSONString());
-					out.write("\n");
+					out.write(apiDataset.apiMessage.toJSONString().getBytes("UTF-8"));
+					out.write("\n".getBytes("UTF-8"));
 				}
 			}
 
@@ -103,11 +105,11 @@ public class ServiceAPI extends HttpServlet {
 							.createStatusDataset(datasetURI);
 					try {
 						if (apiStatus != null) {
-							out.write(apiStatus.apiMessage.toJSONString());
-							out.write("\n");
+							out.write(apiStatus.apiMessage.toJSONString().getBytes("UTF-8"));
+							out.write("\n".getBytes("UTF-8"));
 						} else {
-							out.write("Error: we couldn't find your dataset. ");
-							out.write("\n");
+							out.write("Error: we couldn't find your dataset. ".getBytes("UTF-8"));
+							out.write("\n".getBytes("UTF-8"));
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -137,12 +139,10 @@ public class ServiceAPI extends HttpServlet {
 				}
 			}
 			if (parameters.containsKey(ServiceAPIOptions.SERVER_STATISTICS)) {
-				out.write(new APIStatistics().getStatistics().toJSONString()); 
+				out.write(new APIStatistics().getStatistics().toJSONString().getBytes("UTF-8")); 
 			}			
 			if (parameters.containsKey(ServiceAPIOptions.LIST)) {
-				boolean isVocabulary = false; 
-				if(parameters.get(ServiceAPIOptions.LIST_IS_VOCABULARY)[0].toString().equals("true"))
-					isVocabulary = true;
+				int searchVocabularies = Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_SEARCH_VOCABULARIES)[0].toString());
 				String searchValue = parameters.get(ServiceAPIOptions.LIST_SEARCH)[0];
 				
 				String searchSubject = null;
@@ -158,47 +158,47 @@ public class ServiceAPI extends HttpServlet {
 					
 				out.write(new APIStatistics().listDistributions(
 						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_START)[0]),
-						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_SKIP)[0]), isVocabulary,
+						Integer.parseInt(parameters.get(ServiceAPIOptions.LIST_SKIP)[0]), searchVocabularies,
 						searchValue, searchSubject, searchProperty, searchObject
-						).toJSONString()); 
+						).toJSONString().getBytes("UTF-8")); 
 			}
 			
 			if (parameters.containsKey(ServiceAPIOptions.DATASET_STATISTICS)) {
 				out.write(new APIStatistics().datasetDetails(parameters.get(ServiceAPIOptions.DUMP_FILE)[0],
 						Integer.parseInt(parameters.get(ServiceAPIOptions.TOP_N)[0]),
 						parameters.get(ServiceAPIOptions.TYPE)[0]
-						).toJSONString()); 
+						).toJSONString().getBytes("UTF-8")); 
 			}
 			if (parameters.containsKey(ServiceAPIOptions.COMPARE_DATASETS)) {
 				out.write(new APIStatistics().compareDatasets(Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET1)[0]),
-						Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET2)[0]), parameters.get(ServiceAPIOptions.TYPE)[0]).toJSONString()); 
+						Integer.valueOf(parameters.get(ServiceAPIOptions.COMPARE_DATASETS_DATASET2)[0]), parameters.get(ServiceAPIOptions.TYPE)[0]).toJSONString().getBytes("UTF-8")); 
 			}	
 			
 			if (parameters.containsKey(ServiceAPIOptions.DATASET_DETAILS_STATISTICS)) {
 				out.write(new APIStatistics().getTop(parameters.get(ServiceAPIOptions.DUMP_FILE)[0],
 						Integer.parseInt(parameters.get(ServiceAPIOptions.TOP_N)[0]),
 						parameters.get(ServiceAPIOptions.TYPE)[0]
-						).toJSONString()); 			
+						).toJSONString().getBytes("UTF-8")); 			
 			}	
 			
 			
 
 		} catch (DynamicLODAPINoParametersFoundExceiption e) {
 			Iterator<APIOption> it = options.iterator();
-			out.write("We couldn't find any valid parameter.\n\n\n");
+			out.write("We couldn't find any valid parameter.\n\n\n".getBytes("UTF-8"));
 
-			out.write("Parameter \t\t Description\n\n");
+			out.write("Parameter \t\t Description\n\n".getBytes("UTF-8"));
 
 			while (it.hasNext()) {
 				APIOption o = it.next();
-				out.write(o.getOption() + "\t\t" + o.getDescription() + "\n");
+				out.write((o.getOption() + "\t\t" + o.getDescription() + "\n").getBytes("UTF-8"));
 			}
 
-			out.write("\n\n\nFor full documentation please access: http://dynamiclod.dbpedia.org/wiki.html");
+			out.write("\n\n\nFor full documentation please access: http://dynamiclod.dbpedia.org/wiki.html".getBytes("UTF-8"));
 		} catch (DynamicLODNoDatasetFoundException e) {
-			out.write(e.getMessage());
+			out.write(e.getMessage().getBytes("UTF-8"));
 		} catch (DynamicLODAPINoLinksFoundException e) {
-			out.write(e.getMessage());
+			out.write(e.getMessage().getBytes("UTF-8"));
 
 		}
 	}

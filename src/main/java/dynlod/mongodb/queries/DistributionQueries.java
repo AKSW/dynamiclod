@@ -210,7 +210,7 @@ public class DistributionQueries {
 	 *            final value of range
 	 * @return a ArrayList of DistributionMongoDBObject
 	 */
-	public ArrayList<DistributionDB> getDistributions(int skip, int limit, boolean isVocabulary, String downloadURLSearch, List<Integer> in) {
+	public ArrayList<DistributionDB> getDistributions(int skip, int limit, int searchVocabularies, String downloadURLSearch, List<Integer> in) {
 
 		ArrayList<DistributionDB> list = new ArrayList<DistributionDB>();
 
@@ -230,15 +230,16 @@ public class DistributionQueries {
 				// BasicDBObject(DistributionMongoDBObject.DOWNLOAD_URL, new
 				// BasicDBObject("$regex",""+search+""));
 				query2 = new BasicDBObject(DistributionDB.DOWNLOAD_URL, java.util.regex.Pattern.compile(downloadURLSearch));
+				query3 = new BasicDBObject(DistributionDB.TITLE, java.util.regex.Pattern.compile(downloadURLSearch));
 
 				// DatasetMongoDBObject.URI, /.*m.*/
 				// new BasicDBObject("$regex", topDataset + ".*")
 
 				// make a AND operator
-				BasicDBList and = new BasicDBList();
-//				and.add(query3);
-				and.add(query2);
-				query = new BasicDBObject("$and", and);
+				BasicDBList or = new BasicDBList();
+				or.add(query3);
+				or.add(query2);
+				query = new BasicDBObject("$or", or);
 			}
 			
 			if(in.size()>0){
@@ -246,6 +247,21 @@ public class DistributionQueries {
 				if(query!=null)
 					and.add(query);
 				and.add(new BasicDBObject(DistributionDB.DYN_LOD_ID, new BasicDBObject("$in", in)));
+				query = new BasicDBObject("$and", and);
+			}
+			
+			if(searchVocabularies==0){
+				BasicDBList and = new BasicDBList();
+				if(query!=null)
+					and.add(query);
+				and.add(new BasicDBObject(DistributionDB.IS_VOCABULARY, true));
+				query = new BasicDBObject("$and", and);
+			}
+			if(searchVocabularies==1){
+				BasicDBList and = new BasicDBList();
+				if(query!=null)
+					and.add(query);
+				and.add(new BasicDBObject(DistributionDB.IS_VOCABULARY, false));
 				query = new BasicDBObject("$and", and);
 			}
 

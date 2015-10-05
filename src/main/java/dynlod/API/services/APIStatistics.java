@@ -56,7 +56,7 @@ public class APIStatistics{
 		return apimessage;
 	}
 	
-	public APIMessage listDistributions(int skip, int limit, boolean isVocabulary, String search, 
+	public APIMessage listDistributions(int skip, int limit, int searchVocabularies, String search, 
 			String searchSubject, String searchProperty, String searchObject){
 		APIMessage apimessage = new APIMessage(); 	
 		
@@ -133,7 +133,7 @@ public class APIStatistics{
 		// search by name
 		DistributionQueries dq = new DistributionQueries();
 		ArrayList<DistributionDB> distributions = dq
-		.getDistributions(skip, limit, isVocabulary, search, in);
+		.getDistributions(skip, limit, searchVocabularies, search, in);
 		
 		
 		for (DistributionDB d : distributions){
@@ -198,7 +198,14 @@ public class APIStatistics{
 			jsonArr.put(jsonObj);
 		}
 
+		
+		
 		msg.put("distributions", jsonArr);
+		msg.put("distributionTitle", dist.getTitle());
+		msg.put("datasetTitle", dist.getTopDatasetTitle());
+		msg.put("distributionTriples", dist.getTriples());
+		msg.put("isVocabulary", dist.getIsVocabulary());
+		msg.put("distributionDownloadURL", dist.getDownloadUrl());
 		apimessage.addListMsg(msg); 
 		
 		return apimessage;
