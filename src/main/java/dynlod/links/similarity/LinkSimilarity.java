@@ -22,9 +22,9 @@ public abstract class LinkSimilarity {
 	
 	/**
 	 * Update values of distribution similarities 
-	 * @param distribution Distribution that should be compared
+	 * @param distributionSource Distribution that should be compared
 	 */
-	public void updateLinks(DistributionDB distribution, GeneralRDFResourceRelationDB type ){
+	public void updateLinks(DistributionDB distributionSource, GeneralRDFResourceRelationDB type ){
 		this.type = type;
 		
 		// get all distributions except for the current one
@@ -34,69 +34,41 @@ public abstract class LinkSimilarity {
 		HashSet<String> set1 ;
 //			set1 = predicates.getSetOfPredicates(distribution.getDynLodID());
 		if(type instanceof AllPredicatesRelationDB)
-			set1 = new AllPredicatesRelationDB().getSetOfPredicates(distribution.getDynLodID());
+			set1 = new AllPredicatesRelationDB().getSetOfPredicates(distributionSource.getDynLodID());
 		else if(type instanceof RDFTypeObjectRelationDB)
-			set1 = new RDFTypeObjectRelationDB().getSetOfPredicates(distribution.getDynLodID());
+			set1 = new RDFTypeObjectRelationDB().getSetOfPredicates(distributionSource.getDynLodID());
 		else if(type instanceof RDFSubClassOfRelationDB)
-			set1 = new RDFSubClassOfRelationDB().getSetOfPredicates(distribution.getDynLodID());
+			set1 = new RDFSubClassOfRelationDB().getSetOfPredicates(distributionSource.getDynLodID());
 //		else if(type instanceof OwlClassRelationDB)
 		else
-			set1 = new OwlClassRelationDB().getSetOfPredicates(distribution.getDynLodID());
+			set1 = new OwlClassRelationDB().getSetOfPredicates(distributionSource.getDynLodID());
 		
-		for(DistributionDB d: distributions){
-			if(d.getDynLodID() != distribution.getDynLodID()){
+		for(DistributionDB distributionTarget: distributions){
+			if(distributionTarget.getDynLodID() != distributionSource.getDynLodID()){
 			
 			HashSet<String> set2;
 			if(type instanceof AllPredicatesRelationDB)
-				set2 = new AllPredicatesRelationDB().getSetOfPredicates(d.getDynLodID());
+				set2 = new AllPredicatesRelationDB().getSetOfPredicates(distributionTarget.getDynLodID());
 			else if(type instanceof RDFTypeObjectRelationDB)
-				set2 = new RDFTypeObjectRelationDB().getSetOfPredicates(d.getDynLodID());
+				set2 = new RDFTypeObjectRelationDB().getSetOfPredicates(distributionTarget.getDynLodID());
 			else if(type instanceof RDFSubClassOfRelationDB)
-				set2 = new RDFSubClassOfRelationDB().getSetOfPredicates(d.getDynLodID());
+				set2 = new RDFSubClassOfRelationDB().getSetOfPredicates(distributionTarget.getDynLodID());
 //			else if(type instanceof OwlClassRelationDB)
 			else
-				set2 = new OwlClassRelationDB().getSetOfPredicates(d.getDynLodID());
+				set2 = new OwlClassRelationDB().getSetOfPredicates(distributionTarget.getDynLodID());
 			
 			
 			double value = compare(
 					set1, set2);
 			
 			if(value>0){
-				makeLink(distribution, d, value);
-				makeLink(d, distribution, value);
+				makeLink(distributionSource, distributionTarget, value);
+//				makeLink(distributionTarget, distributionSource, value);
 				}
 			}
 		}
 	}
 	
-//	/**
-//	 * Update values of distribution similarities 
-//	 * @param distribution Distribution that should be compared
-//	 */
-//	public void updateLinks(DistributionMongoDBObject distribution){
-//		
-//		// get all distributions except for the current one
-//		ArrayList<DistributionMongoDBObject> distributions = new DistributionQueries().getDistributions(true);
-//		
-//		PredicatesQueries predicates = new PredicatesQueries();
-//		
-//		HashSet<String> set1 = predicates.getSetOfPredicates(distribution.getDynLodID());
-//		
-//		for(DistributionMongoDBObject d: distributions){
-//			if(d.getDynLodID() != distribution.getDynLodID()){
-//			
-//			HashSet<String> set2 = predicates.getSetOfPredicates(d.getDynLodID());
-//			
-//			double value = compare(
-//					set1, set2);
-//			
-//			if(value>0){
-//				makeLink(distribution, d, value);
-//				makeLink(d, distribution, value);
-//				}
-//			}
-//		}
-//	}
 	/**
 	 * Update link similarity value at mongodb
 	 * @param dist1 distribution 1
@@ -119,7 +91,12 @@ public abstract class LinkSimilarity {
 		else
 			link.setOwlClassSimilarity(value);
 		
-		
+		if (link.getLinks() == 0 &&
+				link.getOwlClassSimilarity() == 0 &&
+				link.getRdfSubClassSimilarity()== 0 &&
+				link.getRdfTypeSimilarity()== 0
+				)
+			return;
 		
 		if(link.getDatasetSource()==0)
 			link.setDatasetSource(dist1.getTopDataset());

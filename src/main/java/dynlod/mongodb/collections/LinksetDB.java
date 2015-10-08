@@ -21,7 +21,7 @@ public class LinksetDB extends DBSuperClass {
 
 	public static final String DATASET_SOURCE = "datasetSource";
 
-//	public static final String INVALID_LINKS = "invalidLinks";
+	public static final String INVALID_LINKS = "invalidLinks";
 
 	public static final String PREDICATE_SIMILARITY = "predicateSimilarity";
 
@@ -98,6 +98,8 @@ public class LinksetDB extends DBSuperClass {
 
 			links = ((Number) obj.get(LINK_NUMBER_LINKS)).intValue();
 
+			invalidLinks = ((Number) obj.get(INVALID_LINKS)).intValue();
+
 		}
 	}
 
@@ -137,6 +139,8 @@ public class LinksetDB extends DBSuperClass {
 			mongoDBObject.put(RDF_SUBCLASS_SIMILARITY, rdfSubClassSimilarity);
 
 			mongoDBObject.put(RDF_TYPE_SIMILARITY, rdfTypeSimilarity);
+
+			mongoDBObject.put(INVALID_LINKS, invalidLinks);
 
 			// updating link strength on mongodb
 			mongoDBObject.put(LINK_STRENGHT, strength);
@@ -187,6 +191,8 @@ public class LinksetDB extends DBSuperClass {
 //			invalidLinks = Integer.valueOf(obj.get(INVALID_LINKS).toString());
 
 			links = ((Number) obj.get(LINK_NUMBER_LINKS)).intValue();
+
+			invalidLinks= ((Number) obj.get(INVALID_LINKS)).intValue();
 
 			return true;
 		}

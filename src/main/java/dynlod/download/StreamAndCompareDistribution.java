@@ -58,11 +58,6 @@ public class StreamAndCompareDistribution extends Stream {
 	public Integer objectLines = 0;
 	public Integer totalTriples;
 
-//	public ConcurrentHashMap<String, Integer> objectDomains = new ConcurrentHashMap<String, Integer>();
-//	public ConcurrentHashMap<String, Integer> subjectDomains = new ConcurrentHashMap<String, Integer>();
-//	public ConcurrentHashMap<String, Integer> countObjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
-//	public ConcurrentHashMap<String, Integer> countSubjectDomainsHashMap = new ConcurrentHashMap<String, Integer>();
-
 	ConcurrentLinkedQueue<String> bufferQueue = new ConcurrentLinkedQueue<String>();
 	ConcurrentLinkedQueue<String> objectQueue = new ConcurrentLinkedQueue<String>();
 	ConcurrentLinkedQueue<String> subjectQueue = new ConcurrentLinkedQueue<String>();
@@ -129,22 +124,13 @@ public class StreamAndCompareDistribution extends Stream {
 			DynamicLODGeneralException, 
 			DynamicLODFormatNotAcceptedException {
 
-		// SplitAndStoreThread splitThread = new SplitAndStoreThread(
-		// bufferQueue, subjectQueue, objectQueue, getFileName());
-
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
 				objectQueue, FileUtils.stringToHash(url.toString()));
-
-//		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
-//				countObjectDomainsHashMap, uri);
-//		getDomainFromSubjectsThread = new MakeLinksetsMasterThread(subjectQueue,
-//				countSubjectDomainsHashMap, uri);
 
 		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
 				uri);
 		getDomainFromSubjectsThread = new MakeLinksetsMasterThread(subjectQueue,
 				uri);
-
 		
 		getDomainFromObjectsThread.setName("getDomainFromObjectsThread");		
 		getDomainFromSubjectsThread.isSubject = true;
@@ -287,12 +273,6 @@ public class StreamAndCompareDistribution extends Stream {
 		new OwlClassDB().insertSet(splitThread.owlClasses.keySet());
 		new OwlClassRelationDB().insertSet(splitThread.owlClasses, distribution.getDynLodID(), distribution.getTopDataset());
 			
-		
-		
-//		logger.info("Checking distributions similarities...");
-//		// Saving link similarities
-//		LinkSimilarity linkSimilarity = new JaccardSimilarity();
-//		linkSimilarity.updateLinks(distribution);
 	}
 
 }

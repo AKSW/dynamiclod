@@ -101,8 +101,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 						
 					}
 					if (numberOfReadedTriples%saveDomainsEach==0){		
-				if(!isSubject)	
-					makeLinks();
+						if(!isSubject)	
+							makeLinks();
 					}
 
 				} catch (NoSuchElementException e) {
@@ -114,8 +114,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 				
 		logger.info("Waiting all threads finish their jobs...");
 		try {
-if(!isSubject)
-			makeLinks();
+			if(!isSubject)
+				makeLinks();
 			for(Thread t : listOfThreads.values()){
 				t.join();
 			}
