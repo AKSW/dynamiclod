@@ -92,7 +92,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 					obj = resourceQueue.remove();
 					resourcesToBeProcessedQueue.add(obj);
 					
-					FQDN.getFQDNFromString(obj);
+					obj = FQDN.getFQDNFromString(obj);
 
 					if (!obj.equals("")) {
 						countTotalFQDN.putIfAbsent(obj, 0);
@@ -101,7 +101,8 @@ public class GetFQDNFromTriplesThread extends Thread {
 						
 					}
 					if (numberOfReadedTriples%saveDomainsEach==0){		
-						makeLinks();
+				if(!isSubject)	
+					makeLinks();
 					}
 
 				} catch (NoSuchElementException e) {
@@ -113,6 +114,7 @@ public class GetFQDNFromTriplesThread extends Thread {
 				
 		logger.info("Waiting all threads finish their jobs...");
 		try {
+if(!isSubject)
 			makeLinks();
 			for(Thread t : listOfThreads.values()){
 				t.join();
