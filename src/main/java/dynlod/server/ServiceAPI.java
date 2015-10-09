@@ -129,7 +129,7 @@ public class ServiceAPI extends HttpServlet {
 								.retrieveDataset(parameters
 										.get("source")[0],
 										parameters
-										.get("target")[0]									);
+										.get("target")[0]);
 					}
 					else
 					apiRetrieve = APIFactory

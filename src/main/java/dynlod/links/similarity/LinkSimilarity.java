@@ -97,6 +97,7 @@ public abstract class LinkSimilarity {
 				link.getRdfSubClassSimilarity()== 0 &&
 				link.getRdfTypeSimilarity()== 0
 				)
+			return;
 		
 		if(link.getDatasetSource()==0)
 			link.setDatasetSource(dist1.getTopDataset());

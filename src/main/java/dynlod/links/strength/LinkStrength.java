@@ -60,6 +60,13 @@ public class LinkStrength {
 			nLinks = 1.0*link.getLinks()/numberOfSourceFQDN;
 		}
 		
+		if (link.getLinks() == 0 &&
+				link.getOwlClassSimilarity() == 0 &&
+				link.getRdfSubClassSimilarity()== 0 &&
+				link.getRdfTypeSimilarity()== 0
+				)
+			return;
+		
 		link.setStrength(nLinks);
 		if(link.getDatasetSource()==0)
 			link.setDatasetSource(dist1.getTopDataset());
