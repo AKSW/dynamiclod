@@ -296,7 +296,7 @@ public class CreateD3JSONFormat extends HttpServlet {
 	
 	protected String getLinksCorrectFormat(LinksetDB linkset){
 		String links;
-		if(showInvalidLinks)
+		if(LINK_TYPE.equals(LinksetDB.INVALID_LINKS))
 			links = linkset.getInvalidLinksAsString();
 		else if(LINK_TYPE.equals(LinksetDB.PREDICATE_SIMILARITY))
 			links = linkset.getPredicatesSimilarityAsString();
@@ -334,6 +334,11 @@ public class CreateD3JSONFormat extends HttpServlet {
 			
 			if(parameters.get("linkType")[0].equals("showLinksStrength"))
 				LINK_TYPE = LinksetDB.LINK_STRENGHT;
+			else if(parameters.get("linkType")[0].equals("showDarkLOD")){
+				LINK_TYPE = LinksetDB.INVALID_LINKS;
+				min = 50;
+				max = -1;
+			}
 			else if(parameters.get("linkType")[0].equals("showSimilarity"))
 				LINK_TYPE = LinksetDB.PREDICATE_SIMILARITY;
 			else if(parameters.get("linkType")[0].equals("showLinks")){

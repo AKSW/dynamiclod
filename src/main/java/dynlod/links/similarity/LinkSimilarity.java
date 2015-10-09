@@ -91,12 +91,12 @@ public abstract class LinkSimilarity {
 		else
 			link.setOwlClassSimilarity(value);
 		
+
 		if (link.getLinks() == 0 &&
 				link.getOwlClassSimilarity() == 0 &&
 				link.getRdfSubClassSimilarity()== 0 &&
 				link.getRdfTypeSimilarity()== 0
 				)
-			return;
 		
 		if(link.getDatasetSource()==0)
 			link.setDatasetSource(dist1.getTopDataset());
