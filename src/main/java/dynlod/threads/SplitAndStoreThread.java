@@ -136,6 +136,9 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 		if(!stPredicate.startsWith("<")){
 			stPredicate = "<"+stPredicate+">";
 		}
+		if(!stObject.startsWith("h")){
+			stObject = "<"+stObject+">";
+		}
 		
 		try {
 			triplesFile.write(stSubject+" "+stPredicate+ " "+stObject+" .\n");
