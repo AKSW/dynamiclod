@@ -2,6 +2,7 @@ package dynlod.threads;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -39,6 +40,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	// these files will be used to create Bloom folters
 	BufferedWriter subjectFile = null;
 	BufferedWriter objectFile = null;
+	BufferedWriter triplesFile = null;
 	
 	// saving all predicates
 	public  HashMap<String, Integer> allPredicates = new  HashMap<String, Integer>();
@@ -60,16 +62,6 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 	}
 
-	public SplitAndStoreThread(ConcurrentLinkedQueue<String> subjectQueue,
-			ConcurrentLinkedQueue<String> objectQueue, String fileName,
-			boolean isChain) {
-		this.objectQueue = objectQueue;
-		this.subjectQueue = subjectQueue;
-		this.fileName = fileName;
-		this.isChain = isChain;
-		startQueues();
-
-	}
 
 	private void startQueues() {
 		try {
@@ -80,7 +72,12 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 			if (objectQueue != null)
 				objectFile = new BufferedWriter(new FileWriter(
 						DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
-								+ fileName));
+								+ fileName));		
+			triplesFile = new BufferedWriter(new FileWriter(
+										DynlodGeneralProperties.BASE_PATH+"/dump/"
+										+ fileName.replace(" ", "_")));
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -92,6 +89,8 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 				objectFile.close();
 			if (subjectFile != null)
 				subjectFile.close();
+			if (triplesFile != null)
+				triplesFile.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -129,7 +128,26 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	}
 	
 	public void saveStatement(String stSubject, String stPredicate,
-			String stObject) {
+			String stObject){
+
+		if(!stSubject.startsWith("<")){
+			stSubject = "<"+stSubject+">";
+		}
+		if(!stPredicate.startsWith("<")){
+			stPredicate = "<"+stPredicate+">";
+		}
+		
+		try {
+			triplesFile.write(stSubject+" "+stPredicate+ " "+stObject+" .\n");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return;
+	}
+	
+	public void saveStatement2(String stSubject, String stPredicate,
+			String stObject) {		
 		
 		
 		if(stObject.startsWith("<")){
@@ -164,7 +182,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 		// save predicate
 		
 		try {
-			if (true) {
+//			if (true) {
 
 //				if (!stObject.equals("http://www.w3.org/2002/07/owl#Class")
 //						&& !stPredicate
@@ -195,7 +213,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 
 //					System.out.println(stSubject+ " "+ stPredicate+" "+stObject);
 				}
-			}
+//			}
 			while (objectQueue.size() > bufferSize) {
 				Thread.sleep(1);
 			}

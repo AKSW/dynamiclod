@@ -124,8 +124,10 @@ public class StreamAndCompareDistribution extends Stream {
 			DynamicLODGeneralException, 
 			DynamicLODFormatNotAcceptedException {
 
+//		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
+//				objectQueue, FileUtils.stringToHash(url.toString()));
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
-				objectQueue, FileUtils.stringToHash(url.toString()));
+				objectQueue, distribution.getTitle()+"_"+distribution.getDynLodID());
 
 		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
 				uri);
@@ -163,8 +165,8 @@ public class StreamAndCompareDistribution extends Stream {
 				throw new DynamicLODFormatNotAcceptedException(
 						"RDF format not supported: " + RDFFormat);
 			}
-			getDomainFromSubjectsThread.start();
-			getDomainFromObjectsThread.start();
+//			getDomainFromSubjectsThread.start();
+//			getDomainFromObjectsThread.start();
 
 			rdfParser.setRDFHandler(splitThread);
 			ParserConfig config = new ParserConfig();
