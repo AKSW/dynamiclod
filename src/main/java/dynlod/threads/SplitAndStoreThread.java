@@ -128,28 +128,6 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	}
 	
 	public void saveStatement(String stSubject, String stPredicate,
-			String stObject){
-
-		if(!stSubject.startsWith("<")){
-			stSubject = "<"+stSubject+">";
-		}
-		if(!stPredicate.startsWith("<")){
-			stPredicate = "<"+stPredicate+">";
-		}
-		if(!stObject.startsWith("h")){
-			stObject = "<"+stObject+">";
-		}
-		
-		try {
-			triplesFile.write(stSubject+" "+stPredicate+ " "+stObject+" .\n");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return;
-	}
-	
-	public void saveStatement2(String stSubject, String stPredicate,
 			String stObject) {		
 		
 		

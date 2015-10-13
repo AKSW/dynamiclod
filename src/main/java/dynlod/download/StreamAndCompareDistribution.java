@@ -165,8 +165,8 @@ public class StreamAndCompareDistribution extends Stream {
 				throw new DynamicLODFormatNotAcceptedException(
 						"RDF format not supported: " + RDFFormat);
 			}
-//			getDomainFromSubjectsThread.start();
-//			getDomainFromObjectsThread.start();
+			getDomainFromSubjectsThread.start();
+			getDomainFromObjectsThread.start();
 
 			rdfParser.setRDFHandler(splitThread);
 			ParserConfig config = new ParserConfig();
