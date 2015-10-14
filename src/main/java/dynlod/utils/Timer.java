@@ -14,7 +14,7 @@ public class Timer {
 	public String stopTimer(){
 		double time = System.currentTimeMillis()-startTime;
 		startTime = 0;
-		return String.format("%.2f", time/1000);
+		return String.format("%.4f", time/1000);
 		
 	}
 	

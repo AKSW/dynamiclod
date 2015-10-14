@@ -1,19 +1,29 @@
 package dynlod.API.services;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Test;
+
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 import dynlod.DynlodGeneralProperties;
 import dynlod.API.core.APIMessage;
 import dynlod.API.core.ServiceAPIOptions;
+import dynlod.mongodb.DBSuperClass;
 import dynlod.mongodb.collections.DistributionDB;
 import dynlod.mongodb.collections.LinksetDB;
 import dynlod.mongodb.collections.RDFResources.GeneralRDFResourceRelationDB;
@@ -28,6 +38,7 @@ import dynlod.mongodb.collections.RDFResources.rdfType.RDFTypeObjectRelationDB;
 import dynlod.mongodb.queries.DatasetQueries;
 import dynlod.mongodb.queries.DistributionQueries;
 import dynlod.mongodb.queries.LinksetQueries;
+import dynlod.utils.Timer;
 
 public class APIStatistics{
 	
@@ -55,6 +66,125 @@ public class APIStatistics{
 		
 		return apimessage;
 	}
+	
+	public static void main(String[] args) {
+		new APIStatistics().go();
+	}
+	
+	@Test
+	public void go(){
+		try {
+		new DynlodGeneralProperties().loadProperties();
+		
+		String subjects = DynlodGeneralProperties.SUBJECT_PATH+"subjects";
+		String objects = DynlodGeneralProperties.OBJECT_PATH+"objects";
+			
+		test(10, "properties");		
+		test(100, "properties");		
+		test(1000, "properties");		
+		
+		test(10, subjects);			
+		test(100, subjects);			
+		test(1000, subjects);			
+//		
+		test(10, objects);			
+		test(100, objects);			
+		test(1000, objects);			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void test(int numberOfResources, String file) throws Exception{
+		
+		HashMap<Integer, String> list = new HashMap<Integer, String>();
+		ArrayList<String> compareList = new ArrayList<String>();
+		int counter = 0;
+		String tmp;
+		
+		Random r = new Random();
+		
+		if(!file.equals("properties")){
+			BufferedReader b = new BufferedReader(new FileReader(file));
+			while((tmp = b.readLine())!=null){
+				if(tmp.contains("http"))
+					list.put(++counter, tmp);
+			}
+		}
+		else{
+				DBCollection collection = DBSuperClass.getInstance()
+						.getCollection(AllPredicatesDB.COLLECTION_NAME);
+
+
+				DBCursor instances = collection.find();
+
+				for (DBObject instance : instances) {
+					String d = instance.get(AllPredicatesDB.URI).toString();
+					System.out.println(d);
+					list.put(++counter, d);
+				}
+			
+		}
+		
+		int Low = 0;
+		int High = list.size();
+
+		
+		// take number of resources here
+		for (int i = 0; i<numberOfResources; i++){
+			int R = r.nextInt(High-Low) + Low;
+			compareList.add(list.get(R));
+		}
+		
+		for(String s : compareList){
+			if(file.contains("subject"))
+				listDistributions( 0, 1, 2, null, s, null, null);
+			else if(file.contains("object"))
+				listDistributions( 0, 1, 2, null, null, null, s);
+			else if(file.contains("prop"))
+				listDistributions( 0, 1, 2, null, null, s, null);
+		}
+		
+		Timer t = new Timer();
+		Timer t2 = new Timer();
+		t2.startTimer();
+		for(String s : compareList){
+			if(file.contains("subject"))
+				listDistributions( 0, 1, 2, null, s, null, null);
+			else if(file.contains("object"))
+				listDistributions( 0, 1, 2, null, null, null, s);
+			else if(file.contains("prop"))
+				listDistributions( 0, 1, 2, null, null, s, null);		
+		}
+		String timer2 = t2.stopTimer();
+		System.out.println(timer2);
+		System.out.println(compareList.size());
+		FileWriter writer;
+		FileWriter writer2;
+		if(file.contains("subject")){
+			writer = new FileWriter(DynlodGeneralProperties.BASE_PATH+"results/subjects"+(String.valueOf(numberOfResources)));
+			writer2 = new FileWriter(DynlodGeneralProperties.BASE_PATH+"results/subjects"+"_result", true);
+		}
+		else if(file.contains("object")){
+			writer = new FileWriter(DynlodGeneralProperties.BASE_PATH+"results/objects"+(String.valueOf(numberOfResources)));
+			writer2 = new FileWriter(DynlodGeneralProperties.BASE_PATH+"results/objects"+"_result", true);
+		}
+		else{
+			writer = new FileWriter(DynlodGeneralProperties.BASE_PATH+"results/properties"+(String.valueOf(numberOfResources)));
+			writer2 = new FileWriter(DynlodGeneralProperties.BASE_PATH+"results/properties"+"_result", true); 	
+		}
+		for(String s : compareList){
+				writer.write(s+"\n");
+		}
+		
+		writer.close();
+		
+		writer2.write(timer2+"\n");
+		writer2.close();
+		
+	}
+	
 	
 	public APIMessage listDistributions(int skip, int limit, int searchVocabularies, String search, 
 			String searchSubject, String searchProperty, String searchObject){

@@ -388,7 +388,6 @@ public class DistributionQueries {
 	}
 
 	public HashSet<DistributionDB> getDistributionsByResource(String resource, String type) {
-		boolean contains = false;
 
 		HashSet<DistributionDB> setOfDistributionFQDN = new HashSet<DistributionDB>();
 

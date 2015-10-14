@@ -124,10 +124,10 @@ public class StreamAndCompareDistribution extends Stream {
 			DynamicLODGeneralException, 
 			DynamicLODFormatNotAcceptedException {
 
-//		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
-//				objectQueue, FileUtils.stringToHash(url.toString()));
 		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
-				objectQueue, distribution.getTitle()+"_"+distribution.getDynLodID());
+				objectQueue, FileUtils.stringToHash(url.toString()));
+//		SplitAndStoreThread splitThread = new SplitAndStoreThread(subjectQueue,
+//				objectQueue, distribution.getTitle()+"_"+distribution.getDynLodID());
 
 		getDomainFromObjectsThread = new MakeLinksetsMasterThread(objectQueue,
 				uri);

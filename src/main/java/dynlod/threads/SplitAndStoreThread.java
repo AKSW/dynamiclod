@@ -40,7 +40,6 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 	// these files will be used to create Bloom folters
 	BufferedWriter subjectFile = null;
 	BufferedWriter objectFile = null;
-	BufferedWriter triplesFile = null;
 	
 	// saving all predicates
 	public  HashMap<String, Integer> allPredicates = new  HashMap<String, Integer>();
@@ -72,11 +71,7 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 			if (objectQueue != null)
 				objectFile = new BufferedWriter(new FileWriter(
 						DynlodGeneralProperties.OBJECT_FILE_DISTRIBUTION_PATH
-								+ fileName));		
-			triplesFile = new BufferedWriter(new FileWriter(
-										DynlodGeneralProperties.BASE_PATH+"/dump/"
-										+ fileName.replace(" ", "_")));
-			
+								+ fileName));					
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -89,8 +84,6 @@ public class SplitAndStoreThread extends RDFHandlerBase {
 				objectFile.close();
 			if (subjectFile != null)
 				subjectFile.close();
-			if (triplesFile != null)
-				triplesFile.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
