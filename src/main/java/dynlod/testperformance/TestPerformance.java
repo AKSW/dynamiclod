@@ -21,8 +21,8 @@ public class TestPerformance {
 	
 	static APIStatistics api = new APIStatistics();
 	
-	int subjectsFileSize;
-	int objectsFileSize;
+	int subjectsFileSize=0;
+	int objectsFileSize=0;
 	
 	String subjectsPath = null ;
 	String objectsPath = null;
@@ -57,6 +57,10 @@ public class TestPerformance {
 			if(tmp.contains("http"))
 				objectsFileSize++;
 		}		
+		System.out.println(subjectsFileSize);
+		System.out.println(objectsFileSize);
+		
+	
 		
 		System.out.println("Subject file size: "+subjectsFileSize);
 		System.out.println("Object file size: "+objectsFileSize);
@@ -79,13 +83,13 @@ public class TestPerformance {
 	}
 	
 	public void test(int numberOfResources, String type, String path, int size) throws Exception{
-		
 		ArrayList<String> list = new ArrayList<String>();
 		HashSet<Integer> rand = new HashSet<Integer>();
 		int counter = 0;
 		String tmp;
 		
 		Random r = new Random();
+		if(type.equals(PROPERTIES))
 		size =  DBSuperClass.getInstance()
 				.getCollection(AllPredicatesDB.COLLECTION_NAME).find().size();
 		
@@ -93,7 +97,7 @@ public class TestPerformance {
 		int Low = 0;
 		int High = size;
 
-		
+		System.out.println(size);
 		// take number of resources here
 		for (int i = 0; i<numberOfResources; i++){
 			int R = r.nextInt(High-Low) + Low;
@@ -107,7 +111,11 @@ public class TestPerformance {
 				if(tmp.contains("http")){
 					counter ++;
 					if(rand.contains(counter)){
-						list.add(tmp);
+						if (list.contains(tmp)){
+							counter -- ;
+						}
+						else
+							list.add(tmp);
 						System.out.println("Matched "+counter+ " "+ tmp);
 					}
 				}
@@ -122,10 +130,15 @@ public class TestPerformance {
 				for (DBObject instance : instances) {
 					tmp = instance.get(AllPredicatesDB.URI).toString();
 					counter ++;
-					if(rand.contains(counter)){
+					
+					if (list.contains(tmp)){
+						counter -- ;
+					}
+					else{
 						list.add(tmp);
 						System.out.println("Matched "+counter+ " "+ tmp);
 					}
+					
 				}
 			}
 		
